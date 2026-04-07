@@ -2,7 +2,32 @@
   "page": {
     "index": {
       "seo": {
-        "title": "Hello World"
+        "title": "Resource Management"
+      },
+      "header": {
+        "title": "Resource Management"
+      },
+      "filters": {
+        "user": {
+          "label": "User",
+          "placeholder": "Select user"
+        },
+        "year": {
+          "label": "Year",
+          "placeholder": "Select year"
+        },
+        "week": {
+          "label": "Number of the week",
+          "placeholder": "Select week"
+        }
+      },
+      "navigation": {
+        "inProgress": "In Progress",
+        "requests": "Requests",
+        "initiator": "Initiator",
+        "projectReports": "Project Reports",
+        "actualReports": "Actual Reports",
+        "settings": "Settings"
       }
     }
   }

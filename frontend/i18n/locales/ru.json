@@ -2,7 +2,32 @@
   "page": {
     "index": {
       "seo": {
-        "title": "Hello World"
+        "title": "Управление ресурсами"
+      },
+      "header": {
+        "title": "Управление ресурсами"
+      },
+      "filters": {
+        "user": {
+          "label": "Пользователь",
+          "placeholder": "Выберите пользователя"
+        },
+        "year": {
+          "label": "Год",
+          "placeholder": "Выберите год"
+        },
+        "week": {
+          "label": "Номер недели",
+          "placeholder": "Выберите неделю"
+        }
+      },
+      "navigation": {
+        "inProgress": "В работе",
+        "requests": "Заявки",
+        "initiator": "Инициатор",
+        "projectReports": "Отчет по проектам",
+        "actualReports": "Отчет по фактам",
+        "settings": "Настройки"
       }
     }
   }
