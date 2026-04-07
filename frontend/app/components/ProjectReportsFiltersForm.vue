@@ -64,7 +64,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.projectReports.filters.user.label')"
         class="min-w-[16rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.user"
           multiple
           autocomplete=""
@@ -78,7 +78,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.projectReports.filters.year.label')"
         class="min-w-[12rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.year"
           multiple
           autocomplete=""
@@ -92,7 +92,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.projectReports.filters.weekFrom.label')"
         class="min-w-[14rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.weekFrom"
           multiple
           autocomplete=""
@@ -106,7 +106,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.projectReports.filters.weekTo.label')"
         class="min-w-[14rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.weekTo"
           multiple
           autocomplete=""

@@ -56,7 +56,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.index.filters.user.label')"
         class="min-w-[16rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.user"
           multiple
           autocomplete=""
@@ -70,7 +70,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.index.filters.year.label')"
         class="min-w-[12rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.year"
           multiple
           autocomplete=""
@@ -84,7 +84,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         :label="t('page.index.filters.week.label')"
         class="min-w-[14rem] flex-1"
       >
-        <B24InputMenu
+        <SingleLineInputMenu
           v-model="formState.week"
           multiple
           autocomplete=""
