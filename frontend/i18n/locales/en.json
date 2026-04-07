@@ -17,9 +17,10 @@
           "placeholder": "Select year"
         },
         "week": {
-          "label": "Number of the week",
+          "label": "Week number",
           "placeholder": "Select week"
-        }
+        },
+        "submit": "Refresh"
       },
       "navigation": {
         "inProgress": "In Progress",
@@ -28,6 +29,51 @@
         "projectReports": "Project Reports",
         "actualReports": "Actual Reports",
         "settings": "Settings"
+      }
+    },
+    "projectReports": {
+      "filters": {
+        "user": {
+          "label": "User",
+          "placeholder": "Select user"
+        },
+        "year": {
+          "label": "Year",
+          "placeholder": "Select year"
+        },
+        "weekFrom": {
+          "label": "Week number from",
+          "placeholder": "Select start week"
+        },
+        "weekTo": {
+          "label": "Week number to",
+          "placeholder": "Select end week"
+        },
+        "submit": "Refresh"
+      }
+    },
+    "actualReports": {
+      "filters": {
+        "department": {
+          "label": "Department",
+          "placeholder": "Select department"
+        },
+        "year": {
+          "label": "Year",
+          "placeholder": "Select year"
+        },
+        "weekFrom": {
+          "label": "Week number from",
+          "placeholder": "Select start week"
+        },
+        "weekTo": {
+          "label": "Week number to",
+          "placeholder": "Select end week"
+        },
+        "onlyFree": {
+          "label": "Only free"
+        },
+        "submit": "Refresh"
       }
     }
   }

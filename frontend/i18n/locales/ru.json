@@ -19,7 +19,8 @@
         "week": {
           "label": "Номер недели",
           "placeholder": "Выберите неделю"
-        }
+        },
+        "submit": "Обновить"
       },
       "navigation": {
         "inProgress": "В работе",
@@ -28,6 +29,51 @@
         "projectReports": "Отчет по проектам",
         "actualReports": "Отчет по фактам",
         "settings": "Настройки"
+      }
+    },
+    "projectReports": {
+      "filters": {
+        "user": {
+          "label": "Пользователь",
+          "placeholder": "Выберите пользователя"
+        },
+        "year": {
+          "label": "Год",
+          "placeholder": "Выберите год"
+        },
+        "weekFrom": {
+          "label": "Номер недели с",
+          "placeholder": "Выберите начальную неделю"
+        },
+        "weekTo": {
+          "label": "Номер недели по",
+          "placeholder": "Выберите конечную неделю"
+        },
+        "submit": "Обновить"
+      }
+    },
+    "actualReports": {
+      "filters": {
+        "department": {
+          "label": "Отдел",
+          "placeholder": "Выберите отдел"
+        },
+        "year": {
+          "label": "Год",
+          "placeholder": "Выберите год"
+        },
+        "weekFrom": {
+          "label": "Номер недели с",
+          "placeholder": "Выберите начальную неделю"
+        },
+        "weekTo": {
+          "label": "Номер недели по",
+          "placeholder": "Выберите конечную неделю"
+        },
+        "onlyFree": {
+          "label": "Только свободные"
+        },
+        "submit": "Обновить"
       }
     }
   }

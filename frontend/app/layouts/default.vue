@@ -1,30 +1,54 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { NavigationMenuItem } from "@bitrix24/b24ui-nuxt";
+import { computed } from 'vue'
+import type { NavigationMenuItem } from '@bitrix24/b24ui-nuxt'
 
-const { t } = useI18n();
+const { t } = useI18n()
+const route = useRoute()
 
 const navigationItems = computed<NavigationMenuItem[]>(() => [
   {
-    label: t("page.index.navigation.inProgress"),
-    active: true,
+    label: t('page.index.navigation.inProgress'),
+    type: 'link',
+    to: '/in-progress',
+    exact: true,
+    active: route.path === '/in-progress',
   },
   {
-    label: t("page.index.navigation.requests"),
+    label: t('page.index.navigation.requests'),
+    type: 'link',
+    to: '/requests',
+    exact: true,
+    active: route.path === '/requests',
   },
   {
-    label: t("page.index.navigation.initiator"),
+    label: t('page.index.navigation.initiator'),
+    type: 'link',
+    to: '/initiator',
+    exact: true,
+    active: route.path === '/initiator',
   },
   {
-    label: t("page.index.navigation.projectReports"),
+    label: t('page.index.navigation.projectReports'),
+    type: 'link',
+    to: '/project-reports',
+    exact: true,
+    active: route.path === '/project-reports',
   },
   {
-    label: t("page.index.navigation.actualReports"),
+    label: t('page.index.navigation.actualReports'),
+    type: 'link',
+    to: '/actual-reports',
+    exact: true,
+    active: route.path === '/actual-reports',
   },
   {
-    label: t("page.index.navigation.settings"),
+    label: t('page.index.navigation.settings'),
+    type: 'link',
+    to: '/settings',
+    exact: true,
+    active: route.path === '/settings',
   },
-]);
+])
 </script>
 
 <template>
@@ -35,7 +59,7 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
           <h1
             class="mt-2 text-2xl font-semibold text-(--ui-color-base-1) sm:text-3xl"
           >
-            {{ t("page.index.header.title") }}
+            {{ t('page.index.header.title') }}
           </h1>
         </div>
         <div class="min-w-0 flex-1 basis-[42rem]">
@@ -43,6 +67,7 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
             :items="navigationItems"
             orientation="horizontal"
             class="w-full"
+            :aria-label="t('page.index.header.title')"
             :b24ui="{}"
           />
         </div>
