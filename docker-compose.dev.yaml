@@ -1,0 +1,106 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: ${DATABASE_HOST}
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+      POSTGRES_DB: ${DATABASE}
+    command: ["postgres", "-c", "port=${DATABASE_PORT}"]
+    ports:
+      - ${DATABASE_EXPOSED_PORT}:${DATABASE_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+
+  backend:
+    image: gamefication-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: backend
+    depends_on:
+      postgres:
+        condition: service_started
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    env_file:
+      - .env
+    command: sh -c "npx prisma migrate dev && npx prisma db seed && npm run start:dev"
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - internal-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: ${NITRO_HOST}
+    depends_on:
+      - backend
+    ports:
+      - ${NITRO_PORT}:${NITRO_PORT}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    env_file:
+      - .env
+    command: sh -c "npm run dev"
+    environment:
+      - NUXT_PUBLIC_APP_URL=https://${VIRTUAL_HOST}
+      - NUXT_PUBLIC_API_URL=https://${VIRTUAL_HOST}
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - internal-net
+
+  cloudpub:
+    container_name: cloudpub
+    image: cloudpub/cloudpub:latest-arm64
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TOKEN: ${CLOUDPUB_API_KEY}
+      HTTP: ${NITRO_HOST}:${NITRO_PORT}
+    command: run
+    depends_on:
+      - frontend
+    volumes:
+      - cloudpub_config:/home/cloudpub
+    networks:
+      - internal-net
+
+  redis:
+    image: redis:7
+    container_name: ${REDIS_HOST}
+    command: --port ${REDIS_PORT}
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal-net
+
+volumes:
+  postgres_data:
+  redis_data:
+  cloudpub_config:
+
+networks:
+  internal-net:
+    driver: bridge

@@ -1,0 +1,121 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String @id @default(uuid())
+  external_id Int
+  tenant_id   String
+
+  first_name  String?
+  second_name String?
+  last_name   String?
+  active      Boolean @default(true)
+  language    String? @db.VarChar(2)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  tenant    Tenant?              @relation(fields: [tenant_id], references: [id])
+  session   Session[]
+  userRoles UserRoleAssignment[]
+
+  @@unique([external_id, tenant_id])
+  @@map("users")
+}
+
+model Tenant {
+  id String @id @default(uuid())
+
+  domain    String @unique
+  member_id String @unique
+
+  is_admin      Boolean @default(false)
+  refresh_token String
+
+  access_token              String
+  access_token_ttl_seconds  Int
+  access_token_refreshed_at DateTime @default(now())
+
+  server_endpoint   String?
+  client_endpoint   String?
+  application_token String?
+  is_installed      Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  users     User[]
+  userRoles UserRoleAssignment[]
+
+  @@map("tenants")
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  refresh_token String   @unique
+  created_at    DateTime @default(now())
+  expires_at    DateTime
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Role {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(255)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  permissions PermissionOnRole[]
+  userRoles   UserRoleAssignment[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(255)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  roles PermissionOnRole[]
+
+  @@map("permissions")
+}
+
+model PermissionOnRole {
+  role_id       String
+  permission_id String
+  created_at    DateTime @default(now())
+
+  role       Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@id([role_id, permission_id])
+  @@map("role_permissions")
+}
+
+model UserRoleAssignment {
+  user_id    String
+  tenant_id  String
+  role_id    String
+  created_at DateTime @default(now())
+
+  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, tenant_id, role_id])
+  @@map("user_roles")
+}

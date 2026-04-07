@@ -1,0 +1,98 @@
+resources:
+  - ../../base
+  - cluster-issuer.yaml
+  - db-app-secret.yaml
+  - ingress.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: app-env
+    envs:
+      - .env.production
+
+secretGenerator:
+  - name: app-env-secret
+    envs:
+      - .env.secret
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: app-env
+      fieldPath: data.DATABASE_USER
+    targets:
+      - select:
+          kind: Secret
+          name: db-app-secret
+        fieldPaths:
+          - stringData.username
+      - select:
+          kind: Cluster
+          name: cluster
+        fieldPaths:
+          - spec.bootstrap.initdb.owner
+  - source:
+      kind: ConfigMap
+      name: app-env
+      fieldPath: data.DATABASE
+    targets:
+      - select:
+          kind: Cluster
+          name: cluster
+        fieldPaths:
+          - spec.bootstrap.initdb.database
+  - source:
+      kind: ConfigMap
+      name: app-env
+      fieldPath: data.REDIS_HOST
+    targets:
+      - select:
+          kind: Deployment
+          name: redis
+        fieldPaths:
+          - metadata.name
+          - spec.selector.matchLabels.app
+          - spec.template.metadata.labels.app
+      - select:
+          kind: Service
+          name: redis
+        fieldPaths:
+          - metadata.name
+          - spec.selector.app
+  - source:
+      kind: ConfigMap
+      name: app-env
+      fieldPath: data.REDIS_PORT
+    targets:
+      - select:
+          kind: Deployment
+          name: redis
+        fieldPaths:
+          - spec.template.spec.containers.0.args.4
+          - spec.template.spec.containers.0.ports.0.containerPort
+      - select:
+          kind: Service
+          name: redis
+        fieldPaths:
+          - spec.ports.0.port
+          - spec.ports.0.targetPort
+  - source:
+      kind: Secret
+      name: app-env-secret
+      fieldPath: data.DATABASE_PASS
+    targets:
+      - select:
+          kind: Secret
+          name: db-app-secret
+        fieldPaths:
+          - data.password
+
+images:
+  - name: backend
+    newName: registry.mcart.ru/bitrix-automation/management/tamagotchi/backend
+    newTag: '1.0'
+  - name: frontend
+    newName: registry.mcart.ru/bitrix-automation/management/tamagotchi/frontend
+    newTag: '1.0'
