@@ -106,6 +106,7 @@ watch(
         <SingleLineInputMenu
           v-model="formState.user"
           multiple
+          open-on-focus
           autocomplete=""
           :items="userItems"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
@@ -120,6 +121,7 @@ watch(
         <SingleLineInputMenu
           v-model="formState.year"
           multiple
+          open-on-focus
           autocomplete=""
           :items="yearItems"
           :placeholder="t('page.projectReports.filters.year.placeholder')"
@@ -134,6 +136,7 @@ watch(
         <SingleLineInputMenu
           v-model="formState.weekFrom"
           multiple
+          open-on-focus
           autocomplete=""
           :items="weekItems"
           :placeholder="t('page.projectReports.filters.weekFrom.placeholder')"
@@ -148,6 +151,7 @@ watch(
         <SingleLineInputMenu
           v-model="formState.weekTo"
           multiple
+          open-on-focus
           autocomplete=""
           :items="weekItems"
           :placeholder="t('page.projectReports.filters.weekTo.placeholder')"

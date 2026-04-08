@@ -28,6 +28,7 @@ useHead({
         <SingleLineInputMenu
           v-model="formState.favoriteUsers"
           multiple
+          open-on-focus
           autocomplete=""
           :items="userItems"
           :placeholder="t('page.settings.favoriteUsers.placeholder')"

@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
-import RefreshIcon from '@bitrix24/b24icons-vue/outline/RefreshIcon'
+import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
+import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const userItems = ref(['Alex Johnson', 'Maria Petrova', 'Daniel Kim'])
-const yearItems = ref(['2024', '2025', '2026'])
-const weekItems = ref(['Week 12', 'Week 13', 'Week 14', 'Week 15'])
+const userItems = ref(["Alex Johnson", "Maria Petrova", "Daniel Kim"]);
+const yearItems = ref(["2024", "2025", "2026"]);
+const weekItems = ref(["Week 12", "Week 13", "Week 14", "Week 15"]);
 
 const formState = reactive({
-  user: ['Alex Johnson'],
-  year: ['2026'],
-  week: ['Week 14'],
-})
+  user: ["Alex Johnson"],
+  year: ["2026"],
+  week: ["Week 14"],
+});
 
-type FilterFormState = typeof formState
+type FilterFormState = typeof formState;
 
 const keepLastSelection = (values: string[]) => {
   if (values.length > 1) {
-    return values.slice(-1)
+    return values.slice(-1);
   }
 
-  return values
-}
+  return values;
+};
 
 watch(
   () => formState.user,
   (values) => {
-    formState.user = keepLastSelection(values)
+    formState.user = keepLastSelection(values);
   },
-)
+);
 
 watch(
   () => formState.year,
   (values) => {
-    formState.year = keepLastSelection(values)
+    formState.year = keepLastSelection(values);
   },
-)
+);
 
 watch(
   () => formState.week,
   (values) => {
-    formState.week = keepLastSelection(values)
+    formState.week = keepLastSelection(values);
   },
-)
+);
 
-const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
+const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
 </script>
 
 <template>
@@ -59,6 +59,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         <SingleLineInputMenu
           v-model="formState.user"
           multiple
+          open-on-focus
           autocomplete=""
           :items="userItems"
           :placeholder="t('page.index.filters.user.placeholder')"
@@ -73,6 +74,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         <SingleLineInputMenu
           v-model="formState.year"
           multiple
+          open-on-focus
           autocomplete=""
           :items="yearItems"
           :placeholder="t('page.index.filters.year.placeholder')"
@@ -87,6 +89,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {}
         <SingleLineInputMenu
           v-model="formState.week"
           multiple
+          open-on-focus
           autocomplete=""
           :items="weekItems"
           :placeholder="t('page.index.filters.week.placeholder')"
