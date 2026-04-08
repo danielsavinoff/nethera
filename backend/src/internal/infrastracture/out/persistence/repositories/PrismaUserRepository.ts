@@ -4,6 +4,7 @@ import { UserRepository } from '../../../../application/ports/UserRepository.js'
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import { User } from '../../../../domain/user/User.js';
 import { UserRecord } from '../../../../domain/user/UserRecord.js';
+import { TenantRecord } from '../../../../domain/tenant/TenantRecord.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
 import { Role } from '../../../../domain/authorization/Role.js';
@@ -12,6 +13,89 @@ import { RolePermission } from '../../../../domain/authorization/RolePermission.
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async loadAllByTenantId(
+    tenantId: TenantRecord['id'],
+  ): Promise<User[]> {
+    const rows = await this.prisma.user.findMany({
+      where: {
+        tenant_id: tenantId,
+      },
+      orderBy: [{ first_name: 'asc' }, { id: 'asc' }],
+    });
+
+    return rows.map((row) =>
+      User.hydrate({
+        active: row.active,
+        createdAt: row.created_at,
+        deletedAt: row.deleted_at ?? undefined,
+        externalId: row.external_id,
+        firstName: row.first_name ?? undefined,
+        id: row.id,
+        lastName: row.last_name ?? undefined,
+        secondName: row.second_name ?? undefined,
+        tenantId: row.tenant_id,
+        updatedAt: row.updated_at,
+        language: row.language ?? undefined,
+      }),
+    );
+  }
+
+  async loadAllActiveByTenantId(
+    tenantId: TenantRecord['id'],
+  ): Promise<User[]> {
+    const rows = await this.prisma.user.findMany({
+      where: {
+        tenant_id: tenantId,
+        active: true,
+      },
+      orderBy: [{ first_name: 'asc' }, { id: 'asc' }],
+    });
+
+    return rows.map((row) =>
+      User.hydrate({
+        active: row.active,
+        createdAt: row.created_at,
+        deletedAt: row.deleted_at ?? undefined,
+        externalId: row.external_id,
+        firstName: row.first_name ?? undefined,
+        id: row.id,
+        lastName: row.last_name ?? undefined,
+        secondName: row.second_name ?? undefined,
+        tenantId: row.tenant_id,
+        updatedAt: row.updated_at,
+        language: row.language ?? undefined,
+      }),
+    );
+  }
+
+  async loadAllInactiveByTenantId(
+    tenantId: TenantRecord['id'],
+  ): Promise<User[]> {
+    const rows = await this.prisma.user.findMany({
+      where: {
+        tenant_id: tenantId,
+        active: false,
+      },
+      orderBy: [{ first_name: 'asc' }, { id: 'asc' }],
+    });
+
+    return rows.map((row) =>
+      User.hydrate({
+        active: row.active,
+        createdAt: row.created_at,
+        deletedAt: row.deleted_at ?? undefined,
+        externalId: row.external_id,
+        firstName: row.first_name ?? undefined,
+        id: row.id,
+        lastName: row.last_name ?? undefined,
+        secondName: row.second_name ?? undefined,
+        tenantId: row.tenant_id,
+        updatedAt: row.updated_at,
+        language: row.language ?? undefined,
+      }),
+    );
+  }
 
   async findByTenantAndExternalIdWithRoles(
     tenantId: string,

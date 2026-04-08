@@ -54,6 +54,10 @@ export class User {
     return this.props.tenantId;
   }
 
+  get active(): UserRecord['active'] {
+    return this.props.active;
+  }
+
   get displayName(): string {
     const fullName =
       (this.props.firstName ?? '') +

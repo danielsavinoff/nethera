@@ -10,6 +10,7 @@ import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAcc
 import { EnsureTenantAuthValidityUseCase } from '../../application/usecases/EnsureTenantAuthValidityUseCase.js';
 import { SendNotificationsUseCase } from '../../application/usecases/SendNotificationsUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
+import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
@@ -229,6 +230,13 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaTenantRepository, NestConsoleLogger],
     },
     {
+      provide: GetUsersUseCase,
+      useFactory: (userRepository: UserRepository) => {
+        return new GetUsersUseCase(userRepository);
+      },
+      inject: [PrismaUserRepository],
+    },
+    {
       provide: GetCurrentUserUseCase,
       useFactory: (userRepository: UserRepository) => {
         return new GetCurrentUserUseCase(userRepository);
@@ -324,6 +332,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     RefreshAccessTokenUseCase,
     EnsureTenantAuthValidityUseCase,
     SendNotificationsUseCase,
+    GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,
     GetUserRolesUseCase,

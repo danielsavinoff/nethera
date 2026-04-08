@@ -8,6 +8,7 @@ import { UserController } from './controllers/UserController.js';
 import { BitrixModule } from '../../out/bitrix/BitrixModule.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
+import { GetUsersPresenter } from './presenters/GetUsersPresenter.js';
 import { GetUserRolesPresenter } from './presenters/GetUserRolesPresenter.js';
 import { AddUserRolePresenter } from './presenters/AddUserRolePresenter.js';
 import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js';
@@ -24,6 +25,7 @@ import { EventGuard } from './guards/EventGuard.js';
     UserController,
   ],
   providers: [
+    GetUsersPresenter,
     GetCurrentUserPresenter,
     GetUserRolesPresenter,
     AddUserRolePresenter,
