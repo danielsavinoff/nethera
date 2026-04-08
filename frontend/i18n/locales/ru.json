@@ -86,6 +86,16 @@
         "total": "Итого"
       }
     },
+    "requests": {
+      "table": {
+        "group": "Группа",
+        "planFact": "План/Факт",
+        "initiator": "Инициатор",
+        "reserved": "Забронировано",
+        "approved": "Одобрено",
+        "total": "Итого"
+      }
+    },
     "settings": {
       "favoriteUsers": {
         "label": "Избранные пользователи",

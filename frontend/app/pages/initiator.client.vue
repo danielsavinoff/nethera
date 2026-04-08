@@ -7,5 +7,8 @@ useHead({
 </script>
 
 <template>
-  <ResourceFiltersForm />
+  <section class="flex flex-col gap-6">
+    <ResourceFiltersForm />
+    <RequestsProjectsTable />
+  </section>
 </template>

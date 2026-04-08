@@ -1,11 +1,14 @@
 <script setup lang="ts">
-const { t } = useI18n()
+const { t } = useI18n();
 
 useHead({
-  title: `${t('page.index.navigation.requests')} | ${t('page.index.header.title')}`,
-})
+  title: `${t("page.index.navigation.requests")} | ${t("page.index.header.title")}`,
+});
 </script>
 
 <template>
-  <ResourceFiltersForm />
+  <section class="flex flex-col gap-6">
+    <ResourceFiltersForm />
+    <RequestsProjectsTable />
+  </section>
 </template>

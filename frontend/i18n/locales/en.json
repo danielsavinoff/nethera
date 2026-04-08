@@ -86,6 +86,16 @@
         "total": "Total"
       }
     },
+    "requests": {
+      "table": {
+        "group": "Group",
+        "planFact": "Plan/Fact",
+        "initiator": "Initiator",
+        "reserved": "Reserved",
+        "approved": "Approved",
+        "total": "Total"
+      }
+    },
     "settings": {
       "favoriteUsers": {
         "label": "Favorite users",
