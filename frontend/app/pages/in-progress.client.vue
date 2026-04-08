@@ -197,9 +197,7 @@ useHead({
           </template>
         </tbody>
         <tfoot>
-          <tr
-            class="border-t border-(--ui-color-design-outline-stroke) font-medium"
-          >
+          <tr class="border-t border-(--ui-color-design-outline-stroke)">
             <td colspan="2" class="px-4 py-3 text-(--ui-color-base-1)">
               {{ t("page.inProgress.table.total") }}
             </td>
