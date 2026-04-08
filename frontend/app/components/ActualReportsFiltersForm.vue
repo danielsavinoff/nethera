@@ -159,7 +159,11 @@ watch(
       </B24FormField>
 
       <B24FieldGroup>
-        <B24Button class="border! rounded-l-(--ui-border-radius-sm)!">
+        <B24Button
+          type="button"
+          class="border! rounded-l-(--ui-border-radius-sm)!"
+          @click="formState.onlyFree = !formState.onlyFree"
+        >
           {{ t("page.actualReports.filters.onlyFree.label") }}
         </B24Button>
         <div
