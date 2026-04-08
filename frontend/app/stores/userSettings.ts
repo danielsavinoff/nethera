@@ -13,13 +13,15 @@ export const useUserSettingsStore = defineStore(
       someValue_1: number
       someValue_2: string
       isSomeOption: boolean
+      favoriteUsers: string[]
     }
     type CombinedConfigTyp = ConfigType & { [key: string]: any }
 
     const configSettings = reactive<CombinedConfigTyp>({
       someValue_1: 30,
       someValue_2: 'some text',
-      isSomeOption: true
+      isSomeOption: true,
+      favoriteUsers: [],
     })
     // endregion ////
 
