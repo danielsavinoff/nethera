@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 
+const userStore = useUserStore();
+const { users } = storeToRefs(userStore);
+
 const { t } = useI18n();
 
-const userItems = ref(["Alex Johnson", "Maria Petrova", "Daniel Kim"]);
+await userStore.fetchUsers();
 
 const formState = reactive({
   favoriteUsers: [],
 });
+
+const userItems = computed(() => users.value.map((user) => user.displayName));
 
 type SettingsFormState = typeof formState;
 

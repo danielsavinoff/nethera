@@ -2,12 +2,15 @@
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 
+defineProps<{
+  users: string[];
+}>();
+
 const { t } = useI18n();
 const emit = defineEmits<{
   updateWeekRange: [value: { from: number; to: number }];
 }>();
 
-const userItems = ref(["Alex Johnson", "Maria Petrova", "Daniel Kim"]);
 const yearItems = ref(["2024", "2025", "2026"]);
 
 const weekNumbers = [12, 13, 14, 15];
@@ -30,7 +33,7 @@ const getWeekNumber = (value: string) =>
   Number(value.match(/\d+/)?.[0] ?? "15");
 
 const formState = reactive({
-  user: ["Alex Johnson"],
+  user: [],
   year: ["2026"],
   weekFrom: [getWeekLabel("12")],
   weekTo: [getWeekLabel("15")],
@@ -49,7 +52,7 @@ const keepLastSelection = (values: string[]) => {
 watch(
   () => formState.user,
   (values) => {
-    formState.user = keepLastSelection(values);
+    // formState.user = keepLastSelection(values);
   },
 );
 
@@ -108,7 +111,7 @@ watch(
           multiple
           open-on-focus
           autocomplete=""
-          :items="userItems"
+          :items="users"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
         />
       </B24FormField>

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import Market1Icon from "@bitrix24/b24icons-vue/main/Market1Icon";
 
+const userStore = useUserStore();
+const { users } = storeToRefs(userStore);
+
 const { t } = useI18n();
+
+await userStore.fetchUsers();
 
 const columns = [
   t("page.inProgress.table.group"),
@@ -118,6 +123,8 @@ const totals = computed(() =>
   getTotals(projects.flatMap((project) => project.tasks)),
 );
 
+const userItems = computed(() => users.value.map((user) => user.displayName));
+
 useHead({
   title: `${t("page.index.navigation.inProgress")} | ${t("page.index.header.title")}`,
 });
@@ -125,7 +132,7 @@ useHead({
 
 <template>
   <section class="flex flex-col gap-6">
-    <ResourceFiltersForm />
+    <ResourceFiltersForm :users="userItems" />
 
     <div class="overflow-x-auto">
       <table class="min-w-full border-collapse text-sm">
