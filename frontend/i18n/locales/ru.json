@@ -50,6 +50,16 @@
           "placeholder": "Выберите конечную неделю"
         },
         "submit": "Обновить"
+      },
+      "table": {
+        "project": "Проект",
+        "weekLabel": "Неделя {number}",
+        "totalGroup": "Итого",
+        "reserved": "Бронирование",
+        "fact": "Факт",
+        "bookingExecution": "% исполнение брони",
+        "overallTrackShare": "% от общего трека",
+        "total": "Итого"
       }
     },
     "actualReports": {

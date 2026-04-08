@@ -50,6 +50,16 @@
           "placeholder": "Select end week"
         },
         "submit": "Refresh"
+      },
+      "table": {
+        "project": "Project",
+        "weekLabel": "Week {number}",
+        "totalGroup": "Total",
+        "reserved": "Booking",
+        "fact": "Fact",
+        "bookingExecution": "% booking execution",
+        "overallTrackShare": "% of overall track",
+        "total": "Total"
       }
     },
     "actualReports": {
