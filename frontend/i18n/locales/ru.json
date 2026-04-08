@@ -84,6 +84,17 @@
           "label": "Только свободные"
         },
         "submit": "Обновить"
+      },
+      "table": {
+        "user": "Пользователь",
+        "weekLabel": "Неделя {number}",
+        "reserved": "Бронирование",
+        "bookingFact": "Факт по броням",
+        "requestsTotal": "Всего по заявкам",
+        "bookingExecution": "% от исполнения брони",
+        "totalFact": "Итого факт",
+        "normExecution": "% выработки нормы",
+        "total": "Итого"
       }
     },
     "inProgress": {

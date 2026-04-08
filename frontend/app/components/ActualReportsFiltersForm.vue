@@ -3,16 +3,33 @@ import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 
 const { t } = useI18n();
+const emit = defineEmits<{
+  updateSelectedWeekLabel: [value: string];
+}>();
 
 const departmentItems = ref(["Engineering", "Operations", "Design", "HR"]);
 const yearItems = ref(["2024", "2025", "2026"]);
-const weekItems = ref(["Week 12", "Week 13", "Week 14", "Week 15"]);
+const weekNumbers = [12, 13, 14, 15];
+
+const getWeekLabel = (value: string) => {
+  const number = value.match(/\d+/)?.[0];
+
+  return t("page.actualReports.table.weekLabel", {
+    number: number ?? value,
+  });
+};
+
+const weekItems = computed(() =>
+  weekNumbers.map((weekNumber) =>
+    t("page.actualReports.table.weekLabel", { number: weekNumber }),
+  ),
+);
 
 const formState = reactive({
   department: ["Engineering"],
   year: ["2026"],
-  weekFrom: ["Week 12"],
-  weekTo: ["Week 15"],
+  weekFrom: [getWeekLabel("12")],
+  weekTo: [getWeekLabel("15")],
   onlyFree: false,
 });
 
@@ -55,6 +72,18 @@ watch(
 );
 
 const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
+
+const selectedWeekLabel = computed(() =>
+  getWeekLabel(formState.weekTo[0] ?? "15"),
+);
+
+watch(
+  selectedWeekLabel,
+  (value) => {
+    emit("updateSelectedWeekLabel", value);
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

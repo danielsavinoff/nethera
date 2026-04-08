@@ -84,6 +84,17 @@
           "label": "Only free"
         },
         "submit": "Refresh"
+      },
+      "table": {
+        "user": "User",
+        "weekLabel": "Week {number}",
+        "reserved": "Booking",
+        "bookingFact": "Fact by bookings",
+        "requestsTotal": "Total by requests",
+        "bookingExecution": "% of booking execution",
+        "totalFact": "Total fact",
+        "normExecution": "% of norm fulfillment",
+        "total": "Total"
       }
     },
     "inProgress": {
