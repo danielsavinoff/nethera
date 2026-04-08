@@ -145,7 +145,7 @@ useHead({
         <tbody>
           <template v-for="project in projectRows" :key="project.id">
             <tr
-              class="border-b border-[var(--ui-color-design-outline-stroke)] bg-[var(--ui-color-background-secondary)] font-medium"
+              class="border-b border-[var(--ui-color-design-outline-stroke)] bg-[var(--ui-color-background-secondary)]/50 font-medium"
             >
               <td class="px-4 py-3 text-[var(--ui-color-base-1)]">
                 <div class="flex items-center gap-3">
@@ -158,13 +158,19 @@ useHead({
                 </div>
               </td>
               <td class="px-4 py-3"></td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ project.totals.reserved }}
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ project.totals.used }}
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ project.totals.remaining }}
               </td>
             </tr>
@@ -173,17 +179,32 @@ useHead({
               :key="task.id"
               class="border-b border-[var(--ui-color-design-outline-stroke)] last:border-b-0"
             >
-              <td class="px-4 py-3">{{ task.name }}</td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td class="px-4 py-3">
+                <button
+                  type="button"
+                  class="cursor-pointer text-[var(--ui-color-link-primary-base,#2066b0)]"
+                >
+                  {{ task.name }}
+                </button>
+              </td>
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ task.planFact }}
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ task.reserved }}
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ task.used }}
               </td>
-              <td class="px-4 py-3 whitespace-nowrap">
+              <td
+                class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+              >
                 {{ task.remaining }}
               </td>
             </tr>
@@ -196,13 +217,19 @@ useHead({
             <td colspan="2" class="px-4 py-3 text-[var(--ui-color-base-1)]">
               {{ t("page.inProgress.table.total") }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap">
+            <td
+              class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+            >
               {{ totals.reserved }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap">
+            <td
+              class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+            >
               {{ totals.used }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap">
+            <td
+              class="px-4 py-3 whitespace-nowrap text-[var(--ui-color-base-1)]"
+            >
               {{ totals.remaining }}
             </td>
           </tr>
