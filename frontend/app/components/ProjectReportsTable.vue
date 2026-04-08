@@ -27,6 +27,18 @@ const sumTimes = (values: string[]) => {
 
 const formatPercent = (value: number) => `${value}%`;
 
+const getExecutionPercent = (fact: string, reserved: string) => {
+  const reservedSeconds = parseTime(reserved);
+
+  if (reservedSeconds === 0) {
+    return formatPercent(0);
+  }
+
+  const factSeconds = parseTime(fact);
+
+  return formatPercent(Math.round((factSeconds / reservedSeconds) * 100));
+};
+
 const projects = [
   {
     id: "website-redesign",
@@ -79,8 +91,9 @@ const totals = computed(() => ({
   weekFact: sumTimes(projects.map((project) => project.weekFact)),
   totalReserved: sumTimes(projects.map((project) => project.totalReserved)),
   totalFact: sumTimes(projects.map((project) => project.totalFact)),
-  bookingExecution: formatPercent(
-    projects.reduce((sum, project) => sum + project.bookingExecution, 0),
+  bookingExecution: getExecutionPercent(
+    sumTimes(projects.map((project) => project.totalFact)),
+    sumTimes(projects.map((project) => project.totalReserved)),
   ),
 }));
 </script>
