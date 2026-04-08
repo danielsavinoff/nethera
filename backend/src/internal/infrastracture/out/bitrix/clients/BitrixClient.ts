@@ -1,12 +1,14 @@
-import {
-  B24OAuth,
-  Result,
-  UserBrief,
-} from '@bitrix24/b24jssdk';
+import { B24OAuth, Result, UserBrief } from '@bitrix24/b24jssdk';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { SupportedBitrixEvents } from '../enums/SupportedBitrixEventsToModels.js';
+
+interface BitrixSmartProcessType {
+  id?: number | string;
+  entityTypeId?: number | string;
+  title: string;
+}
 
 @Injectable()
 export class BitrixClient {
@@ -15,7 +17,7 @@ export class BitrixClient {
   private async fromAuthContext(context: TenantCredentials) {
     const client = new B24OAuth(
       // TODO: Wrong type definitions in b24jssdk
-      //@ts-ignore
+      // @ts-expect-error Wrong type definitions in b24jssdk
       {
         accessToken: context.accessToken,
         refreshToken: context.refreshToken,
@@ -120,10 +122,76 @@ export class BitrixClient {
     return result.getData();
   }
 
+  async createSmartProcess(
+    title: string,
+    context: TenantCredentials,
+  ): Promise<BitrixSmartProcessType> {
+    const client = await this.fromAuthContext(context);
+
+    const result = await client.callMethod('crm.type.add', {
+      fields: {
+        title,
+      },
+    });
+
+    const smartProcess = this.extractSmartProcess(
+      result.getData(),
+    );
+
+    if (!smartProcess) {
+      throw new Error('Bitrix smart process creation failed.');
+    }
+
+    return smartProcess;
+  }
+
+  async getSmartProcess(
+    externalId: string,
+    context: TenantCredentials,
+  ): Promise<BitrixSmartProcessType | null> {
+    const client = await this.fromAuthContext(context);
+
+    const result = await client.callMethod('crm.type.get', {
+      id: Number(externalId),
+    });
+
+    return this.extractSmartProcess(result.getData()) ?? null;
+  }
+
   async refresh(context: TenantCredentials) {
     const client = await this.fromAuthContext(context);
     const credentials = await client.auth.refreshAuth();
 
     return credentials;
+  }
+
+  private extractSmartProcess(data: unknown) {
+    if (!data || typeof data !== 'object') {
+      return null;
+    }
+
+    const response = data as {
+      result?: {
+        type?: BitrixSmartProcessType;
+      } & BitrixSmartProcessType;
+      type?: BitrixSmartProcessType;
+    };
+
+    if (response.result?.type) {
+      return response.result.type;
+    }
+
+    if (response.type) {
+      return response.type;
+    }
+
+    if (
+      response.result &&
+      typeof response.result.title === 'string'
+    ) {
+      return response.result;
+    }
+
+    return null;
   }
 }

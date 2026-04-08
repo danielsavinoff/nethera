@@ -23,6 +23,8 @@ import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { EventRepository } from '../../application/ports/EventRepository.js';
 import type { ExternalUserRepository } from '../../application/ports/ExternalUserRepository.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
+import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
+import type { SmartProcessRepository } from '../../application/ports/SmartProcessRepository.js';
 import type { TokenIssuer } from '../../application/ports/TokenIssuer.js';
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
 import type { TokenVerifier } from '../../application/ports/TokenVerifier.js';
@@ -34,6 +36,7 @@ import { NestConsoleLogger } from '../out/logging/loggers/NestConsoleLogger.js';
 import { PrismaTenantRepository } from '../out/persistence/repositories/PrismaTenantRepository.js';
 import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUserRepository.js';
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
+import { PrismaSmartProcessRepository } from '../out/persistence/repositories/PrismaSmartProcessRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { BitrixUserRepository } from '../out/bitrix/repositories/BitrixUserRepository.js';
@@ -41,6 +44,7 @@ import { BitrixEventRepository } from '../out/bitrix/repositories/BitrixEventRep
 import { BitrixOauthProvider } from '../out/bitrix/oauth/BitrixOauthProvider.js';
 import { BitrixTenantCredentialsRenewer } from '../out/bitrix/adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixNotificationRepository } from '../out/bitrix/repositories/BitrixNotificationRepository.js';
+import { BitrixSmartProcessProvider } from '../out/bitrix/repositories/BitrixSmartProcessProvider.js';
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
 
@@ -58,7 +62,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: HandleIncomingWebhookUseCase,
       useFactory: (
-        eventProcessors: Record<string, ProcessAppInstallUseCase | ProcessExternalUserAddUseCase>,
+        eventProcessors: Record<
+          string,
+          | ProcessAppInstallUseCase
+          | ProcessExternalUserAddUseCase
+        >,
         externalUserRepository: ExternalUserRepository,
         ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
       ) => {
@@ -178,6 +186,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         eventRepository: EventRepository,
         userRepository: UserRepository,
         roleRepository: RoleRepository,
+        smartProcessRepository: SmartProcessRepository,
+        smartProcessProvider: SmartProcessProvider,
         transactionRunner: PrismaTransactionRunner,
         logger: Logger,
       ) => {
@@ -187,6 +197,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           eventRepository,
           userRepository,
           roleRepository,
+          smartProcessRepository,
+          smartProcessProvider,
           transactionRunner,
           logger,
         );
@@ -197,6 +209,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         BitrixEventRepository,
         PrismaUserRepository,
         PrismaRoleRepository,
+        PrismaSmartProcessRepository,
+        BitrixSmartProcessProvider,
         PrismaTransactionRunner,
         NestConsoleLogger,
       ],
@@ -296,9 +310,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
     {
       provide: NOTIFICATION_CHANNELS,
-      useFactory: (
-        notificationSender: NotificationSender,
-      ) => ({
+      useFactory: (notificationSender: NotificationSender) => ({
         [NotificationChannel.CRM]: notificationSender,
       }),
       inject: [BitrixNotificationRepository],

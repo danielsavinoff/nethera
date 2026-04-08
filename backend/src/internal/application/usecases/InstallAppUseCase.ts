@@ -12,6 +12,10 @@ import { RoleRepository } from '../ports/RoleRepository.js';
 import { DefaultRolesMustExistException } from '../exceptions/DefaultRolesMustExistException.js';
 import { Tenant } from '../../domain/tenant/Tenant.js';
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
+import { SmartProcessRepository } from '../ports/SmartProcessRepository.js';
+import { SmartProcessProvider } from '../ports/SmartProcessProvider.js';
+import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
+import { TenantSmartProcessAlreadyExistsException } from '../exceptions/TenantSmartProcessAlreadyExistsException.js';
 
 export interface InstallAppCommand {
   accessToken: string;
@@ -33,6 +37,8 @@ export class InstallAppUseCase {
     private readonly eventRepository: EventRepository,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly smartProcessRepository: SmartProcessRepository,
+    private readonly smartProcessProvider: SmartProcessProvider,
     private readonly transactionRunner: TransactionRunner,
     logger: Logger,
   ) {
@@ -174,6 +180,46 @@ export class InstallAppUseCase {
         }
       },
     );
+
+    const existingSmartProcess =
+      await this.smartProcessRepository.loadByTenantId(
+        tenant.id,
+      );
+
+    if (existingSmartProcess) {
+      this.logger.warn(
+        `Tenant ${tenantCredentials.domain} already has a smart process`,
+      );
+    } else {
+      try {
+        const externalSmartProcess =
+          await this.smartProcessProvider.create(
+            tenant.credentials,
+          );
+
+        await this.smartProcessRepository.save(
+          SmartProcess.create({
+            externalId: externalSmartProcess.id,
+            tenantId: tenant.id,
+          }),
+        );
+
+        this.logger.log(
+          `Smart process ${externalSmartProcess.title} for ${tenantCredentials.domain} saved`,
+        );
+      } catch (error) {
+        if (
+          error instanceof
+          TenantSmartProcessAlreadyExistsException
+        ) {
+          this.logger.warn(
+            `Tenant ${tenantCredentials.domain} already has a smart process`,
+          );
+        } else {
+          throw error;
+        }
+      }
+    }
 
     const isSubscribed =
       await this.eventRepository.subscribeTenantToWebhook(

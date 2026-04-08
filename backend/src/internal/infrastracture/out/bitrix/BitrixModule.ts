@@ -8,6 +8,7 @@ import { BitrixEventModelMapper } from './mappers/BitrixEventModelMapper.js';
 import { BitrixEventAuthContextMapper } from './mappers/BitrixEventAuthContextMapper.js';
 import { BitrixTenantCredentialsRenewer } from './adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixOauthProvider } from './oauth/BitrixOauthProvider.js';
+import { BitrixSmartProcessProvider } from './repositories/BitrixSmartProcessProvider.js';
 
 @Module({
   providers: [
@@ -20,6 +21,7 @@ import { BitrixOauthProvider } from './oauth/BitrixOauthProvider.js';
     BitrixEventModelMapper,
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,
+    BitrixSmartProcessProvider,
   ],
   exports: [
     BitrixEventRepository,
@@ -30,6 +32,7 @@ import { BitrixOauthProvider } from './oauth/BitrixOauthProvider.js';
     BitrixEventModelMapper,
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,
+    BitrixSmartProcessProvider,
   ],
 })
 export class BitrixModule {}

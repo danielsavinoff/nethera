@@ -9,6 +9,7 @@ import { HttpModule } from '../in/http/HttpModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { AuthGuard } from '../in/http/guards/AuthGuard.js';
+import { I18Module } from '../out/i18n/I18Module.js';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { AuthGuard } from '../in/http/guards/AuthGuard.js';
     JwtModule.register({
       global: true,
     }),
+    I18Module,
     HttpModule,
     UseCaseModule,
     AuthModule,
