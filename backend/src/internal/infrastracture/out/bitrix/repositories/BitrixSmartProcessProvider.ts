@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ExternalSmartProcessCreationFailedException } from '../../../../application/exceptions/ExternalSmartProcessCreationFailedException.js';
 import { ExternalSmartProcessNotFoundException } from '../../../../application/exceptions/ExternalSmartProcessNotFoundException.js';
 import { ExternalSmartProcess } from '../../../../application/models/ExternalSmartProcess.js';
 import { SmartProcessProvider } from '../../../../application/ports/SmartProcessProvider.js';
@@ -20,6 +21,10 @@ export class BitrixSmartProcessProvider
         SmartProcess.defaultTitle,
         credentials,
       );
+
+    if (!bitrixSmartProcess) {
+      throw new ExternalSmartProcessCreationFailedException();
+    }
 
     return {
       id: String(

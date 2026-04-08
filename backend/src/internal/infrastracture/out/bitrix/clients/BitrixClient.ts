@@ -125,7 +125,7 @@ export class BitrixClient {
   async createSmartProcess(
     title: string,
     context: TenantCredentials,
-  ): Promise<BitrixSmartProcessType> {
+  ): Promise<BitrixSmartProcessType | null> {
     const client = await this.fromAuthContext(context);
 
     const result = await client.callMethod('crm.type.add', {
@@ -134,15 +134,21 @@ export class BitrixClient {
       },
     });
 
-    const smartProcess = this.extractSmartProcess(
-      result.getData(),
+    const response = result.getData() as {
+      result?: {
+        type?: BitrixSmartProcessType;
+      } & BitrixSmartProcessType;
+      type?: BitrixSmartProcessType;
+    };
+
+    return (
+      response.result?.type ??
+      response.type ??
+      (response.result &&
+      typeof response.result.title === 'string'
+        ? response.result
+        : null)
     );
-
-    if (!smartProcess) {
-      throw new Error('Bitrix smart process creation failed.');
-    }
-
-    return smartProcess;
   }
 
   async getSmartProcess(
@@ -155,7 +161,21 @@ export class BitrixClient {
       id: Number(externalId),
     });
 
-    return this.extractSmartProcess(result.getData()) ?? null;
+    const response = result.getData() as {
+      result?: {
+        type?: BitrixSmartProcessType;
+      } & BitrixSmartProcessType;
+      type?: BitrixSmartProcessType;
+    };
+
+    return (
+      response.result?.type ??
+      response.type ??
+      (response.result &&
+      typeof response.result.title === 'string'
+        ? response.result
+        : null)
+    );
   }
 
   async refresh(context: TenantCredentials) {
@@ -163,35 +183,5 @@ export class BitrixClient {
     const credentials = await client.auth.refreshAuth();
 
     return credentials;
-  }
-
-  private extractSmartProcess(data: unknown) {
-    if (!data || typeof data !== 'object') {
-      return null;
-    }
-
-    const response = data as {
-      result?: {
-        type?: BitrixSmartProcessType;
-      } & BitrixSmartProcessType;
-      type?: BitrixSmartProcessType;
-    };
-
-    if (response.result?.type) {
-      return response.result.type;
-    }
-
-    if (response.type) {
-      return response.type;
-    }
-
-    if (
-      response.result &&
-      typeof response.result.title === 'string'
-    ) {
-      return response.result;
-    }
-
-    return null;
   }
 }
