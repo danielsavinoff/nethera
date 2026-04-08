@@ -76,6 +76,16 @@
         "submit": "Refresh"
       }
     },
+    "inProgress": {
+      "table": {
+        "group": "Group",
+        "planFact": "Plan/Fact",
+        "reserved": "Reserved",
+        "used": "Used",
+        "remaining": "Remaining",
+        "total": "Total"
+      }
+    },
     "settings": {
       "favoriteUsers": {
         "label": "Favorite users",

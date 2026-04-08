@@ -76,6 +76,16 @@
         "submit": "Обновить"
       }
     },
+    "inProgress": {
+      "table": {
+        "group": "Группа",
+        "planFact": "План/Факт",
+        "reserved": "Забронировано",
+        "used": "Использовано",
+        "remaining": "Осталось",
+        "total": "Итого"
+      }
+    },
     "settings": {
       "favoriteUsers": {
         "label": "Избранные пользователи",
