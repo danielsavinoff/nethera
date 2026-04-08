@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{
-  selectedWeekLabel: string;
+  selectedWeekRange: {
+    from: number;
+    to: number;
+  };
 }>();
 
 const { t } = useI18n();
@@ -39,81 +42,197 @@ const getExecutionPercent = (fact: string, reserved: string) => {
   return formatPercent(Math.round((factSeconds / reservedSeconds) * 100));
 };
 
+const selectedWeeks = computed(() => {
+  const start = Math.min(
+    props.selectedWeekRange.from,
+    props.selectedWeekRange.to,
+  );
+  const end = Math.max(
+    props.selectedWeekRange.from,
+    props.selectedWeekRange.to,
+  );
+
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+});
+
+const weekLabels = computed(() =>
+  selectedWeeks.value.map((weekNumber) => ({
+    number: weekNumber,
+    label: t("page.projectReports.table.weekLabel", {
+      number: weekNumber,
+    }),
+  })),
+);
+
 const projects = [
   {
     id: "website-redesign",
     name: "Website Redesign",
     href: "/project-reports?project=website-redesign",
-    weekReserved: formatTime(16, 0, 0),
-    weekFact: formatTime(13, 40, 0),
-    totalReserved: formatTime(84, 0, 0),
-    totalFact: formatTime(76, 30, 0),
-    bookingExecution: 91,
-    overallTrack: 32,
+    weeks: {
+      12: {
+        reserved: formatTime(18, 0, 0),
+        fact: formatTime(16, 25, 0),
+      },
+      13: {
+        reserved: formatTime(19, 30, 0),
+        fact: formatTime(17, 15, 0),
+      },
+      14: {
+        reserved: formatTime(16, 30, 0),
+        fact: formatTime(15, 10, 0),
+      },
+      15: {
+        reserved: formatTime(16, 0, 0),
+        fact: formatTime(13, 40, 0),
+      },
+    },
   },
   {
     id: "mobile-launch",
     name: "Mobile App Launch",
     href: "/project-reports?project=mobile-launch",
-    weekReserved: formatTime(11, 30, 0),
-    weekFact: formatTime(9, 20, 0),
-    totalReserved: formatTime(63, 30, 0),
-    totalFact: formatTime(54, 45, 0),
-    bookingExecution: 86,
-    overallTrack: 24,
+    weeks: {
+      12: {
+        reserved: formatTime(15, 0, 0),
+        fact: formatTime(12, 35, 0),
+      },
+      13: {
+        reserved: formatTime(14, 45, 0),
+        fact: formatTime(13, 5, 0),
+      },
+      14: {
+        reserved: formatTime(12, 15, 0),
+        fact: formatTime(10, 40, 0),
+      },
+      15: {
+        reserved: formatTime(11, 30, 0),
+        fact: formatTime(9, 20, 0),
+      },
+    },
   },
   {
     id: "analytics-revamp",
     name: "Analytics Revamp",
     href: "/project-reports?project=analytics-revamp",
-    weekReserved: formatTime(14, 15, 0),
-    weekFact: formatTime(12, 10, 0),
-    totalReserved: formatTime(58, 15, 0),
-    totalFact: formatTime(49, 35, 0),
-    bookingExecution: 85,
-    overallTrack: 22,
+    weeks: {
+      12: {
+        reserved: formatTime(13, 0, 0),
+        fact: formatTime(11, 15, 0),
+      },
+      13: {
+        reserved: formatTime(15, 15, 0),
+        fact: formatTime(12, 55, 0),
+      },
+      14: {
+        reserved: formatTime(15, 45, 0),
+        fact: formatTime(13, 15, 0),
+      },
+      15: {
+        reserved: formatTime(14, 15, 0),
+        fact: formatTime(12, 10, 0),
+      },
+    },
   },
   {
     id: "support-automation",
     name: "Support Automation",
     href: "/project-reports?project=support-automation",
-    weekReserved: formatTime(8, 45, 0),
-    weekFact: formatTime(7, 30, 0),
-    totalReserved: formatTime(41, 0, 0),
-    totalFact: formatTime(35, 50, 0),
-    bookingExecution: 87,
-    overallTrack: 18,
+    weeks: {
+      12: {
+        reserved: formatTime(9, 45, 0),
+        fact: formatTime(8, 20, 0),
+      },
+      13: {
+        reserved: formatTime(10, 15, 0),
+        fact: formatTime(8, 45, 0),
+      },
+      14: {
+        reserved: formatTime(12, 15, 0),
+        fact: formatTime(11, 15, 0),
+      },
+      15: {
+        reserved: formatTime(8, 45, 0),
+        fact: formatTime(7, 30, 0),
+      },
+    },
   },
 ];
 
-const totals = computed(() => ({
-  weekReserved: sumTimes(projects.map((project) => project.weekReserved)),
-  weekFact: sumTimes(projects.map((project) => project.weekFact)),
-  totalReserved: sumTimes(projects.map((project) => project.totalReserved)),
-  totalFact: sumTimes(projects.map((project) => project.totalFact)),
-  bookingExecution: getExecutionPercent(
-    sumTimes(projects.map((project) => project.totalFact)),
-    sumTimes(projects.map((project) => project.totalReserved)),
-  ),
-}));
+const projectRows = computed(() => {
+  const rows = projects.map((project) => {
+    const weeks = selectedWeeks.value.map((weekNumber) => ({
+      number: weekNumber,
+      reserved:
+        project.weeks[weekNumber as keyof typeof project.weeks].reserved,
+      fact: project.weeks[weekNumber as keyof typeof project.weeks].fact,
+    }));
+    const totalReserved = sumTimes(weeks.map((week) => week.reserved));
+    const totalFact = sumTimes(weeks.map((week) => week.fact));
+
+    return {
+      ...project,
+      weeks,
+      totalReserved,
+      totalFact,
+      bookingExecution: getExecutionPercent(totalFact, totalReserved),
+    };
+  });
+
+  const allFact = sumTimes(rows.map((row) => row.totalFact));
+
+  return rows.map((row) => ({
+    ...row,
+    overallTrack: getExecutionPercent(row.totalFact, allFact),
+  }));
+});
+
+const totals = computed(() => {
+  const weeks = selectedWeeks.value.map((weekNumber) => ({
+    number: weekNumber,
+    reserved: sumTimes(
+      projects.map(
+        (project) =>
+          project.weeks[weekNumber as keyof typeof project.weeks].reserved,
+      ),
+    ),
+    fact: sumTimes(
+      projects.map(
+        (project) =>
+          project.weeks[weekNumber as keyof typeof project.weeks].fact,
+      ),
+    ),
+  }));
+  const totalReserved = sumTimes(weeks.map((week) => week.reserved));
+  const totalFact = sumTimes(weeks.map((week) => week.fact));
+
+  return {
+    weeks,
+    totalReserved,
+    totalFact,
+    bookingExecution: getExecutionPercent(totalFact, totalReserved),
+  };
+});
 </script>
 
 <template>
-  <div class="overflow-x-auto">
-    <table class="min-w-full border-collapse text-sm">
+  <div class="max-w-full overflow-x-auto rounded-lg">
+    <table class="min-w-max border-collapse text-sm">
       <thead>
         <tr class="border-b border-(--ui-color-design-outline-stroke)">
           <th
             rowspan="2"
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1)"
+            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 py-3 text-left font-medium text-(--ui-color-base-1)"
           >
             {{ t("page.projectReports.table.project") }}
           </th>
           <th
+            v-for="week in weekLabels"
+            :key="week.number"
             colspan="2"
             class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
-            {{ props.selectedWeekLabel }}
+            {{ week.label }}
           </th>
           <th
             colspan="3"
@@ -129,16 +248,18 @@ const totals = computed(() => ({
           </th>
         </tr>
         <tr class="border-b border-(--ui-color-design-outline-stroke)">
-          <th
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
-          >
-            {{ t("page.projectReports.table.reserved") }}
-          </th>
-          <th
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
-          >
-            {{ t("page.projectReports.table.fact") }}
-          </th>
+          <template v-for="week in weekLabels" :key="`subhead-${week.number}`">
+            <th
+              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            >
+              {{ t("page.projectReports.table.reserved") }}
+            </th>
+            <th
+              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            >
+              {{ t("page.projectReports.table.fact") }}
+            </th>
+          </template>
           <th
             class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
@@ -158,11 +279,13 @@ const totals = computed(() => ({
       </thead>
       <tbody>
         <tr
-          v-for="project in projects"
+          v-for="project in projectRows"
           :key="project.id"
           class="border-b border-(--ui-color-design-outline-stroke)"
         >
-          <td class="px-4 py-3">
+          <td
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3"
+          >
             <NuxtLink
               :to="project.href"
               class="text-(--ui-color-link-primary-base,#2066b0) transition-opacity hover:opacity-80"
@@ -170,12 +293,17 @@ const totals = computed(() => ({
               {{ project.name }}
             </NuxtLink>
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ project.weekReserved }}
-          </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ project.weekFact }}
-          </td>
+          <template
+            v-for="week in project.weeks"
+            :key="`${project.id}-${week.number}`"
+          >
+            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+              {{ week.reserved }}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+              {{ week.fact }}
+            </td>
+          </template>
           <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
             {{ project.totalReserved }}
           </td>
@@ -183,24 +311,28 @@ const totals = computed(() => ({
             {{ project.totalFact }}
           </td>
           <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ formatPercent(project.bookingExecution) }}
+            {{ project.bookingExecution }}
           </td>
           <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ formatPercent(project.overallTrack) }}
+            {{ project.overallTrack }}
           </td>
         </tr>
       </tbody>
       <tfoot>
         <tr class="border-t border-(--ui-color-design-outline-stroke)">
-          <td class="px-4 py-3 text-(--ui-color-base-1)">
+          <td
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3 text-(--ui-color-base-1)"
+          >
             {{ t("page.projectReports.table.total") }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ totals.weekReserved }}
-          </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
-            {{ totals.weekFact }}
-          </td>
+          <template v-for="week in totals.weeks" :key="`total-${week.number}`">
+            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+              {{ week.reserved }}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+              {{ week.fact }}
+            </td>
+          </template>
           <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
             {{ totals.totalReserved }}
           </td>

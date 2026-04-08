@@ -4,7 +4,7 @@ import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 
 const { t } = useI18n();
 const emit = defineEmits<{
-  updateSelectedWeekLabel: [value: string];
+  updateWeekRange: [value: { from: number; to: number }];
 }>();
 
 const userItems = ref(["Alex Johnson", "Maria Petrova", "Daniel Kim"]);
@@ -25,6 +25,9 @@ const weekItems = computed(() =>
     t("page.projectReports.table.weekLabel", { number: weekNumber }),
   ),
 );
+
+const getWeekNumber = (value: string) =>
+  Number(value.match(/\d+/)?.[0] ?? "15");
 
 const formState = reactive({
   user: ["Alex Johnson"],
@@ -73,14 +76,20 @@ watch(
 
 const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
 
-const selectedWeekLabel = computed(() =>
-  getWeekLabel(formState.weekTo[0] ?? "15"),
-);
+const selectedWeekRange = computed(() => {
+  const from = getWeekNumber(formState.weekFrom[0] ?? "12");
+  const to = getWeekNumber(formState.weekTo[0] ?? "15");
+
+  return {
+    from: Math.min(from, to),
+    to: Math.max(from, to),
+  };
+});
 
 watch(
-  selectedWeekLabel,
+  selectedWeekRange,
   (value) => {
-    emit("updateSelectedWeekLabel", value);
+    emit("updateWeekRange", value);
   },
   { immediate: true },
 );
