@@ -16,11 +16,15 @@ import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
+import { GetUserFavoritesUseCase } from '../../application/usecases/GetUserFavoritesUseCase.js';
+import { AddUserFavoritesUseCase } from '../../application/usecases/AddUserFavoritesUseCase.js';
+import { DeleteUserFavoritesUseCase } from '../../application/usecases/DeleteUserFavoritesUseCase.js';
 import { NotificationChannel } from '../../application/models/Notification.js';
 import type { NotificationSender } from '../../application/ports/NotificationSender.js';
 import type { TenantRepository } from '../../application/ports/TenantRepository.js';
 import type { TenantCredentialsRenewer } from '../../application/ports/TenantCredentialsRenewer.js';
 import type { UserRepository } from '../../application/ports/UserRepository.js';
+import type { UserFavoriteRepository } from '../../application/ports/UserFavoriteRepository.js';
 import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
 import type { EventProvider } from '../../application/ports/EventProvider.js';
@@ -41,6 +45,7 @@ import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUser
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
 import { PrismaSmartProcessRepository } from '../out/persistence/repositories/PrismaSmartProcessRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
+import { PrismaUserFavoriteRepository } from '../out/persistence/repositories/PrismaUserFavoriteRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { BitrixUserProvider } from '../out/bitrix/repositories/BitrixUserProvider.js';
 import { BitrixEventProvider } from '../out/bitrix/repositories/BitrixEventProvider.js';
@@ -51,6 +56,7 @@ import { BitrixSmartProcessProvider } from '../out/bitrix/repositories/BitrixSma
 import { BitrixDepartmentProvider } from '../out/bitrix/repositories/BitrixDepartmentProvider.js';
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
+import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
@@ -292,6 +298,63 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaUserRepository, RolePolicy],
     },
     {
+      provide: GetUserFavoritesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userFavoriteRepository: UserFavoriteRepository,
+        userFavoritePolicy: UserFavoritePolicy,
+      ) => {
+        return new GetUserFavoritesUseCase(
+          userRepository,
+          userFavoriteRepository,
+          userFavoritePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaUserFavoriteRepository,
+        UserFavoritePolicy,
+      ],
+    },
+    {
+      provide: AddUserFavoritesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userFavoriteRepository: UserFavoriteRepository,
+        userFavoritePolicy: UserFavoritePolicy,
+      ) => {
+        return new AddUserFavoritesUseCase(
+          userRepository,
+          userFavoriteRepository,
+          userFavoritePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaUserFavoriteRepository,
+        UserFavoritePolicy,
+      ],
+    },
+    {
+      provide: DeleteUserFavoritesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userFavoriteRepository: UserFavoriteRepository,
+        userFavoritePolicy: UserFavoritePolicy,
+      ) => {
+        return new DeleteUserFavoritesUseCase(
+          userRepository,
+          userFavoriteRepository,
+          userFavoritePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaUserFavoriteRepository,
+        UserFavoritePolicy,
+      ],
+    },
+    {
       provide: AddUserRoleUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -329,6 +392,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         RolePolicy,
       ],
     },
+    UserFavoritePolicy,
     RolePolicy,
     {
       provide: EVENT_PROCESSORS,
@@ -364,6 +428,9 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,
+    GetUserFavoritesUseCase,
+    AddUserFavoritesUseCase,
+    DeleteUserFavoritesUseCase,
     GetUserRolesUseCase,
     AddUserRoleUseCase,
     DeleteUserRoleUseCase,

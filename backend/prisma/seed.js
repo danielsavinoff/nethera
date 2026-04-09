@@ -31,6 +31,9 @@ async function main() {
     Permission.UserRoleUpdateAny,
     Permission.UserRoleDeleteAny,
     Permission.UserViewOwn,
+    Permission.UserFavoriteViewOwn,
+    Permission.UserFavoriteAddOwn,
+    Permission.UserFavoriteDeleteOwn,
   ];
 
   await prisma.role.upsert({
@@ -121,6 +124,42 @@ async function main() {
       roleId: userRole.id,
       permissionId: permissionsByName.get(
         Permission.UserViewOwn,
+      )?.id,
+    },
+    {
+      roleId: userRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteViewOwn,
+      )?.id,
+    },
+    {
+      roleId: userRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteAddOwn,
+      )?.id,
+    },
+    {
+      roleId: userRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteDeleteOwn,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteViewOwn,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteAddOwn,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.UserFavoriteDeleteOwn,
       )?.id,
     },
   ];

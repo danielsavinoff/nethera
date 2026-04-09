@@ -22,9 +22,11 @@ model User {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  tenant    Tenant?              @relation(fields: [tenant_id], references: [id])
-  session   Session[]
-  userRoles UserRoleAssignment[]
+  tenant              Tenant?        @relation(fields: [tenant_id], references: [id])
+  session             Session[]
+  userRoles           UserRoleAssignment[]
+  favoritesAsFavoriter UserFavorite[] @relation("user_favorites_favoriter")
+  favoritesAsFavorited UserFavorite[] @relation("user_favorites_favorited")
 
   @@unique([external_id, tenant_id])
   @@map("users")
@@ -78,6 +80,19 @@ model Session {
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model UserFavorite {
+  id                String   @id @default(uuid())
+  favoriter_user_id String
+  favorited_user_id String
+  created_at        DateTime @default(now())
+
+  favoriter User @relation("user_favorites_favoriter", fields: [favoriter_user_id], references: [id], onDelete: Cascade)
+  favorited User @relation("user_favorites_favorited", fields: [favorited_user_id], references: [id], onDelete: Cascade)
+
+  @@unique([favoriter_user_id, favorited_user_id])
+  @@map("favorite_users")
 }
 
 model Role {
