@@ -55,6 +55,16 @@ export class UserController {
     required: false,
     type: Boolean,
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+  })
   @Get()
   async handleGetUsers(
     @Query() query: GetUsersQueryDto,
@@ -63,6 +73,8 @@ export class UserController {
     const result = await this.getUsersUseCase.execute({
       tenantId: claims.tid,
       active: query.active,
+      page: query.page,
+      limit: query.limit,
     });
 
     return this.getUsersPresenter.present(result);

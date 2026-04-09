@@ -1,6 +1,6 @@
 import { EventProcessorNotFoundException } from '../exceptions/EventProcessorNotFoundException.js';
 import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
-import { ExternalUserRepository } from '../ports/ExternalUserRepository.js';
+import { UserProvider } from '../ports/UserProvider.js';
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
 import { EnsureTenantAuthValidityUseCase } from './EnsureTenantAuthValidityUseCase.js';
 import { Tenant } from '../../domain/tenant/Tenant.js';
@@ -36,14 +36,14 @@ export class HandleIncomingWebhookUseCase {
       string,
       EventHandlerUseCase
     >,
-    private readonly externalUserRepository: ExternalUserRepository,
+    private readonly userProvider: UserProvider,
     private readonly ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
   ) {}
 
   async execute(
     command: HandleIncomingWebhookCommand,
   ): Promise<HandleIncomingWebhookResult> {
-    const isAdmin = await this.externalUserRepository.isAdmin(
+    const isAdmin = await this.userProvider.isAdmin(
       command.tenantCredentials,
     );
 

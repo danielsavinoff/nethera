@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "translate-ui": "tsx tools/translate.ui.ts",
-    "gen:api": "dotenv -e ../.env -- sh -c 'openapi-typescript \"$OPENAPI_URL\" -o shared/types/generated/api.d.ts'"
+    "generate:api": "dotenv -e ../.env -- sh -c 'openapi-typescript \"$OPENAPI_URL\" -o shared/types/generated/api.d.ts'"
   },
   "dependencies": {
     "@bitrix24/b24icons-vue": "^2.0.4",

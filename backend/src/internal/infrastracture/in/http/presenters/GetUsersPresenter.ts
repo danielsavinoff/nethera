@@ -7,12 +7,16 @@ import { GetUsersResponseDto } from '../dtos/GetUsersResponseDto.js';
 export class GetUsersPresenter {
   present(result: GetUsersResult): GetUsersResponseDto {
     return new GetUsersResponseDto({
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
       users: result.users.map(
         (user) =>
           new GetUserResponseDto({
             id: user.id,
             displayName: user.displayName,
             active: user.active,
+            departmentExternalIds: user.departmentExternalIds,
           }),
       ),
     });

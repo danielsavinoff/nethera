@@ -4,4 +4,5 @@ export interface ExternalUser {
   secondName?: string;
   lastName?: string;
   isActive?: boolean;
+  departmentIds: string[];
 }

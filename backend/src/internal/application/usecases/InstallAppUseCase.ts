@@ -1,6 +1,6 @@
 import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
 import { TenantRepository } from '../ports/TenantRepository.js';
-import { ExternalUserRepository } from '../ports/ExternalUserRepository.js';
+import { UserProvider } from '../ports/UserProvider.js';
 import { EventSubscriptionFailedException } from '../exceptions/EventSubscriptionFailedException.js';
 import { Logger } from '../../domain/logging/Logger.js';
 import { EventRepository } from '../ports/EventRepository.js';
@@ -33,7 +33,7 @@ export class InstallAppUseCase {
 
   constructor(
     private readonly tenantRepository: TenantRepository,
-    private readonly externalUserRepository: ExternalUserRepository,
+    private readonly userProvider: UserProvider,
     private readonly eventRepository: EventRepository,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
@@ -57,7 +57,7 @@ export class InstallAppUseCase {
       clientEndpoint: command.clientEndpoint,
     });
 
-    const isAdmin = await this.externalUserRepository.isAdmin(
+    const isAdmin = await this.userProvider.isAdmin(
       tenantCredentials,
     );
 
@@ -91,7 +91,7 @@ export class InstallAppUseCase {
       );
     }
 
-    const initiator = await this.externalUserRepository.getMe(
+    const initiator = await this.userProvider.fetchMe(
       tenantCredentials,
     );
 
@@ -100,7 +100,7 @@ export class InstallAppUseCase {
     );
 
     const externalUsers =
-      await this.externalUserRepository.getAllUsers(
+      await this.userProvider.fetchAll(
         tenantCredentials,
       );
 

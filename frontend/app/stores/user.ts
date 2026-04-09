@@ -29,7 +29,12 @@ export const useUserStore = defineStore("user", {
       }
 
       const { $api } = useNuxtApp();
-      const query: GetUsersQuery = { active };
+
+      const query: GetUsersQuery = {
+        active,
+        page: 1,
+        limit: 1000,
+      };
       const response = await $api<GetUsersResponseDto>("/api/users", {
         query,
       });

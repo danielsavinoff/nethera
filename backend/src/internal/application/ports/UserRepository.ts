@@ -4,6 +4,7 @@ import type {
   TenantRecord,
 } from '../../domain/tenant/TenantRecord.js';
 import { UserRecord } from '../../domain/user/UserRecord.js';
+import type { Page } from '../models/Page.js';
 import { TransactionContext } from '../models/TransactionContext.js';
 
 export interface UserRepository {
@@ -19,6 +20,14 @@ export interface UserRepository {
   loadAllInactiveByTenantId(
     tenantId: TenantRecord['id'],
   ): Promise<User[]>;
+  loadPageByTenantId(
+    tenantId: TenantRecord['id'],
+    options: {
+      active?: boolean;
+      page: number;
+      limit: number;
+    },
+  ): Promise<Page<User>>;
   findByTenantAndExternalIdWithRoles(
     tenantId: TenantId,
     externalId: number,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { UserRepository } from '../../../../application/ports/UserRepository.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
+import type { Page } from '../../../../application/models/Page.js';
 import { User } from '../../../../domain/user/User.js';
 import { UserRecord } from '../../../../domain/user/UserRecord.js';
 import { TenantRecord } from '../../../../domain/tenant/TenantRecord.js';
@@ -13,6 +14,55 @@ import { RolePermission } from '../../../../domain/authorization/RolePermission.
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async loadPageByTenantId(
+    tenantId: TenantRecord['id'],
+    options: {
+      active?: boolean;
+      page: number;
+      limit: number;
+    },
+  ): Promise<Page<User>> {
+    const where = {
+      tenant_id: tenantId,
+      ...(typeof options.active === 'boolean'
+        ? { active: options.active }
+        : {}),
+    };
+
+    const skip = (options.page - 1) * options.limit;
+
+    const [total, rows] = await this.prisma.$transaction([
+      this.prisma.user.count({
+        where,
+      }),
+      this.prisma.user.findMany({
+        where,
+        orderBy: [{ first_name: 'asc' }, { id: 'asc' }],
+        skip,
+        take: options.limit,
+      }),
+    ]);
+
+    return {
+      total,
+      items: rows.map((row) =>
+        User.hydrate({
+          active: row.active,
+          createdAt: row.created_at,
+          deletedAt: row.deleted_at ?? undefined,
+          externalId: row.external_id,
+          firstName: row.first_name ?? undefined,
+          id: row.id,
+          lastName: row.last_name ?? undefined,
+          secondName: row.second_name ?? undefined,
+          tenantId: row.tenant_id,
+          updatedAt: row.updated_at,
+          language: row.language ?? undefined,
+        }),
+      ),
+    };
+  }
 
   async loadAllByTenantId(
     tenantId: TenantRecord['id'],

@@ -24,7 +24,7 @@ import type { UserRepository } from '../../application/ports/UserRepository.js';
 import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
 import type { EventRepository } from '../../application/ports/EventRepository.js';
-import type { ExternalUserRepository } from '../../application/ports/ExternalUserRepository.js';
+import type { UserProvider } from '../../application/ports/UserProvider.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
 import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
 import type { SmartProcessRepository } from '../../application/ports/SmartProcessRepository.js';
@@ -42,7 +42,7 @@ import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRole
 import { PrismaSmartProcessRepository } from '../out/persistence/repositories/PrismaSmartProcessRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
-import { BitrixUserRepository } from '../out/bitrix/repositories/BitrixUserRepository.js';
+import { BitrixUserProvider } from '../out/bitrix/repositories/BitrixUserProvider.js';
 import { BitrixEventRepository } from '../out/bitrix/repositories/BitrixEventRepository.js';
 import { BitrixOauthProvider } from '../out/bitrix/oauth/BitrixOauthProvider.js';
 import { BitrixTenantCredentialsRenewer } from '../out/bitrix/adapters/BitrixTenantCredentialsRenewer.js';
@@ -71,36 +71,36 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           | ProcessAppInstallUseCase
           | ProcessExternalUserAddUseCase
         >,
-        externalUserRepository: ExternalUserRepository,
+        userProvider: UserProvider,
         ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
       ) => {
         return new HandleIncomingWebhookUseCase(
           eventProcessors,
-          externalUserRepository,
+          userProvider,
           ensureTenantAuthValidityUseCase,
         );
       },
       inject: [
         EVENT_PROCESSORS,
-        BitrixUserRepository,
+        BitrixUserProvider,
         EnsureTenantAuthValidityUseCase,
       ],
     },
     {
       provide: ProcessExternalUserAddUseCase,
       useFactory: (
-        externalUserRepository: ExternalUserRepository,
+        userProvider: UserProvider,
         userRepository: UserRepository,
         roleRepository: RoleRepository,
       ) => {
         return new ProcessExternalUserAddUseCase(
-          externalUserRepository,
+          userProvider,
           userRepository,
           roleRepository,
         );
       },
       inject: [
-        BitrixUserRepository,
+        BitrixUserProvider,
         PrismaUserRepository,
         PrismaRoleRepository,
       ],
@@ -185,7 +185,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: InstallAppUseCase,
       useFactory: (
-        externalUserRepository: ExternalUserRepository,
+        userProvider: UserProvider,
         tenantRepository: TenantRepository,
         eventRepository: EventRepository,
         userRepository: UserRepository,
@@ -197,7 +197,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ) => {
         return new InstallAppUseCase(
           tenantRepository,
-          externalUserRepository,
+          userProvider,
           eventRepository,
           userRepository,
           roleRepository,
@@ -208,7 +208,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         );
       },
       inject: [
-        BitrixUserRepository,
+        BitrixUserProvider,
         PrismaTenantRepository,
         BitrixEventRepository,
         PrismaUserRepository,
@@ -247,10 +247,22 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
     {
       provide: GetUsersUseCase,
-      useFactory: (userRepository: UserRepository) => {
-        return new GetUsersUseCase(userRepository);
+      useFactory: (
+        userRepository: UserRepository,
+        tenantRepository: TenantRepository,
+        userProvider: UserProvider,
+      ) => {
+        return new GetUsersUseCase(
+          userRepository,
+          tenantRepository,
+          userProvider,
+        );
       },
-      inject: [PrismaUserRepository],
+      inject: [
+        PrismaUserRepository,
+        PrismaTenantRepository,
+        BitrixUserProvider,
+      ],
     },
     {
       provide: GetCurrentUserUseCase,

@@ -1,7 +1,7 @@
 import { User } from '../../domain/user/User.js';
 import { DefaultRolesMustExistException } from '../exceptions/DefaultRolesMustExistException.js';
 import { NewUserNotFoundInExternalSystemException } from '../exceptions/NewUserNotFoundInExternalSystemException.js';
-import { ExternalUserRepository } from '../ports/ExternalUserRepository.js';
+import { UserProvider } from '../ports/UserProvider.js';
 import { UserRepository } from '../ports/UserRepository.js';
 import {
   EventHandlerCommand,
@@ -16,7 +16,7 @@ export class ProcessExternalUserAddUseCase
   implements EventHandlerUseCase
 {
   constructor(
-    private readonly externalUserRepository: ExternalUserRepository,
+    private readonly userProvider: UserProvider,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
   ) {}
@@ -27,7 +27,7 @@ export class ProcessExternalUserAddUseCase
     const entityId = command.payload.id;
 
     const externalUser =
-      await this.externalUserRepository.getById(
+      await this.userProvider.fetchByExternalId(
         entityId,
         command.tenant.credentials,
       );

@@ -43,8 +43,6 @@ export class BitrixClient {
       },
     );
 
-    await client.initIsAdmin();
-
     return client;
   }
 
@@ -54,7 +52,26 @@ export class BitrixClient {
       'user.get',
     )) as Result<UserBrief[]>;
 
-    return result.getData();
+    return result.getData() ?? [];
+  }
+
+  async getAllUsersByIds(
+    externalIds: number[],
+    context: TenantCredentials,
+  ): Promise<UserBrief[]> {
+    if (externalIds.length === 0) {
+      return [];
+    }
+
+    const client = await this.fromAuthContext(context);
+
+    const result = (await client.callListMethod('user.get', {
+      filter: {
+        ID: externalIds,
+      },
+    })) as Result<UserBrief[]>;
+
+    return result.getData() ?? [];
   }
 
   async getDepartments(

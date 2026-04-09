@@ -1,50 +1,81 @@
-import { User } from '../../domain/user/User.js';
-import { TenantRecord } from '../../domain/tenant/TenantRecord.js';
-import { UserRepository } from '../ports/UserRepository.js';
+import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
+import type { TenantRepository } from '../ports/TenantRepository.js';
+import type { UserProvider } from '../ports/UserProvider.js';
+import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetUsersCommand {
   tenantId: TenantRecord['id'];
   active?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface GetUsersResultUser {
+  id: string;
+  displayName: string;
+  active: boolean;
+  departmentExternalIds: string[];
 }
 
 export interface GetUsersResult {
-  users: User[];
+  total: number;
+  page: number;
+  limit: number;
+  users: GetUsersResultUser[];
 }
 
 export class GetUsersUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly tenantRepository: TenantRepository,
+    private readonly userProvider: UserProvider,
+  ) {}
 
   async execute(
     command: GetUsersCommand,
   ): Promise<GetUsersResult> {
-    if (command.active === true) {
-      const users =
-        await this.userRepository.loadAllActiveByTenantId(
-          command.tenantId,
-        );
+    const page = command.page ?? 1;
+    const limit = command.limit ?? 100;
 
-      return {
-        users,
-      };
-    }
-
-    if (command.active === false) {
-      const users =
-        await this.userRepository.loadAllInactiveByTenantId(
-          command.tenantId,
-        );
-
-      return {
-        users,
-      };
-    }
-
-    const users = await this.userRepository.loadAllByTenantId(
+    const tenant = await this.tenantRepository.loadByIdOrThrow(
       command.tenantId,
     );
 
+    const usersPage =
+      await this.userRepository.loadPageByTenantId(
+        command.tenantId,
+        {
+          active: command.active,
+          page,
+          limit,
+        },
+      );
+
+    const externalUsers =
+      await this.userProvider.fetchAllByExternalIds(
+        usersPage.items.map((user) => user.externalId),
+        tenant.credentials,
+      );
+
+    const externalUsersById = new Map(
+      externalUsers.map((externalUser) => [
+        externalUser.id,
+        externalUser,
+      ]),
+    );
+
     return {
-      users,
+      total: usersPage.total,
+      page,
+      limit,
+      users: usersPage.items.map((user) => ({
+        id: user.id,
+        displayName: user.displayName,
+        active: user.active,
+        departmentExternalIds:
+          externalUsersById.get(user.externalId)
+            ?.departmentIds ?? [],
+      })),
     };
   }
 }
