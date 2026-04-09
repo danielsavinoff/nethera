@@ -11,7 +11,12 @@ const selectedWeekRange = ref({
 
 await userStore.fetchUsers();
 
-const userItems = computed(() => users.value.map((user) => user.displayName));
+const userItems = computed(() =>
+  users.value.map((user) => ({
+    id: user.id,
+    label: user.displayName,
+  })),
+);
 
 useHead({
   title: `${t("page.index.navigation.projectReports")} | ${t("page.index.header.title")}`,

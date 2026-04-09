@@ -2,8 +2,13 @@
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 
+type UserItem = {
+  id: string;
+  label: string;
+};
+
 defineProps<{
-  users: string[];
+  users: UserItem[];
 }>();
 
 const { t } = useI18n();
@@ -112,6 +117,8 @@ watch(
           open-on-focus
           autocomplete=""
           :items="users"
+          value-key="id"
+          label-key="label"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
         />
       </B24FormField>

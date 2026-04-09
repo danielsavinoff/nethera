@@ -6,7 +6,12 @@ const { t } = useI18n();
 
 await userStore.fetchUsers();
 
-const userItems = computed(() => users.value.map((user) => user.displayName));
+const userItems = computed(() =>
+  users.value.map((user) => ({
+    id: user.id,
+    label: user.displayName,
+  })),
+);
 
 useHead({
   title: `${t("page.index.navigation.initiator")} | ${t("page.index.header.title")}`,
