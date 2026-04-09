@@ -8,6 +8,9 @@ export class GetUserFavoriteResponseDto {
   favoriteUserId!: string;
 
   @ApiProperty()
+  favoriteUserDisplayName!: string;
+
+  @ApiProperty()
   createdAt!: Date;
 
   constructor(data: GetUserFavoriteResponseDto) {

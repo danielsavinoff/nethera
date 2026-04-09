@@ -12,8 +12,10 @@ export class GetUserFavoritesPresenter {
       favorites: result.favorites.map(
         (favorite) =>
           new GetUserFavoriteResponseDto({
-            favoriteId: favorite.id,
-            favoriteUserId: favorite.favoritedUserId,
+            favoriteId: favorite.favoriteId,
+            favoriteUserId: favorite.favoriteUserId,
+            favoriteUserDisplayName:
+              favorite.favoriteUserDisplayName,
             createdAt: favorite.createdAt,
           }),
       ),

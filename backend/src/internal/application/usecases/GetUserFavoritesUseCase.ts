@@ -1,5 +1,4 @@
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
-import { UserFavorite } from '../../domain/user/UserFavorite.js';
 import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import type { UserFavoriteRepository } from '../ports/UserFavoriteRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
@@ -9,8 +8,15 @@ export interface GetUserFavoritesCommand {
   userId: string;
 }
 
+export interface GetUserFavoriteResult {
+  favoriteId: string;
+  favoriteUserId: string;
+  favoriteUserDisplayName: string;
+  createdAt: Date;
+}
+
 export interface GetUserFavoritesResult {
-  favorites: UserFavorite[];
+  favorites: GetUserFavoriteResult[];
 }
 
 export class GetUserFavoritesUseCase {
@@ -25,29 +31,40 @@ export class GetUserFavoritesUseCase {
   ): Promise<GetUserFavoritesResult> {
     const initiator =
       await this.userRepository.findByIdWithRoles(
-      command.initiatorUserId,
-    );
+        command.initiatorUserId,
+      );
 
     if (!initiator) {
       throw new UserNotFoundException();
     }
 
-    const user = await this.userRepository.findById(command.userId);
+    const user = await this.userRepository.findById(
+      command.userId,
+    );
 
     if (!user || user.tenantId !== initiator.tenantId) {
       throw new UserNotFoundException();
     }
 
-    this.userFavoritePolicy.assertCanView(
-      initiator,
-      user.id,
+    this.userFavoritePolicy.assertCanView(initiator, user.id);
+
+    const favorites =
+      await this.userFavoriteRepository.loadAllByUserId(user.id);
+
+    const favoriteUsers = await Promise.all(
+      favorites.map((favorite) =>
+        this.userRepository.findById(favorite.favoritedUserId),
+      ),
     );
 
     return {
-      favorites:
-        await this.userFavoriteRepository.loadAllByUserId(
-          user.id,
-        ),
+      favorites: favorites.map((favorite, index) => ({
+        favoriteId: favorite.id,
+        favoriteUserId: favorite.favoritedUserId,
+        favoriteUserDisplayName:
+          favoriteUsers[index]?.displayName ?? 'Unnamed user',
+        createdAt: favorite.createdAt,
+      })),
     };
   }
 }
