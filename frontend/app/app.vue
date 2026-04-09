@@ -2,6 +2,7 @@
 import * as locales from "@bitrix24/b24ui-nuxt/locale";
 
 const userStore = useUserStore();
+const departmentStore = useDepartmentStore();
 const { user } = storeToRefs(userStore);
 
 const route = useRoute();
@@ -12,6 +13,7 @@ watchEffect(async () => {
   }
 
   await userStore.fetchCurrent();
+  await departmentStore.fetchAll();
 });
 
 const { locale, defaultLocale, setLocale, availableLocales } = useI18n();
