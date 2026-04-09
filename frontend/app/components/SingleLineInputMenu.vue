@@ -19,7 +19,6 @@ const mergedB24ui = computed(() => ({
   ...singleLineInputMenuUi,
   ...props.b24ui,
 }));
-console.log(mergedB24ui.value);
 </script>
 
 <template>

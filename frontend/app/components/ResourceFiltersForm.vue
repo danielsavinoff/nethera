@@ -59,7 +59,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
         :label="t('page.index.filters.user.label')"
         class="min-w-[16rem] flex-1"
       >
-        <SingleLineInputMenu
+        <UserLineInputMenu
           v-model="formState.user"
           multiple
           open-on-focus

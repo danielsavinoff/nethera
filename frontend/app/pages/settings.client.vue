@@ -30,7 +30,7 @@ useHead({
         name="favoriteUsers"
         :label="t('page.settings.favoriteUsers.label')"
       >
-        <SingleLineInputMenu
+        <UserLineInputMenu
           v-model="formState.favoriteUsers"
           multiple
           open-on-focus

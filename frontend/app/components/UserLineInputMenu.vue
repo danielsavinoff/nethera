@@ -713,6 +713,7 @@ defineExpose({
       :as-child="!multiple"
       data-slot="base"
       :class="b24ui.base({ class: props.b24ui?.base })"
+      class="flex min-w-0 flex-nowrap items-center overflow-hidden"
     >
       <TagsInputRoot
         v-if="multiple"
@@ -903,7 +904,7 @@ defineExpose({
             :class="
               activeTab === tab.id
                 ? 'bg-(--ui-color-accent-main-primary) text-white'
-                : 'bg-(--color-secondary-background) text-(--color-secondary-text) hover:bg-[var(--color-base-200)]'
+                : 'bg-(--color-secondary-background) text-(--color-secondary-text) hover:bg-(--color-base-200)'
             "
             @click="activeTab = tab.id"
           >
