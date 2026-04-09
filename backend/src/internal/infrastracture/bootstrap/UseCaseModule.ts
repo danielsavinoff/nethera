@@ -11,6 +11,7 @@ import { EnsureTenantAuthValidityUseCase } from '../../application/usecases/Ensu
 import { SendNotificationsUseCase } from '../../application/usecases/SendNotificationsUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
+import { GetDepartmentsUseCase } from '../../application/usecases/GetDepartmentsUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
@@ -21,6 +22,7 @@ import type { TenantRepository } from '../../application/ports/TenantRepository.
 import type { TenantCredentialsRenewer } from '../../application/ports/TenantCredentialsRenewer.js';
 import type { UserRepository } from '../../application/ports/UserRepository.js';
 import type { RoleRepository } from '../../application/ports/RoleRepository.js';
+import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
 import type { EventRepository } from '../../application/ports/EventRepository.js';
 import type { ExternalUserRepository } from '../../application/ports/ExternalUserRepository.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
@@ -46,6 +48,7 @@ import { BitrixOauthProvider } from '../out/bitrix/oauth/BitrixOauthProvider.js'
 import { BitrixTenantCredentialsRenewer } from '../out/bitrix/adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixNotificationRepository } from '../out/bitrix/repositories/BitrixNotificationRepository.js';
 import { BitrixSmartProcessProvider } from '../out/bitrix/repositories/BitrixSmartProcessProvider.js';
+import { BitrixDepartmentProvider } from '../out/bitrix/repositories/BitrixDepartmentProvider.js';
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
 
@@ -230,6 +233,19 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaTenantRepository, NestConsoleLogger],
     },
     {
+      provide: GetDepartmentsUseCase,
+      useFactory: (
+        tenantRepository: TenantRepository,
+        departmentProvider: DepartmentProvider,
+      ) => {
+        return new GetDepartmentsUseCase(
+          tenantRepository,
+          departmentProvider,
+        );
+      },
+      inject: [PrismaTenantRepository, BitrixDepartmentProvider],
+    },
+    {
       provide: GetUsersUseCase,
       useFactory: (userRepository: UserRepository) => {
         return new GetUsersUseCase(userRepository);
@@ -332,6 +348,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     RefreshAccessTokenUseCase,
     EnsureTenantAuthValidityUseCase,
     SendNotificationsUseCase,
+    GetDepartmentsUseCase,
     GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,

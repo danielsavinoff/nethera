@@ -4,10 +4,16 @@ import { ConfigService } from '@nestjs/config';
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { SupportedBitrixEvents } from '../enums/SupportedBitrixEventsToModels.js';
 
-interface BitrixSmartProcessType {
+interface BitrixSmartProcess {
   id?: number | string;
   entityTypeId?: number | string;
   title: string;
+}
+
+interface BitrixDepartment {
+  ID: number | string;
+  NAME: string;
+  PARENT?: number | string | null;
 }
 
 @Injectable()
@@ -49,6 +55,18 @@ export class BitrixClient {
     )) as Result<UserBrief[]>;
 
     return result.getData();
+  }
+
+  async getDepartments(
+    context: TenantCredentials,
+  ): Promise<BitrixDepartment[]> {
+    const client = await this.fromAuthContext(context);
+
+    const result = (await client.callListMethod(
+      'department.get',
+    )) as Result<BitrixDepartment[]>;
+
+    return result.getData() ?? [];
   }
 
   async isAdmin(context: TenantCredentials) {
@@ -125,7 +143,7 @@ export class BitrixClient {
   async createSmartProcess(
     title: string,
     context: TenantCredentials,
-  ): Promise<BitrixSmartProcessType | null> {
+  ): Promise<BitrixSmartProcess | null> {
     const client = await this.fromAuthContext(context);
 
     const result = await client.callMethod('crm.type.add', {
@@ -136,9 +154,9 @@ export class BitrixClient {
 
     const response = result.getData() as {
       result?: {
-        type?: BitrixSmartProcessType;
-      } & BitrixSmartProcessType;
-      type?: BitrixSmartProcessType;
+        type?: BitrixSmartProcess;
+      } & BitrixSmartProcess;
+      type?: BitrixSmartProcess;
     };
 
     return (
@@ -154,7 +172,7 @@ export class BitrixClient {
   async getSmartProcess(
     externalId: string,
     context: TenantCredentials,
-  ): Promise<BitrixSmartProcessType | null> {
+  ): Promise<BitrixSmartProcess | null> {
     const client = await this.fromAuthContext(context);
 
     const result = await client.callMethod('crm.type.get', {
@@ -163,9 +181,9 @@ export class BitrixClient {
 
     const response = result.getData() as {
       result?: {
-        type?: BitrixSmartProcessType;
-      } & BitrixSmartProcessType;
-      type?: BitrixSmartProcessType;
+        type?: BitrixSmartProcess;
+      } & BitrixSmartProcess;
+      type?: BitrixSmartProcess;
     };
 
     return (
