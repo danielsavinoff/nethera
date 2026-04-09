@@ -1,9 +1,8 @@
 import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
 import { TenantRepository } from '../ports/TenantRepository.js';
 import { UserProvider } from '../ports/UserProvider.js';
-import { EventSubscriptionFailedException } from '../exceptions/EventSubscriptionFailedException.js';
 import { Logger } from '../../domain/logging/Logger.js';
-import { EventRepository } from '../ports/EventRepository.js';
+import { EventProvider } from '../ports/EventProvider.js';
 import { UserRepository } from '../ports/UserRepository.js';
 import { User } from '../../domain/user/User.js';
 import { TransactionRunner } from '../ports/TransactionRunner.js';
@@ -34,7 +33,7 @@ export class InstallAppUseCase {
   constructor(
     private readonly tenantRepository: TenantRepository,
     private readonly userProvider: UserProvider,
-    private readonly eventRepository: EventRepository,
+    private readonly eventProvider: EventProvider,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
     private readonly smartProcessRepository: SmartProcessRepository,
@@ -221,13 +220,6 @@ export class InstallAppUseCase {
       }
     }
 
-    const isSubscribed =
-      await this.eventRepository.subscribeTenantToWebhook(
-        tenantCredentials,
-      );
-
-    if (!isSubscribed) {
-      throw new EventSubscriptionFailedException();
-    }
+    await this.eventProvider.subscribe(tenantCredentials);
   }
 }

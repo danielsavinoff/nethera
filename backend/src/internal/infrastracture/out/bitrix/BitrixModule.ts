@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { BitrixEventRepository } from './repositories/BitrixEventRepository.js';
+import { BitrixEventProvider } from './repositories/BitrixEventProvider.js';
 import { BitrixUserProvider } from './repositories/BitrixUserProvider.js';
 import { BitrixNotificationRepository } from './repositories/BitrixNotificationRepository.js';
 import { BitrixClient } from './clients/BitrixClient.js';
@@ -13,7 +13,7 @@ import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvide
 
 @Module({
   providers: [
-    BitrixEventRepository,
+    BitrixEventProvider,
     BitrixUserProvider,
     BitrixNotificationRepository,
     BitrixClient,
@@ -26,7 +26,7 @@ import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvide
     BitrixDepartmentProvider,
   ],
   exports: [
-    BitrixEventRepository,
+    BitrixEventProvider,
     BitrixUserProvider,
     BitrixNotificationRepository,
     BitrixOauthAuthContextMapper,

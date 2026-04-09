@@ -1,7 +1,7 @@
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
 
-export interface EventRepository {
-  subscribeTenantToWebhook(
+export interface EventProvider {
+  subscribe(
     authContext: TenantCredentials,
-  ): Promise<boolean>;
+  ): Promise<void>;
 }

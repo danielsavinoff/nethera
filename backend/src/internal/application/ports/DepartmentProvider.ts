@@ -1,8 +1,8 @@
 import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
-import type { Department } from '../models/Department.js';
+import type { ExternalDepartment } from '../models/ExternalDepartment.js';
 
 export interface DepartmentProvider {
   fetchAll(
     credentials: TenantCredentials,
-  ): Promise<Department[]>;
+  ): Promise<ExternalDepartment[]>;
 }

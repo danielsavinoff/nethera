@@ -23,7 +23,7 @@ import type { TenantCredentialsRenewer } from '../../application/ports/TenantCre
 import type { UserRepository } from '../../application/ports/UserRepository.js';
 import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
-import type { EventRepository } from '../../application/ports/EventRepository.js';
+import type { EventProvider } from '../../application/ports/EventProvider.js';
 import type { UserProvider } from '../../application/ports/UserProvider.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
 import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
@@ -43,7 +43,7 @@ import { PrismaSmartProcessRepository } from '../out/persistence/repositories/Pr
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { BitrixUserProvider } from '../out/bitrix/repositories/BitrixUserProvider.js';
-import { BitrixEventRepository } from '../out/bitrix/repositories/BitrixEventRepository.js';
+import { BitrixEventProvider } from '../out/bitrix/repositories/BitrixEventProvider.js';
 import { BitrixOauthProvider } from '../out/bitrix/oauth/BitrixOauthProvider.js';
 import { BitrixTenantCredentialsRenewer } from '../out/bitrix/adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixNotificationRepository } from '../out/bitrix/repositories/BitrixNotificationRepository.js';
@@ -187,7 +187,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       useFactory: (
         userProvider: UserProvider,
         tenantRepository: TenantRepository,
-        eventRepository: EventRepository,
+        eventProvider: EventProvider,
         userRepository: UserRepository,
         roleRepository: RoleRepository,
         smartProcessRepository: SmartProcessRepository,
@@ -198,7 +198,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         return new InstallAppUseCase(
           tenantRepository,
           userProvider,
-          eventRepository,
+          eventProvider,
           userRepository,
           roleRepository,
           smartProcessRepository,
@@ -210,7 +210,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [
         BitrixUserProvider,
         PrismaTenantRepository,
-        BitrixEventRepository,
+        BitrixEventProvider,
         PrismaUserRepository,
         PrismaRoleRepository,
         PrismaSmartProcessRepository,

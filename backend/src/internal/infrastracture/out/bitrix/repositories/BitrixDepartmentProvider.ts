@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { Department } from '../../../../application/models/Department.js';
+import type { ExternalDepartment } from '../../../../application/models/ExternalDepartment.js';
 import type { DepartmentProvider } from '../../../../application/ports/DepartmentProvider.js';
 import type { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { BitrixClient } from '../clients/BitrixClient.js';
@@ -12,7 +12,7 @@ export class BitrixDepartmentProvider
 
   async fetchAll(
     credentials: TenantCredentials,
-  ): Promise<Department[]> {
+  ): Promise<ExternalDepartment[]> {
     const bitrixDepartments =
       await this.bitrixClient.getDepartments(credentials);
 
@@ -25,7 +25,7 @@ export class BitrixDepartmentProvider
               ? undefined
               : String(bitrixDepartment.PARENT),
           name: bitrixDepartment.NAME,
-        }) satisfies Department,
+        }) satisfies ExternalDepartment,
     );
   }
 }

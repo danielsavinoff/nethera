@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import type {
-  CreateSessionData,
-  SessionRepository,
-} from '../../../../application/ports/SessionRepository.js';
+import type { SessionRepository } from '../../../../application/ports/SessionRepository.js';
+import { SessionNotFoundException } from '../../../../application/exceptions/SessionNotFoundException.js';
 import type { SessionRecord } from '../../../../domain/user/SessionRecord.js';
 import { Injectable } from '@nestjs/common';
 import { Session } from '../../../../domain/user/Session.js';
@@ -19,15 +17,15 @@ export class PrismaSessionRepository
     });
   }
 
-  async findById(
+  async loadByIdOrThrow(
     id: SessionRecord['id'],
-  ): Promise<Session | null> {
+  ): Promise<Session> {
     const row = await this.prisma.session.findUnique({
       where: { id },
     });
 
     if (!row) {
-      return null;
+      throw new SessionNotFoundException();
     }
 
     return Session.hydrate({

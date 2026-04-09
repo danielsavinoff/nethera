@@ -1,5 +1,5 @@
 import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
-import type { Department } from '../models/Department.js';
+import type { ExternalDepartment } from '../models/ExternalDepartment.js';
 import type { DepartmentProvider } from '../ports/DepartmentProvider.js';
 import type { TenantRepository } from '../ports/TenantRepository.js';
 
@@ -8,7 +8,7 @@ export type GetDepartmentsCommand = {
 };
 
 export interface GetDepartmentsResult {
-  departments: Department[];
+  departments: ExternalDepartment[];
 }
 
 export class GetDepartmentsUseCase {

@@ -2,7 +2,7 @@ export enum Provider {
   Bitrix = 'bitrix',
 }
 
-export interface ProviderIdentity {
-  externalId: number;
+export interface ExternalIdentity {
+  id: number;
   provider: Provider;
 }

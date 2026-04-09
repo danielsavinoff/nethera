@@ -1,4 +1,4 @@
-export interface Department {
+export interface ExternalDepartment {
   id: string;
   parentId?: string;
   name: string;

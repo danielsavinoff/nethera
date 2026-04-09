@@ -1,4 +1,3 @@
-import { SessionNotFoundException } from '../exceptions/SessionNotFoundException.js';
 import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import type { SessionRepository } from '../ports/SessionRepository.js';
 import type { TenantRepository } from '../ports/TenantRepository.js';
@@ -37,13 +36,9 @@ export class RefreshAccessTokenUseCase {
       throw new UserNotFoundException();
     }
 
-    const session = await this.sessionRepository.findById(
+    const session = await this.sessionRepository.loadByIdOrThrow(
       authClaim.sid,
     );
-
-    if (!session) {
-      throw new SessionNotFoundException();
-    }
 
     const token = await this.tokenIssuer.issue({
       claims: {

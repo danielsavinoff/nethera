@@ -1,6 +1,8 @@
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
-import { ProviderIdentity } from '../models/ProviderIdentity.js';
+import { ExternalIdentity } from '../models/ExternalIdentity.js';
 
 export interface OauthProvider {
-  getIdentity(ctx: TenantCredentials): Promise<ProviderIdentity>;
+  fetchIdentity(
+    ctx: TenantCredentials,
+  ): Promise<ExternalIdentity>;
 }

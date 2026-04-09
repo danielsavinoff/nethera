@@ -29,14 +29,14 @@ export class LoginWithOauthProviderUseCase {
   async execute(
     command: LoginWithOauthProviderCommand,
   ): Promise<LoginWithOauthProviderResult> {
-    const identity = await this.oauthProvider.getIdentity(
+    const identity = await this.oauthProvider.fetchIdentity(
       command.tenantCredentials,
     );
 
     let user =
       await this.userRepository.findByTenantAndExternalIdWithRoles(
         command.tenant.id,
-        identity.externalId,
+        identity.id,
       );
 
     if (!user) {
