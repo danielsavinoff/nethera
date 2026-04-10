@@ -39,6 +39,7 @@ import {
 } from "reka-ui";
 import { defu } from "defu";
 import { isEqual } from "ohash/utils";
+import { storeToRefs } from "pinia";
 import {
   createReusableTemplate,
   reactivePick,
@@ -157,6 +158,13 @@ const searchTerm = defineModel("searchTerm", {
 const { t } = useLocale();
 const appConfig = useAppConfig();
 const { contains } = useFilter({ sensitivity: "base" });
+const favoriteUsersStore = useFavoriteUsersStore();
+const {
+  favoriteItems: storedFavoriteItems,
+  loaded: favoriteUsersLoaded,
+  loading: favoriteUsersLoading,
+} =
+  storeToRefs(favoriteUsersStore);
 
 const rootProps = useForwardPropsEmits(
   reactivePick(
@@ -260,7 +268,7 @@ const menuTabs = [
     icon: ThreePersonsIcon,
   },
 ];
-const activeTab = ref(menuTabs[0].id);
+const activeTab = ref("people");
 
 const b24ui = computed(() =>
   tv({
@@ -289,11 +297,95 @@ const groups = computed(() =>
       : [props.items]
     : [],
 );
-const flattenedItems = computed(() => groups.value.flatMap((group) => group));
+const normalizedGroups = computed(() => groups.value);
+const flattenedItems = computed(() =>
+  normalizedGroups.value.flatMap((group) => group),
+);
+
+function getItemValue(item) {
+  return props.valueKey && isInputItem(item) ? get(item, props.valueKey) : item;
+}
+
+function createFavoriteItem(item) {
+  if (!props.valueKey) {
+    return item.label;
+  }
+
+  return {
+    [props.valueKey]: item.id,
+    [props.labelKey]: item.label,
+  };
+}
+
+const favoriteMenuItems = computed(() => {
+  const favoriteIds = new Set(
+    storedFavoriteItems.value.map((item) => String(item.id)),
+  );
+  const itemsById = new Map();
+
+  for (const item of flattenedItems.value) {
+    const itemValue = getItemValue(item);
+
+    if (itemValue === undefined || itemValue === null) {
+      continue;
+    }
+
+    const favoriteId = String(itemValue);
+
+    if (!favoriteIds.has(favoriteId) || itemsById.has(favoriteId)) {
+      continue;
+    }
+
+    itemsById.set(favoriteId, item);
+  }
+
+  for (const favoriteItem of storedFavoriteItems.value) {
+    if (itemsById.has(favoriteItem.id)) {
+      continue;
+    }
+
+    itemsById.set(
+      favoriteItem.id,
+      createFavoriteItem(favoriteItem),
+    );
+  }
+
+  return Array.from(itemsById.values());
+});
+
+const displayItems = computed(() => {
+  const itemsById = new Map();
+
+  for (const item of flattenedItems.value) {
+    const itemValue = getItemValue(item);
+
+    if (itemValue === undefined || itemValue === null) {
+      continue;
+    }
+
+    itemsById.set(String(itemValue), item);
+  }
+
+  for (const item of favoriteMenuItems.value) {
+    const itemValue = getItemValue(item);
+
+    if (itemValue === undefined || itemValue === null) {
+      continue;
+    }
+
+    if (itemsById.has(String(itemValue))) {
+      continue;
+    }
+
+    itemsById.set(String(itemValue), item);
+  }
+
+  return Array.from(itemsById.values());
+});
 
 function displayValue(value) {
   return (
-    getDisplayValue(flattenedItems.value, value, {
+    getDisplayValue(displayItems.value, value, {
       labelKey: props.labelKey,
       valueKey: props.valueKey,
     }) ?? ""
@@ -302,14 +394,14 @@ function displayValue(value) {
 
 const filteredGroups = computed(() => {
   if (props.ignoreFilter || !searchTerm.value) {
-    return groups.value;
+    return normalizedGroups.value;
   }
 
   const fields = Array.isArray(props.filterFields)
     ? props.filterFields
     : [props.labelKey];
 
-  return groups.value
+  return normalizedGroups.value
     .map((group) =>
       group.filter((item) => {
         if (item === undefined || item === null) {
@@ -346,8 +438,44 @@ const filteredGroups = computed(() => {
     );
 });
 
-const filteredItems = computed(() =>
-  filteredGroups.value.flatMap((group) => group),
+const filteredFavoriteItems = computed(() => {
+  if (!searchTerm.value) {
+    return favoriteMenuItems.value;
+  }
+
+  const fields = Array.isArray(props.filterFields)
+    ? props.filterFields
+    : [props.labelKey];
+
+  return favoriteMenuItems.value.filter((item) =>
+    fields.some((field) => {
+      const value = isInputItem(item) ? get(item, field) : item;
+
+      return (
+        value !== undefined &&
+        value !== null &&
+        contains(String(value), searchTerm.value)
+      );
+    }),
+  );
+});
+
+const visibleGroups = computed(() => {
+  if (activeTab.value === "favorites") {
+    return filteredFavoriteItems.value.length
+      ? [filteredFavoriteItems.value]
+      : [];
+  }
+
+  if (activeTab.value === "people") {
+    return normalizedGroups.value;
+  }
+
+  return filteredGroups.value;
+});
+
+const visibleItems = computed(() =>
+  visibleGroups.value.flatMap((group) => group),
 );
 const isListLoading = computed(() => Boolean(props.loading));
 
@@ -365,12 +493,12 @@ const createItem = computed(() => {
       props.createItem.when === "always") ||
     props.createItem === "always"
   ) {
-    return !filteredItems.value.find((item) =>
+    return !visibleItems.value.find((item) =>
       compare(item, newItem, props.valueKey),
     );
   }
 
-  return !filteredItems.value.length;
+  return !visibleItems.value.length;
 });
 
 const createItemPosition = computed(() =>
@@ -393,6 +521,10 @@ onMounted(() => {
   nextTick(() => {
     searchTerm.value = "";
   });
+
+  if (!favoriteUsersLoaded.value && !favoriteUsersLoading.value) {
+    void favoriteUsersStore.fetchFavorites();
+  }
 
   setTimeout(() => {
     autoFocus();
@@ -499,6 +631,7 @@ async function restoreViewportScrollPosition() {
 function onLoadMore() {
   if (
     !isMenuOpen.value ||
+    activeTab.value === "favorites" ||
     !props.hasMore ||
     isListLoading.value ||
     isLoadMorePending.value
@@ -512,7 +645,7 @@ function onLoadMore() {
 }
 
 watch(
-  () => filteredItems.value.length,
+  () => visibleItems.value.length,
   async (length, previousLength) => {
     if (pendingViewportScrollTop.value === null || length <= previousLength) {
       return;
@@ -521,6 +654,12 @@ watch(
     await restoreViewportScrollPosition();
   },
 );
+
+watch(searchTerm, (value) => {
+  if (value) {
+    activeTab.value = "search";
+  }
+});
 
 watch(
   isListLoading,
@@ -537,6 +676,7 @@ useInfiniteScroll(viewportRef, onLoadMore, {
   distance: 64,
   canLoadMore: () =>
     isMenuOpen.value &&
+    activeTab.value !== "favorites" &&
     Boolean(props.hasMore) &&
     !isListLoading.value &&
     !disabled.value,
@@ -1008,7 +1148,11 @@ defineExpose({
           ref="viewportRef"
           role="presentation"
           data-slot="viewport"
-          :class="b24ui.viewport({ class: props.b24ui?.viewport })"
+          :class="
+            b24ui.viewport({
+              class: [props.b24ui?.viewport, 'min-h-[40vh]'],
+            })
+          "
         >
           <template v-if="!!virtualize">
             <ReuseCreateItemTemplate
@@ -1017,7 +1161,7 @@ defineExpose({
 
             <ComboboxVirtualizer
               v-slot="{ option: item, virtualItem }"
-              :options="filteredItems"
+              :options="visibleItems"
               :text-content="
                 (candidate) =>
                   isInputItem(candidate)
@@ -1044,7 +1188,7 @@ defineExpose({
             </ComboboxGroup>
 
             <ComboboxGroup
-              v-for="(group, groupIndex) in filteredGroups"
+              v-for="(group, groupIndex) in visibleGroups"
               :key="`group-${groupIndex}`"
               data-slot="group"
               :class="b24ui.group({ class: props.b24ui?.group })"
