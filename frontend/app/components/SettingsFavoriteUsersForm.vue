@@ -35,38 +35,27 @@ const syncFormState = () => {
   formState.favoriteUsers = [...favoriteUserIds.value];
 };
 
-await Promise.all([
-  favoriteUsersStore.fetchFavorites(),
-]);
+await Promise.all([favoriteUsersStore.fetchFavorites()]);
 syncFormState();
 
 const userItems = computed<UserPickerItem[]>(() =>
   Array.from(
     new Map(
-      [...props.users, ...favoriteItems.value].map((item) => [
-        item.id,
-        item,
-      ]),
+      [...props.users, ...favoriteItems.value].map((item) => [item.id, item]),
     ).values(),
   ),
 );
 
 const hasChanges = computed(() => {
-  const selectedFavoriteUserIds = [
-    ...new Set(formState.favoriteUsers),
-  ].sort();
+  const selectedFavoriteUserIds = [...new Set(formState.favoriteUsers)].sort();
   const currentFavoriteUserIds = [...favoriteUserIds.value].sort();
 
-  if (
-    selectedFavoriteUserIds.length !==
-    currentFavoriteUserIds.length
-  ) {
+  if (selectedFavoriteUserIds.length !== currentFavoriteUserIds.length) {
     return true;
   }
 
   return selectedFavoriteUserIds.some(
-    (favoriteUserId, index) =>
-      favoriteUserId !== currentFavoriteUserIds[index],
+    (favoriteUserId, index) => favoriteUserId !== currentFavoriteUserIds[index],
   );
 });
 
@@ -74,9 +63,7 @@ type SettingsFormState = typeof formState;
 
 const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
   await wait("settings.favorite-users.submit", async () => {
-    await favoriteUsersStore.saveFavoriteUsers(
-      formState.favoriteUsers,
-    );
+    await favoriteUsersStore.saveFavoriteUsers(formState.favoriteUsers);
     syncFormState();
   });
 };
@@ -103,6 +90,7 @@ const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
           :reset-search="props.resetSearch"
           value-key="id"
           label-key="label"
+          size="lg"
           :placeholder="t('page.settings.favoriteUsers.placeholder')"
         />
       </B24FormField>
@@ -113,6 +101,7 @@ const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
         class="self-start"
         :loading="isSubmitting"
         :disabled="isSubmitting || !hasChanges"
+        size="lg"
         use-wait
       >
         {{ t("page.settings.save") }}

@@ -109,6 +109,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="departmentItems"
+          size="lg"
           :placeholder="t('page.actualReports.filters.department.placeholder')"
         />
       </B24FormField>
@@ -124,6 +125,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="yearItems"
+          size="lg"
           :placeholder="t('page.actualReports.filters.year.placeholder')"
         />
       </B24FormField>
@@ -139,6 +141,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="weekItems"
+          size="lg"
           :placeholder="t('page.actualReports.filters.weekFrom.placeholder')"
         />
       </B24FormField>
@@ -154,6 +157,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="weekItems"
+          size="lg"
           :placeholder="t('page.actualReports.filters.weekTo.placeholder')"
         />
       </B24FormField>
@@ -162,6 +166,7 @@ watch(
         <B24Button
           type="button"
           class="border! rounded-l-(--ui-border-radius-sm)!"
+          size="lg"
           @click="formState.onlyFree = !formState.onlyFree"
         >
           {{ t("page.actualReports.filters.onlyFree.label") }}
@@ -175,9 +180,10 @@ watch(
 
       <B24Button
         type="submit"
-        color="air-primary"
+        color="air-secondary-no-accent"
         :icon="RefreshIcon"
         :aria-label="t('page.actualReports.filters.submit')"
+        size="lg"
       />
     </section>
   </B24Form>

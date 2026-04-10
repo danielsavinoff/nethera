@@ -133,6 +133,7 @@ watch(
           :reset-search="props.resetSearch"
           value-key="id"
           label-key="label"
+          size="lg"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
         />
       </B24FormField>
@@ -148,6 +149,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="yearItems"
+          size="lg"
           :placeholder="t('page.projectReports.filters.year.placeholder')"
         />
       </B24FormField>
@@ -163,6 +165,7 @@ watch(
           open-on-focus
           autocomplete=""
           :items="weekItems"
+          size="lg"
           :placeholder="t('page.projectReports.filters.weekFrom.placeholder')"
         />
       </B24FormField>
@@ -178,15 +181,17 @@ watch(
           open-on-focus
           autocomplete=""
           :items="weekItems"
+          size="lg"
           :placeholder="t('page.projectReports.filters.weekTo.placeholder')"
         />
       </B24FormField>
 
       <B24Button
         type="submit"
-        color="air-primary"
+        color="air-secondary-no-accent"
         :icon="RefreshIcon"
         :aria-label="t('page.projectReports.filters.submit')"
+        size="lg"
       />
     </section>
   </B24Form>

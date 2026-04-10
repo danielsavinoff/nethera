@@ -86,6 +86,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           :reset-search="props.resetSearch"
           value-key="id"
           label-key="label"
+          size="lg"
           :placeholder="t('page.index.filters.user.placeholder')"
         />
       </B24FormField>
@@ -101,6 +102,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           open-on-focus
           autocomplete=""
           :items="yearItems"
+          size="lg"
           :placeholder="t('page.index.filters.year.placeholder')"
         />
       </B24FormField>
@@ -116,15 +118,17 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           open-on-focus
           autocomplete=""
           :items="weekItems"
+          size="lg"
           :placeholder="t('page.index.filters.week.placeholder')"
         />
       </B24FormField>
 
       <B24Button
         type="submit"
-        color="air-primary"
+        color="air-secondary-no-accent"
         :icon="RefreshIcon"
         :aria-label="t('page.index.filters.submit')"
+        size="lg"
       />
     </section>
   </B24Form>
