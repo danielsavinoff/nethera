@@ -98,10 +98,9 @@ export class InstallAppUseCase {
       `Installation for ${tenantCredentials.domain} initiated`,
     );
 
-    const externalUsers =
-      await this.userProvider.fetchAll(
-        tenantCredentials,
-      );
+    const externalUsers = await this.userProvider.fetchAll(
+      tenantCredentials,
+    );
 
     await this.transactionRunner.run(
       async (transactionContext) => {

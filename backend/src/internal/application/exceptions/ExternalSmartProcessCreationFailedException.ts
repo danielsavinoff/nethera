@@ -3,7 +3,6 @@ export class ExternalSmartProcessCreationFailedException extends Error {
     message = 'External smart process creation failed.',
   ) {
     super(message);
-    this.name =
-      ExternalSmartProcessCreationFailedException.name;
+    this.name = ExternalSmartProcessCreationFailedException.name;
   }
 }

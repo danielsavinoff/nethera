@@ -6,6 +6,7 @@ import type { UserRepository } from '../ports/UserRepository.js';
 export interface GetUsersCommand {
   tenantId: TenantRecord['id'];
   active?: boolean;
+  q?: string;
   page?: number;
   limit?: number;
 }
@@ -46,6 +47,7 @@ export class GetUsersUseCase {
         command.tenantId,
         {
           active: command.active,
+          q: command.q,
           page,
           limit,
         },

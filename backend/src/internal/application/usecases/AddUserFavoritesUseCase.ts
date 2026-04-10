@@ -26,14 +26,16 @@ export class AddUserFavoritesUseCase {
   ): Promise<AddUserFavoritesResult> {
     const initiator =
       await this.userRepository.findByIdWithRoles(
-      command.initiatorUserId,
-    );
+        command.initiatorUserId,
+      );
 
     if (!initiator) {
       throw new UserNotFoundException();
     }
 
-    const user = await this.userRepository.findById(command.userId);
+    const user = await this.userRepository.findById(
+      command.userId,
+    );
 
     if (!user || user.tenantId !== initiator.tenantId) {
       throw new UserNotFoundException();
@@ -50,10 +52,7 @@ export class AddUserFavoritesUseCase {
       throw new UserNotFoundException();
     }
 
-    this.userFavoritePolicy.assertCanAdd(
-      initiator,
-      user.id,
-    );
+    this.userFavoritePolicy.assertCanAdd(initiator, user.id);
 
     const favorite = await this.userFavoriteRepository.save(
       UserFavorite.create({

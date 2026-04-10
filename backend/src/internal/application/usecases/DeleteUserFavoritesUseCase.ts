@@ -24,8 +24,8 @@ export class DeleteUserFavoritesUseCase {
   ): Promise<DeleteUserFavoritesResult> {
     const initiator =
       await this.userRepository.findByIdWithRoles(
-      command.initiatorUserId,
-    );
+        command.initiatorUserId,
+      );
 
     if (!initiator) {
       throw new UserNotFoundException();

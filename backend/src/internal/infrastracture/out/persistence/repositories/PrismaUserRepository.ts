@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { UserRepository } from '../../../../application/ports/UserRepository.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import type { Page } from '../../../../application/models/Page.js';
@@ -19,14 +19,39 @@ export class PrismaUserRepository implements UserRepository {
     tenantId: TenantRecord['id'],
     options: {
       active?: boolean;
+      q?: string;
       page: number;
       limit: number;
     },
   ): Promise<Page<User>> {
-    const where = {
+    const where: Prisma.UserWhereInput = {
       tenant_id: tenantId,
       ...(typeof options.active === 'boolean'
         ? { active: options.active }
+        : {}),
+      ...(options.q
+        ? {
+            OR: [
+              {
+                first_name: {
+                  contains: options.q,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                second_name: {
+                  contains: options.q,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                last_name: {
+                  contains: options.q,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          }
         : {}),
     };
 

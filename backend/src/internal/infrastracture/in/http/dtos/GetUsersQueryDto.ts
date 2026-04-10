@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsInt,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from 'class-validator';
@@ -34,6 +35,24 @@ export class GetUsersQueryDto {
     return rawValue;
   })
   active?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }): unknown => {
+    if (typeof value === 'undefined') {
+      return undefined;
+    }
+
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    const trimmedValue = value.trim();
+
+    return trimmedValue === '' ? undefined : trimmedValue;
+  })
+  q?: string;
 
   @ApiPropertyOptional({ type: Number, minimum: 1 })
   @IsOptional()

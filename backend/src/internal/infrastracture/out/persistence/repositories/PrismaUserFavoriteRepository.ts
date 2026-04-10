@@ -50,9 +50,7 @@ export class PrismaUserFavoriteRepository
     });
   }
 
-  async save(
-    userFavorite: UserFavorite,
-  ): Promise<UserFavorite> {
+  async save(userFavorite: UserFavorite): Promise<UserFavorite> {
     const record = userFavorite.toRecord();
     const row = await this.prisma.userFavorite.upsert({
       where: {

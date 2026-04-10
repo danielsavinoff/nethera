@@ -6,8 +6,7 @@ import type { TenantCredentials } from '../../../../domain/tenant/TenantCredenti
 import { BitrixClient } from '../clients/BitrixClient.js';
 
 @Injectable()
-export class BitrixUserProvider implements UserProvider
-{
+export class BitrixUserProvider implements UserProvider {
   constructor(private readonly bitrixClient: BitrixClient) {}
 
   async isAdmin(
@@ -31,11 +30,10 @@ export class BitrixUserProvider implements UserProvider
     externalIds: number[],
     credentials: TenantCredentials,
   ): Promise<ExternalUser[]> {
-    const bitrixUsers =
-      await this.bitrixClient.getAllUsersByIds(
-        externalIds,
-        credentials,
-      );
+    const bitrixUsers = await this.bitrixClient.getAllUsersByIds(
+      externalIds,
+      credentials,
+    );
 
     return bitrixUsers.map((bitrixUser) =>
       this.mapExternalUser(bitrixUser),
@@ -67,9 +65,7 @@ export class BitrixUserProvider implements UserProvider
     return this.mapExternalUser(bitrixUser);
   }
 
-  private mapExternalUser(
-    bitrixUser: UserBrief,
-  ): ExternalUser {
+  private mapExternalUser(bitrixUser: UserBrief): ExternalUser {
     return {
       id: Number(bitrixUser.ID),
       firstName: bitrixUser.NAME ?? undefined,

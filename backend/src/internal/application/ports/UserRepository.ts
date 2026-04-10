@@ -24,6 +24,7 @@ export interface UserRepository {
     tenantId: TenantRecord['id'],
     options: {
       active?: boolean;
+      q?: string;
       page: number;
       limit: number;
     },

@@ -79,6 +79,11 @@ export class UserController {
     type: Number,
   })
   @ApiQuery({
+    name: 'q',
+    required: false,
+    type: String,
+  })
+  @ApiQuery({
     name: 'limit',
     required: false,
     type: Number,
@@ -91,6 +96,7 @@ export class UserController {
     const result = await this.getUsersUseCase.execute({
       tenantId: claims.tid,
       active: query.active,
+      q: query.q,
       page: query.page,
       limit: query.limit,
     });
@@ -123,7 +129,9 @@ export class UserController {
         throw new NotFoundException('User does not exist.');
       }
 
-      if (error instanceof UserFavoriteActionForbiddenException) {
+      if (
+        error instanceof UserFavoriteActionForbiddenException
+      ) {
         throw new ForbiddenException(error.message);
       }
 
@@ -134,7 +142,8 @@ export class UserController {
   @ApiOkResponse({ type: AddUserFavoritesResponseDto })
   @Post('me/favorites')
   async handleAddFavorites(
-    @Body() addUserFavoritesRequestDto: AddUserFavoritesRequestDto,
+    @Body()
+    addUserFavoritesRequestDto: AddUserFavoritesRequestDto,
     @Claims() claims: AuthClaim,
   ) {
     try {
@@ -151,7 +160,9 @@ export class UserController {
         throw new NotFoundException('User does not exist.');
       }
 
-      if (error instanceof UserFavoriteActionForbiddenException) {
+      if (
+        error instanceof UserFavoriteActionForbiddenException
+      ) {
         throw new ForbiddenException(error.message);
       }
 
@@ -184,7 +195,9 @@ export class UserController {
         );
       }
 
-      if (error instanceof UserFavoriteActionForbiddenException) {
+      if (
+        error instanceof UserFavoriteActionForbiddenException
+      ) {
         throw new ForbiddenException(error.message);
       }
 
