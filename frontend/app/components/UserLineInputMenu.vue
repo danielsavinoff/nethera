@@ -43,6 +43,7 @@ import { storeToRefs } from "pinia";
 import {
   createReusableTemplate,
   reactivePick,
+  useDebounceFn,
   useInfiniteScroll,
 } from "@vueuse/core";
 import { useAppConfig } from "#imports";
@@ -135,6 +136,11 @@ const props = defineProps({
   loading: { type: Boolean, required: false },
   hasMore: { type: Boolean, required: false },
   trailing: { type: Boolean, required: false },
+  searchState: { type: Object, required: false },
+  browseState: { type: Object, required: false },
+  loadNextSearch: { type: Function, required: false },
+  loadDepartmentUsers: { type: Function, required: false },
+  resetSearch: { type: Function, required: false },
 });
 
 const emits = defineEmits([
@@ -163,8 +169,7 @@ const {
   favoriteItems: storedFavoriteItems,
   loaded: favoriteUsersLoaded,
   loading: favoriteUsersLoading,
-} =
-  storeToRefs(favoriteUsersStore);
+} = storeToRefs(favoriteUsersStore);
 
 const rootProps = useForwardPropsEmits(
   reactivePick(
@@ -269,6 +274,9 @@ const menuTabs = [
   },
 ];
 const activeTab = ref("people");
+const hasPickerState = computed(() =>
+  Boolean(props.searchState && props.browseState),
+);
 
 const b24ui = computed(() =>
   tv({
@@ -298,6 +306,20 @@ const groups = computed(() =>
     : [],
 );
 const normalizedGroups = computed(() => groups.value);
+const browseGroups = computed(() => {
+  if (!hasPickerState.value) {
+    return normalizedGroups.value;
+  }
+
+  return props.browseState?.users?.length ? [props.browseState.users] : [];
+});
+const searchGroups = computed(() => {
+  if (!hasPickerState.value) {
+    return [];
+  }
+
+  return props.searchState?.users?.length ? [props.searchState.users] : [];
+});
 const flattenedItems = computed(() =>
   normalizedGroups.value.flatMap((group) => group),
 );
@@ -344,10 +366,7 @@ const favoriteMenuItems = computed(() => {
       continue;
     }
 
-    itemsById.set(
-      favoriteItem.id,
-      createFavoriteItem(favoriteItem),
-    );
+    itemsById.set(favoriteItem.id, createFavoriteItem(favoriteItem));
   }
 
   return Array.from(itemsById.values());
@@ -393,7 +412,7 @@ function displayValue(value) {
 }
 
 const filteredGroups = computed(() => {
-  if (props.ignoreFilter || !searchTerm.value) {
+  if (hasPickerState.value || props.ignoreFilter || !searchTerm.value) {
     return normalizedGroups.value;
   }
 
@@ -439,7 +458,7 @@ const filteredGroups = computed(() => {
 });
 
 const filteredFavoriteItems = computed(() => {
-  if (!searchTerm.value) {
+  if (hasPickerState.value || !searchTerm.value) {
     return favoriteMenuItems.value;
   }
 
@@ -467,6 +486,16 @@ const visibleGroups = computed(() => {
       : [];
   }
 
+  if (hasPickerState.value) {
+    if (activeTab.value === "people") {
+      return browseGroups.value;
+    }
+
+    if (activeTab.value === "search") {
+      return searchGroups.value;
+    }
+  }
+
   if (activeTab.value === "people") {
     return normalizedGroups.value;
   }
@@ -477,7 +506,28 @@ const visibleGroups = computed(() => {
 const visibleItems = computed(() =>
   visibleGroups.value.flatMap((group) => group),
 );
-const isListLoading = computed(() => Boolean(props.loading));
+const isListLoading = computed(() => {
+  if (activeTab.value === "search" && props.searchState) {
+    return Boolean(props.searchState.loading);
+  }
+
+  if (activeTab.value === "people" && props.browseState) {
+    return Boolean(props.browseState.loading);
+  }
+
+  return Boolean(props.loading);
+});
+const hasMoreItems = computed(() => {
+  if (activeTab.value === "search" && props.searchState) {
+    return Boolean(props.searchState.hasMore);
+  }
+
+  if (activeTab.value === "people" && props.browseState) {
+    return Boolean(props.browseState.hasMore);
+  }
+
+  return Boolean(props.hasMore);
+});
 
 const createItem = computed(() => {
   if (!props.createItem || !searchTerm.value) {
@@ -510,6 +560,13 @@ const viewportRef = useTemplateRef("viewportRef");
 const isMenuOpen = ref(Boolean(props.open ?? props.defaultOpen));
 const isLoadMorePending = ref(false);
 const pendingViewportScrollTop = ref(null);
+const triggerSearchLoad = useDebounceFn(() => {
+  if (!props.loadNextSearch) {
+    return;
+  }
+
+  void props.loadNextSearch(searchTerm.value);
+}, 300);
 
 function autoFocus() {
   if (props.autofocus) {
@@ -521,6 +578,14 @@ onMounted(() => {
   nextTick(() => {
     searchTerm.value = "";
   });
+
+  if (
+    props.loadDepartmentUsers &&
+    !props.browseState?.loaded &&
+    !props.browseState?.loading
+  ) {
+    void props.loadDepartmentUsers();
+  }
 
   if (!favoriteUsersLoaded.value && !favoriteUsersLoading.value) {
     void favoriteUsersStore.fetchFavorites();
@@ -632,7 +697,7 @@ function onLoadMore() {
   if (
     !isMenuOpen.value ||
     activeTab.value === "favorites" ||
-    !props.hasMore ||
+    !hasMoreItems.value ||
     isListLoading.value ||
     isLoadMorePending.value
   ) {
@@ -641,7 +706,40 @@ function onLoadMore() {
 
   pendingViewportScrollTop.value = viewportRef.value?.scrollTop ?? 0;
   isLoadMorePending.value = true;
+
+  if (activeTab.value === "search" && props.loadNextSearch) {
+    void props.loadNextSearch(searchTerm.value);
+    return;
+  }
+
+  if (activeTab.value === "people" && props.loadDepartmentUsers) {
+    void props.loadDepartmentUsers();
+    return;
+  }
+
   emits("load-more");
+}
+
+function onSelectTab(tabId) {
+  activeTab.value = tabId;
+
+  if (
+    tabId === "people" &&
+    props.loadDepartmentUsers &&
+    !props.browseState?.loaded &&
+    !props.browseState?.loading
+  ) {
+    void props.loadDepartmentUsers();
+  }
+
+  if (
+    tabId === "search" &&
+    searchTerm.value &&
+    props.loadNextSearch &&
+    !props.searchState?.loading
+  ) {
+    triggerSearchLoad();
+  }
 }
 
 watch(
@@ -658,6 +756,18 @@ watch(
 watch(searchTerm, (value) => {
   if (value) {
     activeTab.value = "search";
+    triggerSearchLoad();
+    return;
+  }
+
+  triggerSearchLoad.cancel?.();
+
+  if (props.resetSearch) {
+    props.resetSearch();
+  }
+
+  if (activeTab.value === "search") {
+    activeTab.value = "people";
   }
 });
 
@@ -677,7 +787,7 @@ useInfiniteScroll(viewportRef, onLoadMore, {
   canLoadMore: () =>
     isMenuOpen.value &&
     activeTab.value !== "favorites" &&
-    Boolean(props.hasMore) &&
+    hasMoreItems.value &&
     !isListLoading.value &&
     !disabled.value,
 });
@@ -1122,7 +1232,7 @@ defineExpose({
                 ? 'bg-(--ui-color-accent-main-primary) text-white'
                 : 'bg-(--color-secondary-background) text-(--color-secondary-text) hover:bg-(--color-base-200)'
             "
-            @click="activeTab = tab.id"
+            @click="onSelectTab(tab.id)"
           >
             <Component :is="tab.icon" class="size-6" />
           </button>

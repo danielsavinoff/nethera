@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
+import type {
+  UserPickerItem,
+  UserPickerLoadState,
+} from "~~/app/composables/useUserPickerPageState";
 
-type UserItem = {
-  id: string;
-  label: string;
-};
+const query = defineModel<string>("query", {
+  default: "",
+});
 
-defineProps<{
-  users: UserItem[];
-  hasMoreUsers: boolean;
-  isLoadingMoreUsers: boolean;
-}>();
-const emit = defineEmits<{
-  loadMoreUsers: [];
+const props = defineProps<{
+  users: UserPickerItem[];
+  searchState: UserPickerLoadState;
+  browseState: UserPickerLoadState;
+  loadNextSearch: (query?: string) => Promise<void>;
+  loadDepartmentUsers: () => Promise<void>;
+  resetSearch: () => void;
 }>();
 
 const { t } = useI18n();
@@ -71,16 +74,19 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
       >
         <UserLineInputMenu
           v-model="formState.user"
+          v-model:search-term="query"
           multiple
           open-on-focus
           autocomplete=""
-          :items="users"
-          :has-more="hasMoreUsers"
-          :loading="isLoadingMoreUsers"
+          :items="props.users"
+          :search-state="props.searchState"
+          :browse-state="props.browseState"
+          :load-next-search="props.loadNextSearch"
+          :load-department-users="props.loadDepartmentUsers"
+          :reset-search="props.resetSearch"
           value-key="id"
           label-key="label"
           :placeholder="t('page.index.filters.user.placeholder')"
-          @load-more="emit('loadMoreUsers')"
         />
       </B24FormField>
 

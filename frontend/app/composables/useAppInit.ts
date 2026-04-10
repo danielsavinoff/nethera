@@ -41,7 +41,7 @@ export const useAppInit = (loggerTitle?: string) => {
   // Stores
   const appSettings = useAppSettingsStore();
   const userSettings = useUserSettingsStore();
-  const user = useUserStore();
+  const user = useCurrentUserState();
 
   /**
    * Initialize application data

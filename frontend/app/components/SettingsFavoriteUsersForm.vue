@@ -1,17 +1,27 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
+import type {
+  UserPickerItem,
+  UserPickerLoadState,
+} from "~~/app/composables/useUserPickerPageState";
 
-type UserLineItem = {
-  id: string;
-  label: string;
-};
-
-const userStore = useUserStore();
 const favoriteUsersStore = useFavoriteUsersStore();
-const { users, hasMoreUsers, usersLoadingMore } = storeToRefs(userStore);
 const { favoriteItems, favoriteUserIds } = storeToRefs(favoriteUsersStore);
 const { isWaiting, wait } = useWait();
 const { t } = useI18n();
+
+const query = defineModel<string>("query", {
+  default: "",
+});
+
+const props = defineProps<{
+  users: UserPickerItem[];
+  searchState: UserPickerLoadState;
+  browseState: UserPickerLoadState;
+  loadNextSearch: (query?: string) => Promise<void>;
+  loadDepartmentUsers: () => Promise<void>;
+  resetSearch: () => void;
+}>();
 
 const isSubmitting = isWaiting("settings.favorite-users.submit");
 
@@ -26,31 +36,20 @@ const syncFormState = () => {
 };
 
 await Promise.all([
-  userStore.fetchUsers(),
   favoriteUsersStore.fetchFavorites(),
 ]);
 syncFormState();
 
-const userItems = computed<UserLineItem[]>(() => {
-  const itemsById = new Map<string, UserLineItem>();
-
-  for (const user of users.value) {
-    itemsById.set(user.id, {
-      id: user.id,
-      label: user.displayName,
-    });
-  }
-
-  for (const favoriteItem of favoriteItems.value) {
-    if (itemsById.has(favoriteItem.id)) {
-      continue;
-    }
-
-    itemsById.set(favoriteItem.id, favoriteItem);
-  }
-
-  return Array.from(itemsById.values());
-});
+const userItems = computed<UserPickerItem[]>(() =>
+  Array.from(
+    new Map(
+      [...props.users, ...favoriteItems.value].map((item) => [
+        item.id,
+        item,
+      ]),
+    ).values(),
+  ),
+);
 
 const hasChanges = computed(() => {
   const selectedFavoriteUserIds = [
@@ -92,16 +91,19 @@ const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
       >
         <UserLineInputMenu
           v-model="formState.favoriteUsers"
+          v-model:search-term="query"
           multiple
           open-on-focus
           autocomplete=""
           :items="userItems"
-          :has-more="hasMoreUsers"
-          :loading="usersLoadingMore"
+          :search-state="props.searchState"
+          :browse-state="props.browseState"
+          :load-next-search="props.loadNextSearch"
+          :load-department-users="props.loadDepartmentUsers"
+          :reset-search="props.resetSearch"
           value-key="id"
           label-key="label"
           :placeholder="t('page.settings.favoriteUsers.placeholder')"
-          @load-more="userStore.loadMoreUsers()"
         />
       </B24FormField>
 

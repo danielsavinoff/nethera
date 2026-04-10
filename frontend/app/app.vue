@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import * as locales from "@bitrix24/b24ui-nuxt/locale";
 
-const userStore = useUserStore();
 const departmentStore = useDepartmentStore();
-const { user } = storeToRefs(userStore);
+const { user, fetchCurrent } = useCurrentUserState();
 
 const route = useRoute();
 
@@ -12,26 +11,31 @@ watchEffect(async () => {
     return;
   }
 
-  await userStore.fetchCurrent();
+  await fetchCurrent();
   await departmentStore.fetchAll();
 });
 
 const { locale, defaultLocale, setLocale, availableLocales } = useI18n();
 
-const userLanguage = computed(() => user.value?.language);
+const userLanguage = computed<string | undefined>(() => user.value?.language);
 
-const language = computed(() =>
-  availableLocales.includes(userLanguage.value as any)
-    ? userLanguage.value
-    : (locales[locale.value]?.code ?? defaultLocale),
-);
+const language = computed(() => {
+  if (
+    userLanguage.value &&
+    availableLocales.includes(userLanguage.value as any)
+  ) {
+    return userLanguage.value;
+  }
+
+  return locales[locale.value]?.code ?? String(defaultLocale);
+});
 const direction = computed(() => locales[locale.value]?.dir || "ltr");
 
 watch(
   language,
   (newLang) => {
     if (!newLang) return;
-    setLocale(newLang as any);
+    void setLocale(newLang as any);
   },
   { immediate: true },
 );
