@@ -3,6 +3,7 @@ export interface ExternalUser {
   firstName?: string;
   secondName?: string;
   lastName?: string;
+  isAdmin: boolean;
   isActive?: boolean;
   departmentIds: string[];
 }

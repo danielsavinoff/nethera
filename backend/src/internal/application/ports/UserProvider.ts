@@ -1,22 +1,23 @@
 import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
 import type { ExternalUser } from '../models/ExternalUser.js';
 
+export interface FetchExternalUsersQuery {
+  externalIds?: number[];
+  departmentExternalId?: string;
+}
+
+export interface FetchExternalUserQuery {
+  externalId: number;
+}
+
 export interface UserProvider {
-  isAdmin(credentials: TenantCredentials): Promise<boolean>;
   fetchAll(
     credentials: TenantCredentials,
+    query: FetchExternalUsersQuery,
   ): Promise<ExternalUser[]>;
-  fetchAllByDepartmentExternalId(
-    departmentExternalId: string,
+  fetchOneOrThrow(
     credentials: TenantCredentials,
-  ): Promise<ExternalUser[]>;
-  fetchAllByExternalIds(
-    externalIds: number[],
-    credentials: TenantCredentials,
-  ): Promise<ExternalUser[]>;
-  fetchByExternalId(
-    externalId: number,
-    credentials: TenantCredentials,
-  ): Promise<ExternalUser | null>;
+    query: FetchExternalUserQuery,
+  ): Promise<ExternalUser>;
   fetchMe(credentials: TenantCredentials): Promise<ExternalUser>;
 }

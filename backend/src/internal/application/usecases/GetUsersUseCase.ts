@@ -53,11 +53,14 @@ export class GetUsersUseCase {
         },
       );
 
-    const externalUsers =
-      await this.userProvider.fetchAllByExternalIds(
-        usersPage.items.map((user) => user.externalId),
-        tenant.credentials,
-      );
+    const externalUsers = await this.userProvider.fetchAll(
+      tenant.credentials,
+      {
+        externalIds: usersPage.items.map(
+          (user) => user.externalId,
+        ),
+      },
+    );
 
     const externalUsersById = new Map(
       externalUsers.map((externalUser) => [

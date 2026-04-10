@@ -1,6 +1,5 @@
 import { User } from '../../domain/user/User.js';
 import { DefaultRolesMustExistException } from '../exceptions/DefaultRolesMustExistException.js';
-import { NewUserNotFoundInExternalSystemException } from '../exceptions/NewUserNotFoundInExternalSystemException.js';
 import { UserProvider } from '../ports/UserProvider.js';
 import { UserRepository } from '../ports/UserRepository.js';
 import {
@@ -26,15 +25,12 @@ export class ProcessExternalUserAddUseCase
   ): Promise<EventHandlerResult> {
     const entityId = command.payload.id;
 
-    const externalUser =
-      await this.userProvider.fetchByExternalId(
-        entityId,
-        command.tenant.credentials,
-      );
-
-    if (!externalUser) {
-      throw new NewUserNotFoundInExternalSystemException();
-    }
+    const externalUser = await this.userProvider.fetchOneOrThrow(
+      command.tenant.credentials,
+      {
+        externalId: entityId,
+      },
+    );
 
     const userRole = await this.roleRepository.loadByName(
       UserRole.User,

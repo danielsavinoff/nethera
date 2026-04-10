@@ -56,11 +56,11 @@ export class InstallAppUseCase {
       clientEndpoint: command.clientEndpoint,
     });
 
-    const isAdmin = await this.userProvider.isAdmin(
+    const initiator = await this.userProvider.fetchMe(
       tenantCredentials,
     );
 
-    if (!isAdmin) {
+    if (!initiator.isAdmin) {
       throw new UserNotBitrixAdminException();
     }
 
@@ -76,7 +76,7 @@ export class InstallAppUseCase {
         refreshToken: command.refreshToken,
         accessTokenTtlSeconds: command.accessTokenTtlSeconds,
         clientEndpoint: command.clientEndpoint,
-        isAdmin: isAdmin,
+        isAdmin: initiator.isAdmin,
       });
 
       this.logger.log(
@@ -90,16 +90,13 @@ export class InstallAppUseCase {
       );
     }
 
-    const initiator = await this.userProvider.fetchMe(
-      tenantCredentials,
-    );
-
     this.logger.log(
       `Installation for ${tenantCredentials.domain} initiated`,
     );
 
     const externalUsers = await this.userProvider.fetchAll(
       tenantCredentials,
+      {},
     );
 
     await this.transactionRunner.run(

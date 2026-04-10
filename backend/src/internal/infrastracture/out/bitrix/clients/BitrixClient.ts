@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { SupportedBitrixEvents } from '../enums/SupportedBitrixEventsToModels.js';
+import type { FetchExternalUsersQuery } from '../../../../application/ports/UserProvider.js';
 
 interface BitrixSmartProcess {
   id?: number | string;
@@ -46,43 +47,38 @@ export class BitrixClient {
     return client;
   }
 
-  async getAllBitrixUsers(context: TenantCredentials) {
-    const client = await this.fromAuthContext(context);
-    const result = (await client.callListMethod(
-      'user.get',
-    )) as Result<UserBrief[]>;
-
-    return result.getData() ?? [];
-  }
-
-  async getAllUsersByIds(
-    externalIds: number[],
+  async getBitrixUsers(
     context: TenantCredentials,
+    query: FetchExternalUsersQuery,
   ): Promise<UserBrief[]> {
-    if (externalIds.length === 0) {
+    if (
+      Array.isArray(query.externalIds) &&
+      query.externalIds.length === 0
+    ) {
       return [];
     }
 
     const client = await this.fromAuthContext(context);
+    const filter: Record<string, unknown> = {};
 
-    const result = (await client.callListMethod('user.get', {
-      filter: {
-        ID: externalIds,
-      },
-    })) as Result<UserBrief[]>;
+    if (query.externalIds) {
+      filter.ID = query.externalIds;
+    }
 
-    return result.getData() ?? [];
-  }
+    const params: Record<string, unknown> = {};
 
-  async getAllUsersByDepartmentExternalId(
-    departmentExternalId: string,
-    context: TenantCredentials,
-  ): Promise<UserBrief[]> {
-    const client = await this.fromAuthContext(context);
+    if (Object.keys(filter).length > 0) {
+      params.filter = filter;
+    }
 
-    const result = (await client.callListMethod('user.get', {
-      UF_DEPARTMENT: Number(departmentExternalId),
-    })) as Result<UserBrief[]>;
+    if (query.departmentExternalId) {
+      params.UF_DEPARTMENT = Number(query.departmentExternalId);
+    }
+
+    const result = (await client.callListMethod(
+      'user.get',
+      params,
+    )) as Result<UserBrief[]>;
 
     return result.getData() ?? [];
   }

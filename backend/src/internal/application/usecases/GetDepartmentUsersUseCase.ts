@@ -34,11 +34,12 @@ export class GetDepartmentUsersUseCase {
       command.tenantId,
     );
 
-    const externalUsers =
-      await this.userProvider.fetchAllByDepartmentExternalId(
-        command.departmentExternalId,
-        tenant.credentials,
-      );
+    const externalUsers = await this.userProvider.fetchAll(
+      tenant.credentials,
+      {
+        departmentExternalId: command.departmentExternalId,
+      },
+    );
 
     if (externalUsers.length === 0) {
       return {

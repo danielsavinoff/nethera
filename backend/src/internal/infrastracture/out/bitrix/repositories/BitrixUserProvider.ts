@@ -1,7 +1,11 @@
-import { UserBrief } from '@bitrix24/b24jssdk';
 import { Injectable } from '@nestjs/common';
+import { ExternalUserNotFoundException } from '../../../../application/exceptions/ExternalUserNotFoundException.js';
 import type { ExternalUser } from '../../../../application/models/ExternalUser.js';
-import type { UserProvider } from '../../../../application/ports/UserProvider.js';
+import type {
+  FetchExternalUserQuery,
+  FetchExternalUsersQuery,
+  UserProvider,
+} from '../../../../application/ports/UserProvider.js';
 import type { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { BitrixClient } from '../clients/BitrixClient.js';
 
@@ -9,85 +13,65 @@ import { BitrixClient } from '../clients/BitrixClient.js';
 export class BitrixUserProvider implements UserProvider {
   constructor(private readonly bitrixClient: BitrixClient) {}
 
-  async isAdmin(
-    credentials: TenantCredentials,
-  ): Promise<boolean> {
-    return await this.bitrixClient.isAdmin(credentials);
-  }
-
   async fetchAll(
     credentials: TenantCredentials,
+    query: FetchExternalUsersQuery,
   ): Promise<ExternalUser[]> {
-    const bitrixUsers =
-      await this.bitrixClient.getAllBitrixUsers(credentials);
-
-    return bitrixUsers.map((bitrixUser) =>
-      this.mapExternalUser(bitrixUser),
-    );
-  }
-
-  async fetchAllByDepartmentExternalId(
-    departmentExternalId: string,
-    credentials: TenantCredentials,
-  ): Promise<ExternalUser[]> {
-    const bitrixUsers =
-      await this.bitrixClient.getAllUsersByDepartmentExternalId(
-        departmentExternalId,
-        credentials,
-      );
-
-    return bitrixUsers.map((bitrixUser) =>
-      this.mapExternalUser(bitrixUser),
-    );
-  }
-
-  async fetchAllByExternalIds(
-    externalIds: number[],
-    credentials: TenantCredentials,
-  ): Promise<ExternalUser[]> {
-    const bitrixUsers = await this.bitrixClient.getAllUsersByIds(
-      externalIds,
+    const bitrixUsers = await this.bitrixClient.getBitrixUsers(
       credentials,
+      query,
     );
 
-    return bitrixUsers.map((bitrixUser) =>
-      this.mapExternalUser(bitrixUser),
-    );
+    return bitrixUsers.map((bitrixUser) => ({
+      id: Number(bitrixUser.ID),
+      firstName: bitrixUser.NAME ?? undefined,
+      secondName: bitrixUser.SECOND_NAME ?? undefined,
+      lastName: bitrixUser.LAST_NAME ?? undefined,
+      isAdmin: false,
+      isActive: bitrixUser.ACTIVE,
+      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
+    }));
   }
 
-  async fetchByExternalId(
-    externalId: number,
+  async fetchOneOrThrow(
     credentials: TenantCredentials,
-  ): Promise<ExternalUser | null> {
+    query: FetchExternalUserQuery,
+  ): Promise<ExternalUser> {
     const bitrixUser = await this.bitrixClient.getBitrixUser(
-      externalId,
+      query.externalId,
       credentials,
     );
 
     if (!bitrixUser) {
-      return null;
+      throw new ExternalUserNotFoundException();
     }
 
-    return this.mapExternalUser(bitrixUser);
-  }
-
-  async fetchMe(
-    credentials: TenantCredentials,
-  ): Promise<ExternalUser> {
-    const bitrixUser =
-      await this.bitrixClient.getCurrentUser(credentials);
-
-    return this.mapExternalUser(bitrixUser);
-  }
-
-  private mapExternalUser(bitrixUser: UserBrief): ExternalUser {
     return {
       id: Number(bitrixUser.ID),
       firstName: bitrixUser.NAME ?? undefined,
       secondName: bitrixUser.SECOND_NAME ?? undefined,
       lastName: bitrixUser.LAST_NAME ?? undefined,
+      isAdmin: false,
       isActive: bitrixUser.ACTIVE,
       departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
-    } satisfies ExternalUser;
+    };
+  }
+
+  async fetchMe(
+    credentials: TenantCredentials,
+  ): Promise<ExternalUser> {
+    const isAdmin = await this.bitrixClient.isAdmin(credentials);
+    const bitrixUser =
+      await this.bitrixClient.getCurrentUser(credentials);
+
+    return {
+      id: Number(bitrixUser.ID),
+      firstName: bitrixUser.NAME ?? undefined,
+      secondName: bitrixUser.SECOND_NAME ?? undefined,
+      lastName: bitrixUser.LAST_NAME ?? undefined,
+      isAdmin,
+      isActive: bitrixUser.ACTIVE,
+      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
+    };
   }
 }

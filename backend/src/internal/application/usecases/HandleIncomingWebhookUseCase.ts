@@ -43,11 +43,11 @@ export class HandleIncomingWebhookUseCase {
   async execute(
     command: HandleIncomingWebhookCommand,
   ): Promise<HandleIncomingWebhookResult> {
-    const isAdmin = await this.userProvider.isAdmin(
+    const user = await this.userProvider.fetchMe(
       command.tenantCredentials,
     );
 
-    if (!isAdmin) {
+    if (!user.isAdmin) {
       throw new UserNotBitrixAdminException();
     }
 
