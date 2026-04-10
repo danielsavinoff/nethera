@@ -41,7 +41,6 @@ export const useAppInit = (loggerTitle?: string) => {
   // Stores
   const appSettings = useAppSettingsStore();
   const userSettings = useUserSettingsStore();
-  const user = useCurrentUserState();
 
   /**
    * Initialize application data
@@ -60,7 +59,6 @@ export const useAppInit = (loggerTitle?: string) => {
       LoadDataType.AppOptions,
       LoadDataType.UserOptions,
       LoadDataType.Currency,
-      LoadDataType.Profile,
     ]);
     isInitB24Helper.value = true;
 
@@ -68,7 +66,6 @@ export const useAppInit = (loggerTitle?: string) => {
       appInfo: getB24Helper().appInfo,
       appSettings: getB24Helper().appOptions,
       userSettings: getB24Helper().userOptions,
-      profileData: getB24Helper().profileInfo,
     };
     $logger.log("Init data >>", data);
 
@@ -86,14 +83,6 @@ export const useAppInit = (loggerTitle?: string) => {
     //
     // const data = response.getData()
     // $logger.log('Init data >>', data)
-
-    // Update stores with received data
-    user.initFromBatch({
-      id: data.profileData?.data.id ?? undefined,
-      name: data.profileData?.data.name ?? undefined,
-      lastName: data.profileData?.data.lastName ?? undefined,
-      isAdmin: data.profileData?.data.isAdmin,
-    });
 
     appSettings.setB24($b24);
     appSettings.initFromBatch({

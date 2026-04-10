@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import * as locales from "@bitrix24/b24ui-nuxt/locale";
 
+const currentUserStore = useCurrentUserStore();
 const departmentStore = useDepartmentStore();
-const { user, fetchCurrent } = useCurrentUserState();
+const { user } = storeToRefs(currentUserStore);
 
 const route = useRoute();
 
@@ -11,7 +12,7 @@ watchEffect(async () => {
     return;
   }
 
-  await fetchCurrent();
+  await currentUserStore.fetchCurrent();
   await departmentStore.fetchAll();
 });
 
