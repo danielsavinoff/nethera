@@ -28,7 +28,9 @@ export class ProcessExternalUserAddUseCase
     const externalUser = await this.userProvider.fetchOneOrThrow(
       command.tenant.credentials,
       {
-        externalId: entityId,
+        filters: {
+          externalId: entityId,
+        },
       },
     );
 

@@ -38,7 +38,7 @@ export class BitrixUserProvider implements UserProvider {
     query: FetchExternalUserQuery,
   ): Promise<ExternalUser> {
     const bitrixUser = await this.bitrixClient.getBitrixUser(
-      query.externalId,
+      query.filters.externalId,
       credentials,
     );
 

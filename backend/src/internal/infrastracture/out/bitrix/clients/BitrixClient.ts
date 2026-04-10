@@ -51,9 +51,11 @@ export class BitrixClient {
     context: TenantCredentials,
     query: FetchExternalUsersQuery,
   ): Promise<UserBrief[]> {
+    const { filters } = query;
+
     if (
-      Array.isArray(query.externalIds) &&
-      query.externalIds.length === 0
+      Array.isArray(filters?.externalIds) &&
+      filters.externalIds.length === 0
     ) {
       return [];
     }
@@ -61,8 +63,8 @@ export class BitrixClient {
     const client = await this.fromAuthContext(context);
     const filter: Record<string, unknown> = {};
 
-    if (query.externalIds) {
-      filter.ID = query.externalIds;
+    if (filters?.externalIds) {
+      filter.ID = filters.externalIds;
     }
 
     const params: Record<string, unknown> = {};
@@ -71,8 +73,10 @@ export class BitrixClient {
       params.filter = filter;
     }
 
-    if (query.departmentExternalId) {
-      params.UF_DEPARTMENT = Number(query.departmentExternalId);
+    if (filters?.departmentExternalId) {
+      params.UF_DEPARTMENT = Number(
+        filters.departmentExternalId,
+      );
     }
 
     const result = (await client.callListMethod(

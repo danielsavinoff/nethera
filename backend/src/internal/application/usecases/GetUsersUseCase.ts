@@ -56,9 +56,11 @@ export class GetUsersUseCase {
     const externalUsers = await this.userProvider.fetchAll(
       tenant.credentials,
       {
-        externalIds: usersPage.items.map(
-          (user) => user.externalId,
-        ),
+        filters: {
+          externalIds: usersPage.items.map(
+            (user) => user.externalId,
+          ),
+        },
       },
     );
 

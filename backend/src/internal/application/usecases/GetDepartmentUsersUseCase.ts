@@ -37,7 +37,9 @@ export class GetDepartmentUsersUseCase {
     const externalUsers = await this.userProvider.fetchAll(
       tenant.credentials,
       {
-        departmentExternalId: command.departmentExternalId,
+        filters: {
+          departmentExternalId: command.departmentExternalId,
+        },
       },
     );
 

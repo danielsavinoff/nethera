@@ -2,12 +2,20 @@ import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js
 import type { ExternalUser } from '../models/ExternalUser.js';
 
 export interface FetchExternalUsersQuery {
-  externalIds?: number[];
-  departmentExternalId?: string;
+  filters?: {
+    externalIds?: number[];
+    departmentExternalId?: string;
+  };
+  page?: {
+    limit?: number;
+    skip?: number;
+  };
 }
 
 export interface FetchExternalUserQuery {
-  externalId: number;
+  filters: {
+    externalId: number;
+  };
 }
 
 export interface UserProvider {
