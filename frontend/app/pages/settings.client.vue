@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import type { components } from "~~/shared/types/generated/api";
 
 const userStore = useUserStore();
-const { users } = storeToRefs(userStore);
+const { hasMoreUsers, users, usersLoadingMore } = storeToRefs(userStore);
 const { $api } = useNuxtApp();
 const { isWaiting, wait } = useWait();
 
@@ -147,9 +147,12 @@ useHead({
           open-on-focus
           autocomplete=""
           :items="userItems"
+          :has-more="hasMoreUsers"
+          :loading="usersLoadingMore"
           value-key="id"
           label-key="label"
           :placeholder="t('page.settings.favoriteUsers.placeholder')"
+          @load-more="userStore.loadMoreUsers()"
         />
       </B24FormField>
 

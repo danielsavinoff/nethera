@@ -13,7 +13,17 @@ export const useUserStore = defineStore("user", {
     users: [] as UserListItem[],
     loaded: false,
     usersLoaded: false,
+    usersLoading: false,
+    usersLoadingMore: false,
+    usersPage: 0,
+    usersTotal: 0,
+    usersLimit: 100,
+    usersActiveFilter: true,
   }),
+
+  getters: {
+    hasMoreUsers: (state) => state.users.length < state.usersTotal,
+  },
 
   actions: {
     async fetchCurrent() {
@@ -23,24 +33,75 @@ export const useUserStore = defineStore("user", {
       this.loaded = true;
     },
 
+    resetUsers(active = true) {
+      this.users = [];
+      this.usersLoaded = false;
+      this.usersLoading = false;
+      this.usersLoadingMore = false;
+      this.usersPage = 0;
+      this.usersTotal = 0;
+      this.usersActiveFilter = active;
+    },
+
     async fetchUsers(active = true) {
-      if (this.usersLoaded) {
+      if (this.usersLoaded && this.usersActiveFilter === active) {
+        return;
+      }
+
+      this.resetUsers(active);
+      await this.loadMoreUsers(active);
+    },
+
+    async loadMoreUsers(active = this.usersActiveFilter) {
+      if (this.usersActiveFilter !== active && this.usersPage > 0) {
+        this.resetUsers(active);
+      } else {
+        this.usersActiveFilter = active;
+      }
+
+      if (this.usersLoading || this.usersLoadingMore) {
+        return;
+      }
+
+      if (this.usersPage > 0 && !this.hasMoreUsers) {
         return;
       }
 
       const { $api } = useNuxtApp();
+      const nextPage = this.usersPage + 1;
+      const isInitialPage = nextPage === 1;
 
-      const query: GetUsersQuery = {
-        active,
-        page: 1,
-        limit: 1000,
-      };
-      const response = await $api<GetUsersResponseDto>("/api/users", {
-        query,
-      });
+      if (isInitialPage) {
+        this.usersLoading = true;
+      } else {
+        this.usersLoadingMore = true;
+      }
 
-      this.users = response.users;
-      this.usersLoaded = true;
+      try {
+        const query: GetUsersQuery = {
+          active,
+          page: nextPage,
+          limit: this.usersLimit,
+        };
+        const response = await $api<GetUsersResponseDto>("/api/users", {
+          query,
+        });
+
+        const loadedUserIds = new Set(this.users.map((user) => user.id));
+        const nextUsers = response.users.filter(
+          (user) => !loadedUserIds.has(user.id),
+        );
+
+        this.users = isInitialPage
+          ? response.users
+          : [...this.users, ...nextUsers];
+        this.usersPage = response.page;
+        this.usersTotal = response.total;
+        this.usersLoaded = true;
+      } finally {
+        this.usersLoading = false;
+        this.usersLoadingMore = false;
+      }
     },
   },
 });

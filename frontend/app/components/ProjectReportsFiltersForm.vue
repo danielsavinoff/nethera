@@ -9,10 +9,13 @@ type UserItem = {
 
 defineProps<{
   users: UserItem[];
+  hasMoreUsers: boolean;
+  isLoadingMoreUsers: boolean;
 }>();
 
 const { t } = useI18n();
 const emit = defineEmits<{
+  loadMoreUsers: [];
   updateWeekRange: [value: { from: number; to: number }];
 }>();
 
@@ -56,7 +59,7 @@ const keepLastSelection = (values: string[]) => {
 
 watch(
   () => formState.user,
-  (values) => {
+  (_values) => {
     // formState.user = keepLastSelection(values);
   },
 );
@@ -117,9 +120,12 @@ watch(
           open-on-focus
           autocomplete=""
           :items="users"
+          :has-more="hasMoreUsers"
+          :loading="isLoadingMoreUsers"
           value-key="id"
           label-key="label"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
+          @load-more="emit('loadMoreUsers')"
         />
       </B24FormField>
 

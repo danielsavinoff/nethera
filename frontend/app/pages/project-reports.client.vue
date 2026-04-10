@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const userStore = useUserStore();
 
-const { users } = storeToRefs(userStore);
+const { hasMoreUsers, users, usersLoadingMore } = storeToRefs(userStore);
 const { t } = useI18n();
 
 const selectedWeekRange = ref({
@@ -27,6 +27,9 @@ useHead({
   <section class="flex flex-col gap-6">
     <ProjectReportsFiltersForm
       :users="userItems"
+      :has-more-users="hasMoreUsers"
+      :is-loading-more-users="usersLoadingMore"
+      @load-more-users="userStore.loadMoreUsers()"
       @update-week-range="selectedWeekRange = $event"
     />
     <ProjectReportsTable :selected-week-range="selectedWeekRange" />

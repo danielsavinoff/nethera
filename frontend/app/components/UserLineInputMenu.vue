@@ -12,6 +12,7 @@ import {
   toRaw,
   toRef,
   useTemplateRef,
+  watch,
 } from "vue";
 import {
   ComboboxAnchor,
@@ -38,7 +39,11 @@ import {
 } from "reka-ui";
 import { defu } from "defu";
 import { isEqual } from "ohash/utils";
-import { createReusableTemplate, reactivePick } from "@vueuse/core";
+import {
+  createReusableTemplate,
+  reactivePick,
+  useInfiniteScroll,
+} from "@vueuse/core";
 import { useAppConfig } from "#imports";
 import { useFieldGroup } from "@bitrix24/b24ui-nuxt/composables/useFieldGroup";
 import { useComponentIcons } from "@bitrix24/b24ui-nuxt/composables/useComponentIcons";
@@ -127,6 +132,7 @@ const props = defineProps({
   icon: { type: [Function, Object], required: false },
   avatar: { type: Object, required: false },
   loading: { type: Boolean, required: false },
+  hasMore: { type: Boolean, required: false },
   trailing: { type: Boolean, required: false },
 });
 
@@ -137,6 +143,7 @@ const emits = defineEmits([
   "focus",
   "create",
   "highlight",
+  "load-more",
   "remove-tag",
   "update:modelValue",
 ]);
@@ -342,6 +349,7 @@ const filteredGroups = computed(() => {
 const filteredItems = computed(() =>
   filteredGroups.value.flatMap((group) => group),
 );
+const isListLoading = computed(() => Boolean(props.loading));
 
 const createItem = computed(() => {
   if (!props.createItem || !searchTerm.value) {
@@ -370,6 +378,10 @@ const createItemPosition = computed(() =>
 );
 
 const inputRef = useTemplateRef("inputRef");
+const viewportRef = useTemplateRef("viewportRef");
+const isMenuOpen = ref(Boolean(props.open ?? props.defaultOpen));
+const isLoadMorePending = ref(false);
+const pendingViewportScrollTop = ref(null);
 
 function autoFocus() {
   if (props.autofocus) {
@@ -432,6 +444,8 @@ function onUpdateOpen(value) {
     emitFormFocus();
     clearTimeout(timeoutId);
   }
+
+  isMenuOpen.value = value;
 }
 
 function onRemoveTag(event, modelValue) {
@@ -465,6 +479,68 @@ function onSelect(e, item) {
 function isInputItem(item) {
   return typeof item === "object" && item !== null;
 }
+
+async function restoreViewportScrollPosition() {
+  if (pendingViewportScrollTop.value === null) {
+    return;
+  }
+
+  const scrollTop = pendingViewportScrollTop.value;
+
+  await nextTick();
+
+  if (viewportRef.value) {
+    viewportRef.value.scrollTop = scrollTop;
+  }
+
+  pendingViewportScrollTop.value = null;
+}
+
+function onLoadMore() {
+  if (
+    !isMenuOpen.value ||
+    !props.hasMore ||
+    isListLoading.value ||
+    isLoadMorePending.value
+  ) {
+    return;
+  }
+
+  pendingViewportScrollTop.value = viewportRef.value?.scrollTop ?? 0;
+  isLoadMorePending.value = true;
+  emits("load-more");
+}
+
+watch(
+  () => filteredItems.value.length,
+  async (length, previousLength) => {
+    if (pendingViewportScrollTop.value === null || length <= previousLength) {
+      return;
+    }
+
+    await restoreViewportScrollPosition();
+  },
+);
+
+watch(
+  isListLoading,
+  async (loading) => {
+    if (!loading) {
+      isLoadMorePending.value = false;
+      await restoreViewportScrollPosition();
+    }
+  },
+  { immediate: true },
+);
+
+useInfiniteScroll(viewportRef, onLoadMore, {
+  distance: 64,
+  canLoadMore: () =>
+    isMenuOpen.value &&
+    Boolean(props.hasMore) &&
+    !isListLoading.value &&
+    !disabled.value,
+});
 
 defineExpose({
   inputRef: toRef(() => inputRef.value?.$el),
@@ -915,6 +991,7 @@ defineExpose({
         <slot name="content-top" />
 
         <ComboboxEmpty
+          v-if="!isListLoading"
           data-slot="empty"
           :class="b24ui.empty({ class: props.b24ui?.empty })"
         >
@@ -928,6 +1005,7 @@ defineExpose({
         </ComboboxEmpty>
 
         <div
+          ref="viewportRef"
           role="presentation"
           data-slot="viewport"
           :class="b24ui.viewport({ class: props.b24ui?.viewport })"
@@ -986,6 +1064,15 @@ defineExpose({
             >
               <ReuseCreateItemTemplate />
             </ComboboxGroup>
+            <div
+              v-if="isListLoading"
+              class="flex items-center justify-center py-2"
+            >
+              <Component
+                :is="icons.loading"
+                class="size-8 text-(--ui-color-design-plain-content-icon-secondary)"
+              />
+            </div>
           </template>
         </div>
 

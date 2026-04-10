@@ -2,7 +2,7 @@
 import Market1Icon from "@bitrix24/b24icons-vue/main/Market1Icon";
 
 const userStore = useUserStore();
-const { users } = storeToRefs(userStore);
+const { hasMoreUsers, users, usersLoadingMore } = storeToRefs(userStore);
 
 const { t } = useI18n();
 
@@ -123,7 +123,12 @@ const totals = computed(() =>
   getTotals(projects.flatMap((project) => project.tasks)),
 );
 
-const userItems = computed(() => users.value.map((user) => user.displayName));
+const userItems = computed(() =>
+  users.value.map((user) => ({
+    id: user.id,
+    label: user.displayName,
+  })),
+);
 
 useHead({
   title: `${t("page.index.navigation.inProgress")} | ${t("page.index.header.title")}`,
@@ -132,7 +137,12 @@ useHead({
 
 <template>
   <section class="flex flex-col gap-6">
-    <ResourceFiltersForm :users="userItems" />
+    <ResourceFiltersForm
+      :users="userItems"
+      :has-more-users="hasMoreUsers"
+      :is-loading-more-users="usersLoadingMore"
+      @load-more-users="userStore.loadMoreUsers()"
+    />
 
     <div class="overflow-x-auto">
       <table class="min-w-full border-collapse text-sm">
@@ -164,7 +174,7 @@ useHead({
                   <span>{{ project.name }}</span>
                 </div>
               </td>
-              <td class="px-4 py-3"></td>
+              <td class="px-4 py-3" />
               <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
                 {{ project.totals.reserved }}
               </td>
