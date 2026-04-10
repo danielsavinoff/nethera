@@ -10,8 +10,6 @@ const {
   resetSearch,
 } = useUserPickerPageState();
 
-await loadDepartmentUsers();
-
 useHead({
   title: `${t("page.index.navigation.settings")} | ${t("page.index.header.title")}`,
 });

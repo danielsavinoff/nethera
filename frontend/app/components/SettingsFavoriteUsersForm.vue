@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
 import type {
+  UserPickerBrowseState,
   UserPickerItem,
   UserPickerLoadState,
 } from "~~/app/composables/useUserPickerPageState";
@@ -17,9 +18,9 @@ const query = defineModel<string>("query", {
 const props = defineProps<{
   users: UserPickerItem[];
   searchState: UserPickerLoadState;
-  browseState: UserPickerLoadState;
+  browseState: UserPickerBrowseState;
   loadNextSearch: (query?: string) => Promise<void>;
-  loadDepartmentUsers: () => Promise<void>;
+  loadDepartmentUsers: (departmentExternalId: string) => Promise<void>;
   resetSearch: () => void;
 }>();
 

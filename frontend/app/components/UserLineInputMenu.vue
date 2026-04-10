@@ -165,11 +165,13 @@ const { t } = useLocale();
 const appConfig = useAppConfig();
 const { contains } = useFilter({ sensitivity: "base" });
 const favoriteUsersStore = useFavoriteUsersStore();
+const departmentStore = useDepartmentStore();
 const {
   favoriteItems: storedFavoriteItems,
   loaded: favoriteUsersLoaded,
   loading: favoriteUsersLoading,
 } = storeToRefs(favoriteUsersStore);
+const { departments } = storeToRefs(departmentStore);
 
 const rootProps = useForwardPropsEmits(
   reactivePick(
@@ -274,9 +276,65 @@ const menuTabs = [
   },
 ];
 const activeTab = ref("people");
+const expandedDepartmentIds = ref([]);
 const hasPickerState = computed(() =>
   Boolean(props.searchState && props.browseState),
 );
+const browseTreeItems = computed(() => {
+  if (!hasPickerState.value) {
+    return [];
+  }
+
+  const collectRows = (parentExternalId = null, depth = 0) =>
+    departments.value
+      .filter(
+        (department) =>
+          (department.parentExternalId ?? null) === parentExternalId,
+      )
+      .sort((left, right) => left.name.localeCompare(right.name))
+      .flatMap((department) => {
+        const departmentState =
+          props.browseState?.departmentStates?.[
+            department.externalId
+          ] ?? {
+            users: [],
+            loading: false,
+            loaded: false,
+          };
+        const expanded = expandedDepartmentIds.value.includes(
+          department.externalId,
+        );
+        const rows = [
+          {
+            type: "department",
+            id: department.externalId,
+            label: department.name,
+            depth,
+            expanded,
+            loading: departmentState.loading,
+          },
+        ];
+
+        if (!expanded) {
+          return rows;
+        }
+
+        if (!departmentState.loaded) {
+          return rows;
+        }
+
+        return [
+          ...rows,
+          ...collectRows(department.externalId, depth + 1),
+          ...departmentState.users.map((user) => ({
+            ...user,
+            depth: depth + 1,
+          })),
+        ];
+      });
+
+  return collectRows();
+});
 
 const b24ui = computed(() =>
   tv({
@@ -306,13 +364,6 @@ const groups = computed(() =>
     : [],
 );
 const normalizedGroups = computed(() => groups.value);
-const browseGroups = computed(() => {
-  if (!hasPickerState.value) {
-    return normalizedGroups.value;
-  }
-
-  return props.browseState?.users?.length ? [props.browseState.users] : [];
-});
 const searchGroups = computed(() => {
   if (!hasPickerState.value) {
     return [];
@@ -488,7 +539,7 @@ const visibleGroups = computed(() => {
 
   if (hasPickerState.value) {
     if (activeTab.value === "people") {
-      return browseGroups.value;
+      return browseTreeItems.value.length ? [browseTreeItems.value] : [];
     }
 
     if (activeTab.value === "search") {
@@ -528,6 +579,9 @@ const hasMoreItems = computed(() => {
 
   return Boolean(props.hasMore);
 });
+const isBrowseTreeEmpty = computed(
+  () => hasPickerState.value && departments.value.length === 0,
+);
 
 const createItem = computed(() => {
   if (!props.createItem || !searchTerm.value) {
@@ -578,14 +632,6 @@ onMounted(() => {
   nextTick(() => {
     searchTerm.value = "";
   });
-
-  if (
-    props.loadDepartmentUsers &&
-    !props.browseState?.loaded &&
-    !props.browseState?.loading
-  ) {
-    void props.loadDepartmentUsers();
-  }
 
   if (!favoriteUsersLoaded.value && !favoriteUsersLoading.value) {
     void favoriteUsersStore.fetchFavorites();
@@ -660,7 +706,7 @@ function onCreate(e) {
   emits("create", searchTerm.value);
 }
 
-function onSelect(e, item) {
+async function onSelect(e, item) {
   if (!isInputItem(item)) {
     return;
   }
@@ -670,11 +716,38 @@ function onSelect(e, item) {
     return;
   }
 
+  if (isDepartmentItem(item)) {
+    e.preventDefault();
+    await onToggleDepartment(item.id);
+    return;
+  }
+
   item.onSelect?.(e);
 }
 
 function isInputItem(item) {
   return typeof item === "object" && item !== null;
+}
+
+function isDepartmentItem(item) {
+  return isInputItem(item) && item.type === "department";
+}
+
+function isTreeItem(item) {
+  return (
+    hasPickerState.value &&
+    activeTab.value === "people" &&
+    isInputItem(item) &&
+    typeof item.depth === "number"
+  );
+}
+
+function getItemIndentStyle(item) {
+  if (!isTreeItem(item)) {
+    return undefined;
+  }
+
+  return getTreeIndent(item.depth);
 }
 
 async function restoreViewportScrollPosition() {
@@ -712,11 +785,6 @@ function onLoadMore() {
     return;
   }
 
-  if (activeTab.value === "people" && props.loadDepartmentUsers) {
-    void props.loadDepartmentUsers();
-    return;
-  }
-
   emits("load-more");
 }
 
@@ -728,15 +796,6 @@ function onSelectTab(tabId) {
   triggerSearchLoad.cancel?.();
   searchTerm.value = "";
   activeTab.value = tabId;
-
-  if (
-    tabId === "people" &&
-    props.loadDepartmentUsers &&
-    !props.browseState?.loaded &&
-    !props.browseState?.loading
-  ) {
-    void props.loadDepartmentUsers();
-  }
 
   if (
     tabId === "search" &&
@@ -797,6 +856,53 @@ useInfiniteScroll(viewportRef, onLoadMore, {
     !isListLoading.value &&
     !disabled.value,
 });
+
+function collectDescendantDepartmentIds(departmentId) {
+  const childDepartmentIds = departments.value
+    .filter(
+      (department) => department.parentExternalId === departmentId,
+    )
+    .map((department) => department.externalId);
+
+  return childDepartmentIds.flatMap((childDepartmentId) => [
+    childDepartmentId,
+    ...collectDescendantDepartmentIds(childDepartmentId),
+  ]);
+}
+
+async function onToggleDepartment(departmentId) {
+  const isExpanded = expandedDepartmentIds.value.includes(
+    departmentId,
+  );
+
+  if (isExpanded) {
+    const collapsedDepartmentIds = new Set([
+      departmentId,
+      ...collectDescendantDepartmentIds(departmentId),
+    ]);
+
+    expandedDepartmentIds.value = expandedDepartmentIds.value.filter(
+      (expandedDepartmentId) =>
+        !collapsedDepartmentIds.has(expandedDepartmentId),
+    );
+    return;
+  }
+
+  expandedDepartmentIds.value = [
+    ...expandedDepartmentIds.value,
+    departmentId,
+  ];
+
+  if (props.loadDepartmentUsers) {
+    await props.loadDepartmentUsers(departmentId);
+  }
+}
+
+function getTreeIndent(depth) {
+  return {
+    paddingInlineStart: `${depth * 1.25 + 0.75}rem`,
+  };
+}
 
 defineExpose({
   inputRef: toRef(() => inputRef.value?.$el),
@@ -880,73 +986,97 @@ defineExpose({
       @select="onSelect($event, item)"
     >
       <slot name="item" :item="item" :index="index" :b24ui="b24ui">
-        <slot name="item-leading" :item="item" :index="index" :b24ui="b24ui">
-          <B24Avatar
-            v-if="isInputItem(item) && item.avatar"
-            :size="
-              item.b24ui?.itemLeadingAvatarSize ||
-              props.b24ui?.itemLeadingAvatarSize ||
-              b24ui.itemLeadingAvatarSize()
-            "
-            v-bind="item.avatar"
-            data-slot="itemLeadingAvatar"
-            :class="
-              b24ui.itemLeadingAvatar({
-                class: [
-                  props.b24ui?.itemLeadingAvatar,
-                  item.b24ui?.itemLeadingAvatar,
-                ],
-                colorItem: item?.color,
-              })
-            "
-          />
-        </slot>
-
         <span
-          data-slot="itemWrapper"
-          :class="
-            b24ui.itemWrapper({
-              class: [
-                props.b24ui?.itemWrapper,
-                isInputItem(item) && item.b24ui?.itemWrapper,
-              ],
-            })
-          "
+          class="flex min-w-0 items-center gap-2"
+          :style="getItemIndentStyle(item)"
         >
-          <span
-            data-slot="itemLabel"
-            :class="
-              b24ui.itemLabel({
-                class: [
-                  props.b24ui?.itemLabel,
-                  isInputItem(item) && item.b24ui?.itemLabel,
-                ],
-              })
-            "
-          >
-            <slot name="item-label" :item="item" :index="index">
-              {{ isInputItem(item) ? get(item, props.labelKey) : item }}
-            </slot>
-          </span>
+          <slot name="item-leading" :item="item" :index="index" :b24ui="b24ui">
+            <Component
+              :is="icons.chevronDown"
+              v-if="isDepartmentItem(item)"
+              data-slot="itemLeadingIcon"
+              :style="{
+                color:
+                  'var(--ui-color-design-plain-content-icon-secondary)',
+              }"
+              :class="
+                b24ui.itemLeadingIcon({
+                  class: [
+                    props.b24ui?.itemLeadingIcon,
+                    item.b24ui?.itemLeadingIcon,
+                    'text-(--ui-color-design-plain-content-icon-secondary)',
+                    item.expanded ? 'rotate-0' : '-rotate-90',
+                  ],
+                })
+              "
+            />
+            <B24Avatar
+              v-else-if="isInputItem(item) && item.avatar"
+              :size="
+                item.b24ui?.itemLeadingAvatarSize ||
+                props.b24ui?.itemLeadingAvatarSize ||
+                b24ui.itemLeadingAvatarSize()
+              "
+              v-bind="item.avatar"
+              data-slot="itemLeadingAvatar"
+              :class="
+                b24ui.itemLeadingAvatar({
+                  class: [
+                    props.b24ui?.itemLeadingAvatar,
+                    item.b24ui?.itemLeadingAvatar,
+                  ],
+                  colorItem: item?.color,
+                })
+              "
+            />
+          </slot>
 
           <span
-            v-if="
-              isInputItem(item) &&
-              (get(item, props.descriptionKey) || !!slots['item-description'])
-            "
-            data-slot="itemDescription"
+            data-slot="itemWrapper"
             :class="
-              b24ui.itemDescription({
+              b24ui.itemWrapper({
                 class: [
-                  props.b24ui?.itemDescription,
-                  isInputItem(item) && item.b24ui?.itemDescription,
+                  props.b24ui?.itemWrapper,
+                  isInputItem(item) && item.b24ui?.itemWrapper,
                 ],
               })
             "
           >
-            <slot name="item-description" :item="item" :index="index">
-              {{ get(item, props.descriptionKey) }}
-            </slot>
+            <span
+              data-slot="itemLabel"
+              :class="
+                b24ui.itemLabel({
+                  class: [
+                    props.b24ui?.itemLabel,
+                    isInputItem(item) && item.b24ui?.itemLabel,
+                  ],
+                })
+              "
+            >
+              <slot name="item-label" :item="item" :index="index">
+                {{ isInputItem(item) ? get(item, props.labelKey) : item }}
+              </slot>
+            </span>
+
+            <span
+              v-if="
+                isInputItem(item) &&
+                (get(item, props.descriptionKey) || !!slots['item-description'])
+              "
+              data-slot="itemDescription"
+              :class="
+                b24ui.itemDescription({
+                  class: [
+                    props.b24ui?.itemDescription,
+                    isInputItem(item) && item.b24ui?.itemDescription,
+                  ],
+                })
+              "
+            >
+              <slot name="item-description" :item="item" :index="index">
+                {{ get(item, props.descriptionKey) }}
+              </slot>
+            </span>
           </span>
         </span>
 
@@ -962,7 +1092,10 @@ defineExpose({
             })
           "
         >
-          <ComboboxItemIndicator as-child>
+          <ComboboxItemIndicator
+            v-if="!isDepartmentItem(item)"
+            as-child
+          >
             <Component
               :is="selectedIcon || icons.check"
               data-slot="itemTrailingIcon"
@@ -980,8 +1113,22 @@ defineExpose({
 
           <slot name="item-trailing" :item="item" :index="index" :b24ui="b24ui">
             <Component
+              :is="icons.loading"
+              v-if="isDepartmentItem(item) && item.loading"
+              data-slot="itemTrailingIcon"
+              :class="
+                b24ui.itemTrailingIcon({
+                  class: [
+                    props.b24ui?.itemTrailingIcon,
+                    item.b24ui?.itemTrailingIcon,
+                    'text-(--ui-color-design-plain-content-icon-secondary)',
+                  ],
+                })
+              "
+            />
+            <Component
               :is="item.icon"
-              v-if="isInputItem(item) && item.icon"
+              v-else-if="isInputItem(item) && item.icon"
               data-slot="itemLeadingIcon"
               :class="
                 b24ui.itemLeadingIcon({
@@ -1246,8 +1393,23 @@ defineExpose({
 
         <slot name="content-top" />
 
+        <div
+          v-if="
+            activeTab === 'people' &&
+            hasPickerState &&
+            !isListLoading &&
+            isBrowseTreeEmpty
+          "
+          data-slot="empty"
+          :class="b24ui.empty({ class: props.b24ui?.empty })"
+        >
+          {{ t("inputMenu.noData") }}
+        </div>
+
         <ComboboxEmpty
-          v-if="!isListLoading"
+          v-else-if="
+            !(activeTab === 'people' && hasPickerState) && !isListLoading
+          "
           data-slot="empty"
           :class="b24ui.empty({ class: props.b24ui?.empty })"
         >
@@ -1325,7 +1487,7 @@ defineExpose({
               <ReuseCreateItemTemplate />
             </ComboboxGroup>
             <div
-              v-if="isListLoading"
+              v-if="activeTab === 'search' && isListLoading"
               class="flex items-center justify-center py-2"
             >
               <Component

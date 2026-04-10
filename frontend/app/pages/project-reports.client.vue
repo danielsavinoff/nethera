@@ -15,8 +15,6 @@ const selectedWeekRange = ref({
   to: 15,
 });
 
-await loadDepartmentUsers();
-
 useHead({
   title: `${t("page.index.navigation.projectReports")} | ${t("page.index.header.title")}`,
 });

@@ -12,8 +12,6 @@ const {
   resetSearch,
 } = useUserPickerPageState();
 
-await loadDepartmentUsers();
-
 const columns = [
   t("page.inProgress.table.group"),
   t("page.inProgress.table.planFact"),
