@@ -721,6 +721,12 @@ function onLoadMore() {
 }
 
 function onSelectTab(tabId) {
+  if (activeTab.value === tabId) {
+    return;
+  }
+
+  triggerSearchLoad.cancel?.();
+  searchTerm.value = "";
   activeTab.value = tabId;
 
   if (
