@@ -16,7 +16,6 @@ export class GetUsersPresenter {
             id: user.id,
             displayName: user.displayName,
             active: user.active,
-            departmentExternalIds: user.departmentExternalIds,
           }),
       ),
     });

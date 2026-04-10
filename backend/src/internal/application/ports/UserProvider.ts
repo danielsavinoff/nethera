@@ -6,6 +6,10 @@ export interface UserProvider {
   fetchAll(
     credentials: TenantCredentials,
   ): Promise<ExternalUser[]>;
+  fetchAllByDepartmentExternalId(
+    departmentExternalId: string,
+    credentials: TenantCredentials,
+  ): Promise<ExternalUser[]>;
   fetchAllByExternalIds(
     externalIds: number[],
     credentials: TenantCredentials,

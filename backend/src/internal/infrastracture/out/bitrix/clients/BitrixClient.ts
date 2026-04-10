@@ -74,6 +74,19 @@ export class BitrixClient {
     return result.getData() ?? [];
   }
 
+  async getAllUsersByDepartmentExternalId(
+    departmentExternalId: string,
+    context: TenantCredentials,
+  ): Promise<UserBrief[]> {
+    const client = await this.fromAuthContext(context);
+
+    const result = (await client.callListMethod('user.get', {
+      UF_DEPARTMENT: Number(departmentExternalId),
+    })) as Result<UserBrief[]>;
+
+    return result.getData() ?? [];
+  }
+
   async getDepartments(
     context: TenantCredentials,
   ): Promise<BitrixDepartment[]> {

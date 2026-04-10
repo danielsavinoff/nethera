@@ -10,6 +10,7 @@ import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAcc
 import { EnsureTenantAuthValidityUseCase } from '../../application/usecases/EnsureTenantAuthValidityUseCase.js';
 import { SendNotificationsUseCase } from '../../application/usecases/SendNotificationsUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
+import { GetDepartmentUsersUseCase } from '../../application/usecases/GetDepartmentUsersUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetDepartmentsUseCase } from '../../application/usecases/GetDepartmentsUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
@@ -252,6 +253,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaTenantRepository, BitrixDepartmentProvider],
     },
     {
+      provide: GetDepartmentUsersUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        tenantRepository: TenantRepository,
+        userProvider: UserProvider,
+      ) => {
+        return new GetDepartmentUsersUseCase(
+          userRepository,
+          tenantRepository,
+          userProvider,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaTenantRepository,
+        BitrixUserProvider,
+      ],
+    },
+    {
       provide: GetUsersUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -425,6 +445,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     EnsureTenantAuthValidityUseCase,
     SendNotificationsUseCase,
     GetDepartmentsUseCase,
+    GetDepartmentUsersUseCase,
     GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,

@@ -16,6 +16,7 @@ import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js
 import { GetUserFavoritesPresenter } from './presenters/GetUserFavoritesPresenter.js';
 import { AddUserFavoritesPresenter } from './presenters/AddUserFavoritesPresenter.js';
 import { DeleteUserFavoritesPresenter } from './presenters/DeleteUserFavoritesPresenter.js';
+import { GetDepartmentUsersPresenter } from './presenters/GetDepartmentUsersPresenter.js';
 import { GetDepartmentsPresenter } from './presenters/GetDepartmentsPresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
 import { TenantGuard } from './guards/TenantGuard.js';
@@ -31,6 +32,7 @@ import { EventGuard } from './guards/EventGuard.js';
     UserController,
   ],
   providers: [
+    GetDepartmentUsersPresenter,
     GetDepartmentsPresenter,
     GetUsersPresenter,
     GetCurrentUserPresenter,

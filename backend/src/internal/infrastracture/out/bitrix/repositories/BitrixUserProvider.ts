@@ -26,6 +26,21 @@ export class BitrixUserProvider implements UserProvider {
     );
   }
 
+  async fetchAllByDepartmentExternalId(
+    departmentExternalId: string,
+    credentials: TenantCredentials,
+  ): Promise<ExternalUser[]> {
+    const bitrixUsers =
+      await this.bitrixClient.getAllUsersByDepartmentExternalId(
+        departmentExternalId,
+        credentials,
+      );
+
+    return bitrixUsers.map((bitrixUser) =>
+      this.mapExternalUser(bitrixUser),
+    );
+  }
+
   async fetchAllByExternalIds(
     externalIds: number[],
     credentials: TenantCredentials,
@@ -72,7 +87,7 @@ export class BitrixUserProvider implements UserProvider {
       secondName: bitrixUser.SECOND_NAME ?? undefined,
       lastName: bitrixUser.LAST_NAME ?? undefined,
       isActive: bitrixUser.ACTIVE,
-      departmentIds: bitrixUser.UF_DEPARTMENT.map(String),
+      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
     } satisfies ExternalUser;
   }
 }
