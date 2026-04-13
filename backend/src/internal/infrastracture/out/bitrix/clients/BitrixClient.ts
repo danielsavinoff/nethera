@@ -11,6 +11,16 @@ interface BitrixSmartProcess {
   title: string;
 }
 
+interface BitrixCrmItemField {
+  type?: string;
+  settings?: Record<string, unknown>;
+}
+
+interface BitrixCreatedUserField {
+  id?: number | string;
+  fieldName?: string;
+}
+
 interface BitrixDepartment {
   ID: number | string;
   NAME: string;
@@ -44,7 +54,9 @@ export class BitrixClient {
       },
     );
 
-    return client;
+    await client.initIsAdmin();
+
+    return Promise.resolve(client);
   }
 
   async getBitrixUsers(
@@ -221,6 +233,102 @@ export class BitrixClient {
       response.type ??
       (response.result &&
       typeof response.result.title === 'string'
+        ? response.result
+        : null)
+    );
+  }
+
+  async getSmartProcessByEntityTypeId(
+    entityTypeId: string,
+    context: TenantCredentials,
+  ): Promise<BitrixSmartProcess | null> {
+    const client = await this.fromAuthContext(context);
+
+    const result = await client.callMethod(
+      'crm.type.getByEntityTypeId',
+      {
+        entityTypeId: Number(entityTypeId),
+      },
+    );
+
+    const response = result.getData() as {
+      result?: {
+        type?: BitrixSmartProcess;
+      } & BitrixSmartProcess;
+      type?: BitrixSmartProcess;
+    };
+
+    return (
+      response.result?.type ??
+      response.type ??
+      (response.result &&
+      typeof response.result.title === 'string'
+        ? response.result
+        : null)
+    );
+  }
+
+  async getCrmItemFields(
+    entityTypeId: number,
+    context: TenantCredentials,
+  ): Promise<Record<string, BitrixCrmItemField>> {
+    const client = await this.fromAuthContext(context);
+
+    const result = await client.callMethod('crm.item.fields', {
+      entityTypeId,
+      useOriginalUfNames: 'N',
+    });
+
+    const response = result.getData() as {
+      result?: {
+        fields?: Record<string, BitrixCrmItemField>;
+      };
+      fields?: Record<string, BitrixCrmItemField>;
+    };
+
+    return response.result?.fields ?? response.fields ?? {};
+  }
+
+  async createSmartProcessField(
+    context: TenantCredentials,
+    input: {
+      smartProcessId: string;
+      fieldName: string;
+      labels: Record<string, string>;
+      userTypeId: string;
+      settings?: Record<string, unknown>;
+    },
+  ): Promise<BitrixCreatedUserField | null> {
+    const client = await this.fromAuthContext(context);
+
+    const result = await client.callMethod(
+      'userfieldconfig.add',
+      {
+        moduleId: 'crm',
+        field: {
+          entityId: `CRM_${input.smartProcessId}`,
+          fieldName: input.fieldName,
+          userTypeId: input.userTypeId,
+          editFormLabel: input.labels,
+          ...(input.settings
+            ? { settings: input.settings }
+            : {}),
+        },
+      },
+    );
+
+    const response = result.getData() as {
+      result?: {
+        field?: BitrixCreatedUserField;
+      } & BitrixCreatedUserField;
+      field?: BitrixCreatedUserField;
+    };
+
+    return (
+      response.result?.field ??
+      response.field ??
+      (response.result &&
+      typeof response.result.fieldName === 'string'
         ? response.result
         : null)
     );

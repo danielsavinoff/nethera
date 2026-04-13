@@ -7,7 +7,6 @@ export enum ExternalSmartProcessFieldType {
 
 interface ExternalSmartProcessFieldBase {
   name: string;
-  label: string;
 }
 
 export type ExternalSmartProcessField =

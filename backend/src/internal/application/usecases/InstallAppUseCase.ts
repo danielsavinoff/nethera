@@ -1,3 +1,5 @@
+import { ExternalTimeAllocationCustomFields } from '../models/ExternalTimeAllocation.js';
+import { ExternalSmartProcessFieldType } from '../models/ExternalSmartProcessField.js';
 import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
 import { TenantRepository } from '../ports/TenantRepository.js';
 import { UserProvider } from '../ports/UserProvider.js';
@@ -13,6 +15,11 @@ import { Tenant } from '../../domain/tenant/Tenant.js';
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
 import { SmartProcessRepository } from '../ports/SmartProcessRepository.js';
 import { SmartProcessProvider } from '../ports/SmartProcessProvider.js';
+import { SmartProcessFieldProvider } from '../ports/SmartProcessFieldProvider.js';
+import {
+  EntityProvider,
+  ExternalEntityType,
+} from '../ports/EntityProvider.js';
 import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
 import { TenantSmartProcessAlreadyExistsException } from '../exceptions/TenantSmartProcessAlreadyExistsException.js';
 
@@ -38,6 +45,8 @@ export class InstallAppUseCase {
     private readonly roleRepository: RoleRepository,
     private readonly smartProcessRepository: SmartProcessRepository,
     private readonly smartProcessProvider: SmartProcessProvider,
+    private readonly smartProcessFieldProvider: SmartProcessFieldProvider,
+    private readonly entityProvider: EntityProvider,
     private readonly transactionRunner: TransactionRunner,
     logger: Logger,
   ) {
@@ -191,6 +200,57 @@ export class InstallAppUseCase {
           await this.smartProcessProvider.create(
             tenant.credentials,
           );
+
+        const userEntityId = (
+          await this.entityProvider.fetch(tenant.credentials, {
+            filters: {
+              entityType: ExternalEntityType.User,
+            },
+          })
+        ).typeId;
+
+        await this.smartProcessFieldProvider.createMany(
+          tenant.credentials,
+          {
+            smartProcessExternalId: externalSmartProcess.id,
+            fields: [
+              {
+                name: ExternalTimeAllocationCustomFields.GroupId,
+                type: ExternalSmartProcessFieldType.Text,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.TaskId,
+                type: ExternalSmartProcessFieldType.Text,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.Hours,
+                type: ExternalSmartProcessFieldType.Number,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.IsApproved,
+                type: ExternalSmartProcessFieldType.Boolean,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.WeekNumber,
+                type: ExternalSmartProcessFieldType.Number,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.Year,
+                type: ExternalSmartProcessFieldType.Number,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.Assignee,
+                type: ExternalSmartProcessFieldType.Link,
+                linkedId: userEntityId,
+              },
+              {
+                name: ExternalTimeAllocationCustomFields.Assigner,
+                type: ExternalSmartProcessFieldType.Link,
+                linkedId: userEntityId,
+              },
+            ],
+          },
+        );
 
         await this.smartProcessRepository.save(
           SmartProcess.create({

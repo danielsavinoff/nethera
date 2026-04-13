@@ -33,6 +33,8 @@ import type { UserProvider } from '../../application/ports/UserProvider.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
 import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
 import type { SmartProcessRepository } from '../../application/ports/SmartProcessRepository.js';
+import type { SmartProcessFieldProvider } from '../../application/ports/SmartProcessFieldProvider.js';
+import type { EntityProvider } from '../../application/ports/EntityProvider.js';
 import type { TokenIssuer } from '../../application/ports/TokenIssuer.js';
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
 import type { TokenVerifier } from '../../application/ports/TokenVerifier.js';
@@ -54,6 +56,8 @@ import { BitrixOauthProvider } from '../out/bitrix/oauth/BitrixOauthProvider.js'
 import { BitrixTenantCredentialsRenewer } from '../out/bitrix/adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixNotificationRepository } from '../out/bitrix/repositories/BitrixNotificationRepository.js';
 import { BitrixSmartProcessProvider } from '../out/bitrix/repositories/BitrixSmartProcessProvider.js';
+import { BitrixSmartProcessFieldProvider } from '../out/bitrix/repositories/BitrixSmartProcessFieldProvider.js';
+import { BitrixEntityProvider } from '../out/bitrix/repositories/BitrixEntityProvider.js';
 import { BitrixDepartmentProvider } from '../out/bitrix/repositories/BitrixDepartmentProvider.js';
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
@@ -199,6 +203,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         roleRepository: RoleRepository,
         smartProcessRepository: SmartProcessRepository,
         smartProcessProvider: SmartProcessProvider,
+        smartProcessFieldProvider: SmartProcessFieldProvider,
+        entityProvider: EntityProvider,
         transactionRunner: PrismaTransactionRunner,
         logger: Logger,
       ) => {
@@ -210,6 +216,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           roleRepository,
           smartProcessRepository,
           smartProcessProvider,
+          smartProcessFieldProvider,
+          entityProvider,
           transactionRunner,
           logger,
         );
@@ -222,6 +230,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         PrismaRoleRepository,
         PrismaSmartProcessRepository,
         BitrixSmartProcessProvider,
+        BitrixSmartProcessFieldProvider,
+        BitrixEntityProvider,
         PrismaTransactionRunner,
         NestConsoleLogger,
       ],

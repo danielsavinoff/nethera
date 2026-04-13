@@ -10,6 +10,8 @@ import { BitrixTenantCredentialsRenewer } from './adapters/BitrixTenantCredentia
 import { BitrixOauthProvider } from './oauth/BitrixOauthProvider.js';
 import { BitrixSmartProcessProvider } from './repositories/BitrixSmartProcessProvider.js';
 import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvider.js';
+import { BitrixSmartProcessFieldProvider } from './repositories/BitrixSmartProcessFieldProvider.js';
+import { BitrixEntityProvider } from './repositories/BitrixEntityProvider.js';
 
 @Module({
   providers: [
@@ -23,6 +25,8 @@ import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvide
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,
     BitrixSmartProcessProvider,
+    BitrixSmartProcessFieldProvider,
+    BitrixEntityProvider,
     BitrixDepartmentProvider,
   ],
   exports: [
@@ -35,6 +39,8 @@ import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvide
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,
     BitrixSmartProcessProvider,
+    BitrixSmartProcessFieldProvider,
+    BitrixEntityProvider,
     BitrixDepartmentProvider,
   ],
 })

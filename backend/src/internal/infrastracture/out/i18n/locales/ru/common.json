@@ -1,1 +1,15 @@
-{}
+{
+  "smartProcess": {
+    "fields": {
+      "id": "ID",
+      "groupId": "Группа",
+      "taskId": "Задача",
+      "hours": "Часы",
+      "isApproved": "Одобрено",
+      "weekNumber": "Номер недели",
+      "year": "Год",
+      "assignee": "Исполнитель",
+      "assigner": "Постановщик"
+    }
+  }
+}

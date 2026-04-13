@@ -1,23 +1,22 @@
-export enum ExternalTimeAllocationFields {
-  Id = 'id',
+export enum ExternalTimeAllocationCustomFields {
   GroupId = 'groupId',
   TaskId = 'taskId',
   Hours = 'hours',
   IsApproved = 'isApproved',
   WeekNumber = 'weekNumber',
   Year = 'year',
-  AssigneeId = 'assigneeId',
-  AssignerId = 'assignerId',
+  Assignee = 'assignee',
+  Assigner = 'assigner',
 }
 
 export interface ExternalTimeAllocation {
-  [ExternalTimeAllocationFields.Id]: string;
-  [ExternalTimeAllocationFields.GroupId]: string;
-  [ExternalTimeAllocationFields.TaskId]: string;
-  [ExternalTimeAllocationFields.Hours]: number;
-  [ExternalTimeAllocationFields.IsApproved]: boolean;
-  [ExternalTimeAllocationFields.WeekNumber]: number;
-  [ExternalTimeAllocationFields.Year]: number;
-  [ExternalTimeAllocationFields.AssigneeId]: string;
-  [ExternalTimeAllocationFields.AssignerId]: string;
+  id: string;
+  [ExternalTimeAllocationCustomFields.GroupId]: string;
+  [ExternalTimeAllocationCustomFields.TaskId]: string;
+  [ExternalTimeAllocationCustomFields.Hours]: number;
+  [ExternalTimeAllocationCustomFields.IsApproved]: boolean;
+  [ExternalTimeAllocationCustomFields.WeekNumber]: number;
+  [ExternalTimeAllocationCustomFields.Year]: number;
+  [ExternalTimeAllocationCustomFields.Assignee]: string;
+  [ExternalTimeAllocationCustomFields.Assigner]: string;
 }
