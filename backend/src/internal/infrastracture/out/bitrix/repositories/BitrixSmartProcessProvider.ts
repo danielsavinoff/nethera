@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ExternalSmartProcessCreationFailedException } from '../../../../application/exceptions/ExternalSmartProcessCreationFailedException.js';
 import { ExternalSmartProcessNotFoundException } from '../../../../application/exceptions/ExternalSmartProcessNotFoundException.js';
 import { ExternalSmartProcess } from '../../../../application/models/ExternalSmartProcess.js';
+import { FetchExternalSmartProcessQuery } from '../../../../application/ports/SmartProcessProvider.js';
 import { SmartProcessProvider } from '../../../../application/ports/SmartProcessProvider.js';
 import { SmartProcess } from '../../../../domain/smart-process/SmartProcess.js';
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
@@ -34,13 +35,13 @@ export class BitrixSmartProcessProvider
     };
   }
 
-  async findByExternalId(
-    externalId: string,
+  async fetchOneOrThrow(
     credentials: TenantCredentials,
+    query: FetchExternalSmartProcessQuery,
   ): Promise<ExternalSmartProcess> {
     const bitrixSmartProcess =
       await this.bitrixClient.getSmartProcess(
-        externalId,
+        query.filters.externalId,
         credentials,
       );
 

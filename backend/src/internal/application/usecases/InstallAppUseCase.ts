@@ -182,7 +182,7 @@ export class InstallAppUseCase {
       );
 
     if (existingSmartProcess) {
-      this.logger.warn(
+      this.logger.log(
         `Tenant ${tenantCredentials.domain} already has a smart process`,
       );
     } else {
@@ -207,7 +207,7 @@ export class InstallAppUseCase {
           error instanceof
           TenantSmartProcessAlreadyExistsException
         ) {
-          this.logger.warn(
+          this.logger.log(
             `Tenant ${tenantCredentials.domain} already has a smart process`,
           );
         } else {
