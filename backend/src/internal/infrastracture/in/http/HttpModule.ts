@@ -6,6 +6,7 @@ import { AuthController } from './controllers/AuthController.js';
 import { DepartmentController } from './controllers/DepartmentController.js';
 import { RoleController } from './controllers/RoleController.js';
 import { UserController } from './controllers/UserController.js';
+import { TimeAllocationController } from './controllers/TimeAllocationController.js';
 import { BitrixModule } from '../../out/bitrix/BitrixModule.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
@@ -19,6 +20,7 @@ import { DeleteUserFavoritesPresenter } from './presenters/DeleteUserFavoritesPr
 import { GetDepartmentUsersPresenter } from './presenters/GetDepartmentUsersPresenter.js';
 import { GetDepartmentsPresenter } from './presenters/GetDepartmentsPresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
+import { GetTimeAllocationsPresenter } from './presenters/GetTimeAllocationsPresenter.js';
 import { TenantGuard } from './guards/TenantGuard.js';
 import { EventGuard } from './guards/EventGuard.js';
 
@@ -30,6 +32,7 @@ import { EventGuard } from './guards/EventGuard.js';
     DepartmentController,
     RoleController,
     UserController,
+    TimeAllocationController,
   ],
   providers: [
     GetDepartmentUsersPresenter,
@@ -43,6 +46,7 @@ import { EventGuard } from './guards/EventGuard.js';
     DeleteUserRolePresenter,
     DeleteUserFavoritesPresenter,
     GetRolesPresenter,
+    GetTimeAllocationsPresenter,
     TenantGuard,
     EventGuard,
   ],

@@ -8,8 +8,8 @@
       "isApproved": "Одобрено",
       "weekNumber": "Номер недели",
       "year": "Год",
-      "assignee": "Исполнитель",
-      "assigner": "Постановщик"
+      "assigneeId": "Исполнитель",
+      "assignerId": "Постановщик"
     }
   }
 }

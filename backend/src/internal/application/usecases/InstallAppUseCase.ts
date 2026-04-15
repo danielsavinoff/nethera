@@ -239,12 +239,12 @@ export class InstallAppUseCase {
                 type: ExternalSmartProcessFieldType.Number,
               },
               {
-                name: ExternalTimeAllocationCustomFields.Assignee,
+                name: ExternalTimeAllocationCustomFields.AssigneeId,
                 type: ExternalSmartProcessFieldType.Link,
                 linkedId: userEntityId,
               },
               {
-                name: ExternalTimeAllocationCustomFields.Assigner,
+                name: ExternalTimeAllocationCustomFields.AssignerId,
                 type: ExternalSmartProcessFieldType.Link,
                 linkedId: userEntityId,
               },

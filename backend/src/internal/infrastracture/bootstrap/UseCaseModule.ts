@@ -13,6 +13,7 @@ import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUser
 import { GetDepartmentUsersUseCase } from '../../application/usecases/GetDepartmentUsersUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetDepartmentsUseCase } from '../../application/usecases/GetDepartmentsUseCase.js';
+import { GetTimeAllocationsUseCase } from '../../application/usecases/GetTimeAllocationsUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
@@ -29,11 +30,14 @@ import type { UserFavoriteRepository } from '../../application/ports/UserFavorit
 import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
 import type { EventProvider } from '../../application/ports/EventProvider.js';
+import type { GroupProvider } from '../../application/ports/GroupProvider.js';
 import type { UserProvider } from '../../application/ports/UserProvider.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
 import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
 import type { SmartProcessRepository } from '../../application/ports/SmartProcessRepository.js';
 import type { SmartProcessFieldProvider } from '../../application/ports/SmartProcessFieldProvider.js';
+import type { TaskProvider } from '../../application/ports/TaskProvider.js';
+import type { TimeAllocationSmartProcessProvider } from '../../application/ports/TimeAllocationSmartProcessProvider.js';
 import type { EntityProvider } from '../../application/ports/EntityProvider.js';
 import type { TokenIssuer } from '../../application/ports/TokenIssuer.js';
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
@@ -59,6 +63,9 @@ import { BitrixSmartProcessProvider } from '../out/bitrix/repositories/BitrixSma
 import { BitrixSmartProcessFieldProvider } from '../out/bitrix/repositories/BitrixSmartProcessFieldProvider.js';
 import { BitrixEntityProvider } from '../out/bitrix/repositories/BitrixEntityProvider.js';
 import { BitrixDepartmentProvider } from '../out/bitrix/repositories/BitrixDepartmentProvider.js';
+import { BitrixTimeAllocationSmartProcessProvider } from '../out/bitrix/repositories/BitrixTimeAllocationSmartProcessProvider.js';
+import { BitrixTaskProvider } from '../out/bitrix/repositories/BitrixTaskProvider.js';
+import { BitrixGroupProvider } from '../out/bitrix/repositories/BitrixGroupProvider.js';
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
@@ -301,6 +308,31 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: GetTimeAllocationsUseCase,
+      useFactory: (
+        tenantRepository: TenantRepository,
+        smartProcessRepository: SmartProcessRepository,
+        timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
+        taskProvider: TaskProvider,
+        groupProvider: GroupProvider,
+      ) => {
+        return new GetTimeAllocationsUseCase(
+          tenantRepository,
+          smartProcessRepository,
+          timeAllocationSmartProcessProvider,
+          taskProvider,
+          groupProvider,
+        );
+      },
+      inject: [
+        PrismaTenantRepository,
+        PrismaSmartProcessRepository,
+        BitrixTimeAllocationSmartProcessProvider,
+        BitrixTaskProvider,
+        BitrixGroupProvider,
+      ],
+    },
+    {
       provide: GetCurrentUserUseCase,
       useFactory: (userRepository: UserRepository) => {
         return new GetCurrentUserUseCase(userRepository);
@@ -457,6 +489,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetDepartmentsUseCase,
     GetDepartmentUsersUseCase,
     GetUsersUseCase,
+    GetTimeAllocationsUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,
     GetUserFavoritesUseCase,

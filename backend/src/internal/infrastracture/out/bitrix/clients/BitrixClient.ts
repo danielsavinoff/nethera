@@ -27,6 +27,17 @@ interface BitrixDepartment {
   PARENT?: number | string | null;
 }
 
+interface BitrixTask {
+  id?: number | string;
+  title?: string;
+  groupId?: number | string | null;
+}
+
+interface BitrixGroup {
+  ID?: number | string;
+  NAME?: string;
+}
+
 @Injectable()
 export class BitrixClient {
   constructor(private readonly configService: ConfigService) {}
@@ -159,9 +170,179 @@ export class BitrixClient {
 
   async getCurrentUser(context: TenantCredentials) {
     const client = await this.fromAuthContext(context);
-    const result = await client.callMethod('user.current');
+    const response = await client.callMethod('user.current');
 
-    return result.getData().result as UserBrief;
+    const data = response.getData();
+    const result = data.result as UserBrief;
+
+    return result;
+  }
+
+  async getCrmItems(
+    context: TenantCredentials,
+    input: {
+      entityTypeId: string;
+      filter?: Record<string, unknown>;
+      start?: number;
+      limit?: number;
+      useOriginalUfNames?: boolean;
+    },
+  ): Promise<{
+    items: Record<string, unknown>[];
+    total: number;
+  }> {
+    const client = await this.fromAuthContext(context);
+    const result = await client.callMethod(
+      'crm.item.list',
+      {
+        entityTypeId: Number(input.entityTypeId),
+        // select: input.select,
+        // ...(input.filter ? { filter: input.filter } : {}),
+        // ...(typeof input.limit === 'number'
+        //   ? { limit: input.limit }
+        //   : {}),
+        // ...(input.useOriginalUfNames
+        //   ? { useOriginalUfNames: 'Y' }
+        //   : {}),
+      },
+      input.start ?? 0,
+    );
+
+    const response = result.getData() as {
+      result?: {
+        items?: Record<string, unknown>[];
+      };
+      items?: Record<string, unknown>[];
+      total?: number;
+    };
+    const items = response.result?.items ?? response.items ?? [];
+    const total = Number(
+      result.getTotal?.() ?? response.total ?? items.length,
+    );
+
+    return {
+      items,
+      total,
+    };
+  }
+
+  async getTask(
+    id: string,
+    context: TenantCredentials,
+  ): Promise<BitrixTask | null> {
+    const client = await this.fromAuthContext(context);
+    const response = await client.callMethod('tasks.task.list', {
+      filter: {
+        ID: Number(id),
+      },
+      select: ['ID', 'TITLE', 'GROUP_ID'],
+    });
+
+    const data = response.getData() as {
+      result?: {
+        tasks?: BitrixTask[];
+      };
+      tasks?: BitrixTask[];
+    };
+    const result = data.result;
+
+    return result?.tasks?.at(0) ?? null;
+  }
+
+  async getTasks(
+    ids: string[],
+    context: TenantCredentials,
+    query?: {
+      page?: {
+        limit?: number;
+        skip?: number;
+      };
+    },
+  ): Promise<BitrixTask[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const skip = query?.page?.skip ?? 0;
+    const limit = query?.page?.limit;
+
+    const client = await this.fromAuthContext(context);
+    const response = await client.callMethod(
+      'tasks.task.list',
+      {
+        filter: {
+          ID: ids.map(Number),
+        },
+        select: ['ID', 'TITLE', 'GROUP_ID'],
+        ...(typeof limit === 'number' ? { limit } : {}),
+      },
+      skip,
+    );
+
+    const data = response.getData() as {
+      result?: {
+        tasks?: BitrixTask[];
+      };
+    };
+    const result = data.result;
+
+    return result?.tasks ?? [];
+  }
+
+  async getGroup(
+    id: string,
+    context: TenantCredentials,
+  ): Promise<BitrixGroup | null> {
+    const client = await this.fromAuthContext(context);
+    const response = await client.callMethod('sonet_group.get', {
+      FILTER: {
+        GROUP_ID: Number(id),
+      },
+    });
+
+    const data = response.getData() as {
+      result?: BitrixGroup[];
+    };
+    const result = data.result?.at(0) ?? null;
+
+    return result;
+  }
+
+  async getGroups(
+    ids: string[],
+    context: TenantCredentials,
+    query?: {
+      page?: {
+        limit?: number;
+        skip?: number;
+      };
+    },
+  ): Promise<BitrixGroup[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const skip = query?.page?.skip ?? 0;
+    const limit = query?.page?.limit;
+
+    const client = await this.fromAuthContext(context);
+    const response = await client.callMethod(
+      'sonet_group.get',
+      {
+        FILTER: {
+          GROUP_ID: ids.map(Number),
+        },
+        ...(typeof limit === 'number' ? { LIMIT: limit } : {}),
+      },
+      skip,
+    );
+
+    const data = response.getData() as {
+      result?: BitrixGroup[];
+    };
+    const result = data.result;
+
+    return result ?? [];
   }
 
   async sendNotification(

@@ -1,0 +1,65 @@
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsDefined,
+  IsInt,
+  IsString,
+  Min,
+  ValidateIf,
+} from 'class-validator';
+
+export class GetTimeAllocationsQueryDto {
+  @ApiProperty({ type: String })
+  @IsDefined()
+  @IsString()
+  userId!: string;
+
+  @ApiProperty({ type: Number, minimum: 1 })
+  @IsDefined()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  year!: number;
+
+  @ApiPropertyOptional({ type: Number, minimum: 1 })
+  @ValidateIf(
+    (query: GetTimeAllocationsQueryDto) =>
+      typeof query.weekNumberFrom === 'undefined' &&
+      typeof query.weekNumberTo === 'undefined',
+  )
+  @IsDefined()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  weekNumber?: number;
+
+  @ApiPropertyOptional({ type: Number, minimum: 1 })
+  @ValidateIf(
+    (query: GetTimeAllocationsQueryDto) =>
+      typeof query.weekNumber === 'undefined' ||
+      typeof query.weekNumberFrom !== 'undefined',
+  )
+  @IsDefined()
+  @ValidateIf(
+    (query: GetTimeAllocationsQueryDto) =>
+      typeof query.weekNumber === 'undefined',
+  )
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  weekNumberFrom?: number;
+
+  @ApiPropertyOptional({ type: Number, minimum: 1 })
+  @ValidateIf(
+    (query: GetTimeAllocationsQueryDto) =>
+      typeof query.weekNumber === 'undefined',
+  )
+  @IsDefined()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  weekNumberTo?: number;
+}

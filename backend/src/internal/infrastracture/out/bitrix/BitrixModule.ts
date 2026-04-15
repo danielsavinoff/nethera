@@ -12,6 +12,9 @@ import { BitrixSmartProcessProvider } from './repositories/BitrixSmartProcessPro
 import { BitrixDepartmentProvider } from './repositories/BitrixDepartmentProvider.js';
 import { BitrixSmartProcessFieldProvider } from './repositories/BitrixSmartProcessFieldProvider.js';
 import { BitrixEntityProvider } from './repositories/BitrixEntityProvider.js';
+import { BitrixTimeAllocationSmartProcessProvider } from './repositories/BitrixTimeAllocationSmartProcessProvider.js';
+import { BitrixTaskProvider } from './repositories/BitrixTaskProvider.js';
+import { BitrixGroupProvider } from './repositories/BitrixGroupProvider.js';
 
 @Module({
   providers: [
@@ -28,6 +31,9 @@ import { BitrixEntityProvider } from './repositories/BitrixEntityProvider.js';
     BitrixSmartProcessFieldProvider,
     BitrixEntityProvider,
     BitrixDepartmentProvider,
+    BitrixTimeAllocationSmartProcessProvider,
+    BitrixTaskProvider,
+    BitrixGroupProvider,
   ],
   exports: [
     BitrixEventProvider,
@@ -42,6 +48,9 @@ import { BitrixEntityProvider } from './repositories/BitrixEntityProvider.js';
     BitrixSmartProcessFieldProvider,
     BitrixEntityProvider,
     BitrixDepartmentProvider,
+    BitrixTimeAllocationSmartProcessProvider,
+    BitrixTaskProvider,
+    BitrixGroupProvider,
   ],
 })
 export class BitrixModule {}

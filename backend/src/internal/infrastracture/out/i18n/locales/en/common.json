@@ -8,8 +8,8 @@
       "isApproved": "Approved",
       "weekNumber": "Week Number",
       "year": "Year",
-      "assignee": "Assignee",
-      "assigner": "Assigner"
+      "assigneeId": "Assignee",
+      "assignerId": "Assigner"
     }
   }
 }

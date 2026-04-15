@@ -5,8 +5,8 @@ export enum ExternalTimeAllocationCustomFields {
   IsApproved = 'isApproved',
   WeekNumber = 'weekNumber',
   Year = 'year',
-  Assignee = 'assignee',
-  Assigner = 'assigner',
+  AssigneeId = 'assigneeId',
+  AssignerId = 'assignerId',
 }
 
 export interface ExternalTimeAllocation {
@@ -17,6 +17,6 @@ export interface ExternalTimeAllocation {
   [ExternalTimeAllocationCustomFields.IsApproved]: boolean;
   [ExternalTimeAllocationCustomFields.WeekNumber]: number;
   [ExternalTimeAllocationCustomFields.Year]: number;
-  [ExternalTimeAllocationCustomFields.Assignee]: string;
-  [ExternalTimeAllocationCustomFields.Assigner]: string;
+  [ExternalTimeAllocationCustomFields.AssigneeId]: string;
+  [ExternalTimeAllocationCustomFields.AssignerId]: string;
 }
