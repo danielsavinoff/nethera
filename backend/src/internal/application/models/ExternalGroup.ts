@@ -1,4 +1,4 @@
 export interface ExternalGroup {
-  id: string;
+  externalId: string;
   name: string;
 }

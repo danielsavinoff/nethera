@@ -36,7 +36,7 @@ export class LoginWithOauthProviderUseCase {
     let user =
       await this.userRepository.findByTenantAndExternalIdWithRoles(
         command.tenant.id,
-        identity.id,
+        identity.externalId,
       );
 
     if (!user) {

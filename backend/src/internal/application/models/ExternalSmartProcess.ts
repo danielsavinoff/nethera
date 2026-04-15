@@ -1,4 +1,4 @@
 export interface ExternalSmartProcess {
-  id: string;
+  externalId: string;
   title: string;
 }

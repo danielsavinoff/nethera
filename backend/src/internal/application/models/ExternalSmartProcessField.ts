@@ -21,5 +21,5 @@ export type ExternalSmartProcessField =
     })
   | (ExternalSmartProcessFieldBase & {
       type: ExternalSmartProcessFieldType.Link;
-      linkedId: string;
+      externalLinkedId: string;
     });

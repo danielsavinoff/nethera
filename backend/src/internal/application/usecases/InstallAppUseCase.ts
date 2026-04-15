@@ -143,15 +143,16 @@ export class InstallAppUseCase {
           const user =
             await this.userRepository.findByTenantAndExternalIdWithRoles(
               persistedTenant.id,
-              externalUser.id,
+              externalUser.externalId,
               transactionContext,
             );
 
           if (!user) {
-            const isInitiator = initiator.id === externalUser.id;
+            const isInitiator =
+              initiator.externalId === externalUser.externalId;
 
             const registeredUser = User.create({
-              externalId: externalUser.id,
+              externalId: externalUser.externalId,
               tenantId: persistedTenant.id,
               active: externalUser.isActive,
               firstName: externalUser.firstName,
@@ -207,12 +208,13 @@ export class InstallAppUseCase {
               entityType: ExternalEntityType.User,
             },
           })
-        ).typeId;
+        ).externalTypeId;
 
         await this.smartProcessFieldProvider.createMany(
           tenant.credentials,
           {
-            smartProcessExternalId: externalSmartProcess.id,
+            smartProcessExternalId:
+              externalSmartProcess.externalId,
             fields: [
               {
                 name: ExternalTimeAllocationCustomFields.GroupId,
@@ -241,12 +243,12 @@ export class InstallAppUseCase {
               {
                 name: ExternalTimeAllocationCustomFields.AssigneeId,
                 type: ExternalSmartProcessFieldType.Link,
-                linkedId: userEntityId,
+                externalLinkedId: userEntityId,
               },
               {
                 name: ExternalTimeAllocationCustomFields.AssignerId,
                 type: ExternalSmartProcessFieldType.Link,
-                linkedId: userEntityId,
+                externalLinkedId: userEntityId,
               },
             ],
           },
@@ -254,7 +256,7 @@ export class InstallAppUseCase {
 
         await this.smartProcessRepository.save(
           SmartProcess.create({
-            externalId: externalSmartProcess.id,
+            externalId: externalSmartProcess.externalId,
             tenantId: tenant.id,
           }),
         );

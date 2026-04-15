@@ -12,8 +12,8 @@ export class GetDepartmentsPresenter {
       departments: result.departments.map(
         (department) =>
           new GetDepartmentResponseDto({
-            externalId: department.id,
-            parentExternalId: department.parentId,
+            externalId: department.externalId,
+            parentExternalId: department.externalParentId,
             name: department.name,
           }),
       ),

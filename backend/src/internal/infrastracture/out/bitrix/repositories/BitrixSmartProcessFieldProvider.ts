@@ -56,12 +56,14 @@ export class BitrixSmartProcessFieldProvider
             : field.type ===
                 ExternalSmartProcessFieldType.Boolean
               ? { userTypeId: 'boolean' }
-              : field.linkedId === 'user'
+              : field.externalLinkedId === 'user'
                 ? { userTypeId: 'employee' }
                 : {
                     userTypeId: 'crm',
                     settings: {
-                      parentEntityTypeId: Number(field.linkedId),
+                      parentEntityTypeId: Number(
+                        field.externalLinkedId,
+                      ),
                     },
                   };
 

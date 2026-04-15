@@ -10,13 +10,13 @@ export enum ExternalTimeAllocationCustomFields {
 }
 
 export interface ExternalTimeAllocation {
-  id: string;
-  [ExternalTimeAllocationCustomFields.GroupId]: string;
-  [ExternalTimeAllocationCustomFields.TaskId]: string;
+  externalId: string;
+  externalGroupId: string;
+  externalTaskId: string;
   [ExternalTimeAllocationCustomFields.Hours]: number;
   [ExternalTimeAllocationCustomFields.IsApproved]: boolean;
   [ExternalTimeAllocationCustomFields.WeekNumber]: number;
   [ExternalTimeAllocationCustomFields.Year]: number;
-  [ExternalTimeAllocationCustomFields.AssigneeId]: string;
-  [ExternalTimeAllocationCustomFields.AssignerId]: string;
+  externalAssigneeId: string;
+  externalAssignerId: string;
 }

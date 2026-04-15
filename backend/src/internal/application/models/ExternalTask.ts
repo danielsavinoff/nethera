@@ -1,5 +1,5 @@
 export interface ExternalTask {
-  id: string;
+  externalId: string;
   title: string;
-  groupId?: string;
+  externalGroupId?: string;
 }

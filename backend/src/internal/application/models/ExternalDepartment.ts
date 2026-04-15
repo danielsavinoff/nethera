@@ -1,5 +1,5 @@
 export interface ExternalDepartment {
-  id: string;
-  parentId?: string;
+  externalId: string;
+  externalParentId?: string;
   name: string;
 }

@@ -28,14 +28,14 @@ export class BitrixEntityProvider implements EntityProvider {
       credentials,
     );
 
-    const typeId = fields.assignedById?.type;
+    const externalTypeId = fields.assignedById?.type;
 
-    if (!typeId) {
+    if (!externalTypeId) {
       throw new ResolveEntityFailureException();
     }
 
     return {
-      typeId,
+      externalTypeId,
     };
   }
 }

@@ -23,13 +23,14 @@ export class BitrixUserProvider implements UserProvider {
     );
 
     return bitrixUsers.map((bitrixUser) => ({
-      id: Number(bitrixUser.ID),
+      externalId: Number(bitrixUser.ID),
       firstName: bitrixUser.NAME ?? undefined,
       secondName: bitrixUser.SECOND_NAME ?? undefined,
       lastName: bitrixUser.LAST_NAME ?? undefined,
       isAdmin: false,
       isActive: bitrixUser.ACTIVE,
-      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
+      externalDepartmentIds:
+        bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
     }));
   }
 
@@ -47,13 +48,14 @@ export class BitrixUserProvider implements UserProvider {
     }
 
     return {
-      id: Number(bitrixUser.ID),
+      externalId: Number(bitrixUser.ID),
       firstName: bitrixUser.NAME ?? undefined,
       secondName: bitrixUser.SECOND_NAME ?? undefined,
       lastName: bitrixUser.LAST_NAME ?? undefined,
       isAdmin: false,
       isActive: bitrixUser.ACTIVE,
-      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
+      externalDepartmentIds:
+        bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
     };
   }
 
@@ -65,13 +67,14 @@ export class BitrixUserProvider implements UserProvider {
       await this.bitrixClient.getCurrentUser(credentials);
 
     return {
-      id: Number(bitrixUser.ID),
+      externalId: Number(bitrixUser.ID),
       firstName: bitrixUser.NAME ?? undefined,
       secondName: bitrixUser.SECOND_NAME ?? undefined,
       lastName: bitrixUser.LAST_NAME ?? undefined,
       isAdmin,
       isActive: bitrixUser.ACTIVE,
-      departmentIds: bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
+      externalDepartmentIds:
+        bitrixUser.UF_DEPARTMENT?.map(String) ?? [],
     };
   }
 }

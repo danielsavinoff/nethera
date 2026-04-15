@@ -19,8 +19,8 @@ export class BitrixDepartmentProvider
     return bitrixDepartments.map(
       (bitrixDepartment) =>
         ({
-          id: String(bitrixDepartment.ID),
-          parentId:
+          externalId: String(bitrixDepartment.ID),
+          externalParentId:
             bitrixDepartment.PARENT == null
               ? undefined
               : String(bitrixDepartment.PARENT),

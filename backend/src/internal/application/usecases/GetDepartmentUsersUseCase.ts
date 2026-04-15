@@ -52,7 +52,9 @@ export class GetDepartmentUsersUseCase {
     const users =
       await this.userRepository.findAllByTenantAndExternalIds(
         command.tenantId,
-        externalUsers.map((externalUser) => externalUser.id),
+        externalUsers.map(
+          (externalUser) => externalUser.externalId,
+        ),
       );
 
     const usersByExternalId = new Map(
@@ -62,7 +64,9 @@ export class GetDepartmentUsersUseCase {
     return {
       users: externalUsers
         .flatMap((externalUser) => {
-          const user = usersByExternalId.get(externalUser.id);
+          const user = usersByExternalId.get(
+            externalUser.externalId,
+          );
 
           if (!user) {
             return [];
@@ -73,7 +77,8 @@ export class GetDepartmentUsersUseCase {
               id: user.id,
               displayName: user.displayName,
               active: user.active,
-              departmentExternalIds: externalUser.departmentIds,
+              departmentExternalIds:
+                externalUser.externalDepartmentIds,
             },
           ];
         })

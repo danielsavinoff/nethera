@@ -28,7 +28,7 @@ export class BitrixSmartProcessProvider
     }
 
     return {
-      id: String(
+      externalId: String(
         bitrixSmartProcess.entityTypeId ?? bitrixSmartProcess.id,
       ),
       title: bitrixSmartProcess.title,
@@ -50,7 +50,7 @@ export class BitrixSmartProcessProvider
     }
 
     return {
-      id: String(
+      externalId: String(
         bitrixSmartProcess.entityTypeId ?? bitrixSmartProcess.id,
       ),
       title: bitrixSmartProcess.title,

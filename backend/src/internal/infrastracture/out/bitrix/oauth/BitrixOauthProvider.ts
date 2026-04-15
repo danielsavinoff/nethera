@@ -18,7 +18,7 @@ export class BitrixOauthProvider implements OauthProvider {
       await this.bitrixClient.getCurrentUser(ctx);
 
     return {
-      id: Number(currentUser.ID),
+      externalId: Number(currentUser.ID),
       provider: Provider.Bitrix,
     };
   }

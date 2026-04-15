@@ -66,7 +66,7 @@ export class GetUsersUseCase {
 
     const externalUsersById = new Map(
       externalUsers.map((externalUser) => [
-        externalUser.id,
+        externalUser.externalId,
         externalUser,
       ]),
     );
@@ -81,7 +81,7 @@ export class GetUsersUseCase {
         active: user.active,
         departmentExternalIds:
           externalUsersById.get(user.externalId)
-            ?.departmentIds ?? [],
+            ?.externalDepartmentIds ?? [],
       })),
     };
   }

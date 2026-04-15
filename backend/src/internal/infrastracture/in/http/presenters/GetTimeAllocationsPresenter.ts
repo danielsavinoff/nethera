@@ -23,17 +23,19 @@ export class GetTimeAllocationsPresenter {
             (item) =>
               new GetTimeAllocationResponseDto({
                 task: new GetTimeAllocationTaskResponseDto({
-                  id: item.externalTask.id,
+                  id: item.externalTask.externalId,
                   title: item.externalTask.title,
-                  groupId: item.externalTask.groupId,
+                  groupId: item.externalTask.externalGroupId,
                 }),
                 group: new GetTimeAllocationGroupResponseDto({
-                  id: item.externalGroup.id,
+                  id: item.externalGroup.externalId,
                   name: item.externalGroup.name,
                 }),
-                id: item.externalTimeAllocation.id,
-                groupId: item.externalTimeAllocation.groupId,
-                taskId: item.externalTimeAllocation.taskId,
+                id: item.externalTimeAllocation.externalId,
+                groupId:
+                  item.externalTimeAllocation.externalGroupId,
+                taskId:
+                  item.externalTimeAllocation.externalTaskId,
                 hours: item.externalTimeAllocation.hours,
                 isApproved:
                   item.externalTimeAllocation.isApproved,
@@ -41,9 +43,9 @@ export class GetTimeAllocationsPresenter {
                   item.externalTimeAllocation.weekNumber,
                 year: item.externalTimeAllocation.year,
                 assigneeId:
-                  item.externalTimeAllocation.assigneeId,
+                  item.externalTimeAllocation.externalAssigneeId,
                 assignerId:
-                  item.externalTimeAllocation.assignerId,
+                  item.externalTimeAllocation.externalAssignerId,
               }),
           ),
     });

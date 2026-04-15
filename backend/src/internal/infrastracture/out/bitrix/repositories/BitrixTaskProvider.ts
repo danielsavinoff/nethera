@@ -26,9 +26,9 @@ export class BitrixTaskProvider implements TaskProvider {
     }
 
     return {
-      id: String(bitrixTask.id),
+      externalId: String(bitrixTask.id),
       title: String(bitrixTask.title),
-      groupId:
+      externalGroupId:
         bitrixTask.groupId == null
           ? undefined
           : String(bitrixTask.groupId),
@@ -82,9 +82,9 @@ export class BitrixTaskProvider implements TaskProvider {
         }
 
         const task = {
-          id: String(bitrixTask.id),
+          externalId: String(bitrixTask.id),
           title: String(bitrixTask.title),
-          groupId:
+          externalGroupId:
             bitrixTask.groupId == null
               ? undefined
               : String(bitrixTask.groupId),

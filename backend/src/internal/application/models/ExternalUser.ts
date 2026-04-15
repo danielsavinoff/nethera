@@ -1,9 +1,9 @@
 export interface ExternalUser {
-  id: number;
+  externalId: number;
   firstName?: string;
   secondName?: string;
   lastName?: string;
   isAdmin: boolean;
   isActive?: boolean;
-  departmentIds: string[];
+  externalDepartmentIds: string[];
 }

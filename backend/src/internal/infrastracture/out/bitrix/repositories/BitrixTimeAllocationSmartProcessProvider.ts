@@ -58,7 +58,7 @@ export class BitrixTimeAllocationSmartProcessProvider
     return {
       total: response.total,
       items: response.items.map((item) => ({
-        [ExternalTimeAllocationCustomFields.AssigneeId]: String(
+        externalAssigneeId: String(
           item[
             this.getFieldName(
               smartProcessId,
@@ -66,7 +66,7 @@ export class BitrixTimeAllocationSmartProcessProvider
             )
           ],
         ),
-        [ExternalTimeAllocationCustomFields.AssignerId]: String(
+        externalAssignerId: String(
           item[
             this.getFieldName(
               smartProcessId,
@@ -74,7 +74,7 @@ export class BitrixTimeAllocationSmartProcessProvider
             )
           ],
         ),
-        [ExternalTimeAllocationCustomFields.GroupId]: String(
+        externalGroupId: String(
           item[
             this.getFieldName(
               smartProcessId,
@@ -82,7 +82,7 @@ export class BitrixTimeAllocationSmartProcessProvider
             )
           ],
         ),
-        [ExternalTimeAllocationCustomFields.TaskId]: String(
+        externalTaskId: String(
           item[
             this.getFieldName(
               smartProcessId,
@@ -121,7 +121,7 @@ export class BitrixTimeAllocationSmartProcessProvider
             )
           ],
         ),
-        id: String(item.id),
+        externalId: String(item.id),
       })),
     };
   }

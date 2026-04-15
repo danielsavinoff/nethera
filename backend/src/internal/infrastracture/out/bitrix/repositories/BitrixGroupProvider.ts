@@ -26,7 +26,7 @@ export class BitrixGroupProvider implements GroupProvider {
     }
 
     return {
-      id: String(bitrixGroup.ID),
+      externalId: String(bitrixGroup.ID),
       name: String(bitrixGroup.NAME),
     };
   }
@@ -78,7 +78,7 @@ export class BitrixGroupProvider implements GroupProvider {
         }
 
         groups.push({
-          id: String(bitrixGroup.ID),
+          externalId: String(bitrixGroup.ID),
           name: String(bitrixGroup.NAME),
         });
       }

@@ -1,3 +1,3 @@
 export interface ExternalEntity {
-  typeId: string;
+  externalTypeId: string;
 }

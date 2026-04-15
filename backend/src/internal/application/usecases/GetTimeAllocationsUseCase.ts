@@ -1,7 +1,4 @@
-import {
-  ExternalTimeAllocation,
-  ExternalTimeAllocationCustomFields,
-} from '../models/ExternalTimeAllocation.js';
+import { ExternalTimeAllocation } from '../models/ExternalTimeAllocation.js';
 import type { ExternalGroup } from '../models/ExternalGroup.js';
 import type { GroupProvider } from '../ports/GroupProvider.js';
 import type { SmartProcessRepository } from '../ports/SmartProcessRepository.js';
@@ -89,12 +86,7 @@ export class GetTimeAllocationsUseCase {
     const externalTaskIds = [
       ...new Set(
         externalTimeAllocations
-          .map(
-            (timeAllocation) =>
-              timeAllocation[
-                ExternalTimeAllocationCustomFields.TaskId
-              ],
-          )
+          .map((timeAllocation) => timeAllocation.externalTaskId)
           .filter((externalTaskId): externalTaskId is string =>
             Boolean(externalTaskId),
           ),
@@ -105,10 +97,7 @@ export class GetTimeAllocationsUseCase {
       ...new Set(
         externalTimeAllocations
           .map(
-            (timeAllocation) =>
-              timeAllocation[
-                ExternalTimeAllocationCustomFields.GroupId
-              ],
+            (timeAllocation) => timeAllocation.externalGroupId,
           )
           .filter((externalGroupId): externalGroupId is string =>
             Boolean(externalGroupId),
@@ -132,11 +121,11 @@ export class GetTimeAllocationsUseCase {
     ]);
 
     const groupsById = new Map(
-      externalGroups.map((group) => [group.id, group]),
+      externalGroups.map((group) => [group.externalId, group]),
     );
 
     const tasksById = new Map(
-      externalTasks.map((task) => [task.id, task]),
+      externalTasks.map((task) => [task.externalId, task]),
     );
 
     console.log({ groupsById });
@@ -151,16 +140,17 @@ export class GetTimeAllocationsUseCase {
         items: externalTimeAllocations.map(
           (externalTimeAllocation) => ({
             externalTask: tasksById.get(
-              externalTimeAllocation.taskId,
+              externalTimeAllocation.externalTaskId,
             ) ?? {
-              id: externalTimeAllocation.taskId,
+              externalId: externalTimeAllocation.externalTaskId,
               title: '',
-              groupId: externalTimeAllocation.groupId,
+              externalGroupId:
+                externalTimeAllocation.externalGroupId,
             },
             externalGroup: groupsById.get(
-              externalTimeAllocation.groupId,
+              externalTimeAllocation.externalGroupId,
             ) ?? {
-              id: externalTimeAllocation.groupId,
+              externalId: externalTimeAllocation.externalGroupId,
               name: '',
             },
             externalTimeAllocation: externalTimeAllocation,

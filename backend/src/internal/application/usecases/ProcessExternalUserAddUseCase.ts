@@ -43,7 +43,7 @@ export class ProcessExternalUserAddUseCase
     }
 
     const registeredUser = User.create({
-      externalId: externalUser.id,
+      externalId: externalUser.externalId,
       tenantId: command.tenant.id,
       active: externalUser.isActive,
       firstName: externalUser.firstName,

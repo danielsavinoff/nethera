@@ -3,6 +3,6 @@ export enum Provider {
 }
 
 export interface ExternalIdentity {
-  id: number;
+  externalId: number;
   provider: Provider;
 }
