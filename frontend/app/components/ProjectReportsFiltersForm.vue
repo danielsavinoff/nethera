@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
-import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 import type {
   UserPickerBrowseState,
   UserPickerItem,
@@ -118,6 +118,9 @@ watch(
       <B24FormField
         name="user"
         :label="t('page.projectReports.filters.user.label')"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
         class="min-w-[16rem] flex-1"
       >
         <UserLineInputMenu
@@ -135,6 +138,7 @@ watch(
           value-key="id"
           label-key="label"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.projectReports.filters.user.placeholder')"
         />
       </B24FormField>
@@ -142,6 +146,9 @@ watch(
       <B24FormField
         name="year"
         :label="t('page.projectReports.filters.year.label')"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
         class="min-w-[12rem] flex-1"
       >
         <SingleLineInputMenu
@@ -151,6 +158,7 @@ watch(
           autocomplete=""
           :items="yearItems"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.projectReports.filters.year.placeholder')"
         />
       </B24FormField>
@@ -158,6 +166,9 @@ watch(
       <B24FormField
         name="weekFrom"
         :label="t('page.projectReports.filters.weekFrom.label')"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
         class="min-w-[14rem] flex-1"
       >
         <SingleLineInputMenu
@@ -167,6 +178,7 @@ watch(
           autocomplete=""
           :items="weekItems"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.projectReports.filters.weekFrom.placeholder')"
         />
       </B24FormField>
@@ -174,6 +186,9 @@ watch(
       <B24FormField
         name="weekTo"
         :label="t('page.projectReports.filters.weekTo.label')"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
         class="min-w-[14rem] flex-1"
       >
         <SingleLineInputMenu
@@ -183,6 +198,7 @@ watch(
           autocomplete=""
           :items="weekItems"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.projectReports.filters.weekTo.placeholder')"
         />
       </B24FormField>
@@ -190,8 +206,9 @@ watch(
       <B24Button
         type="submit"
         color="air-secondary-no-accent"
-        :icon="RefreshIcon"
+        :icon="Refresh5Icon"
         :aria-label="t('page.projectReports.filters.submit')"
+        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1)' }"
         size="lg"
       />
     </section>

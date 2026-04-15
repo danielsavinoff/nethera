@@ -76,6 +76,10 @@ const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
       <B24FormField
         name="favoriteUsers"
         :label="t('page.settings.favoriteUsers.label')"
+        class="text-base"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
       >
         <UserLineInputMenu
           v-model="formState.favoriteUsers"
@@ -92,6 +96,7 @@ const onSubmit = async (_event: FormSubmitEvent<SettingsFormState>) => {
           value-key="id"
           label-key="label"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.settings.favoriteUsers.placeholder')"
         />
       </B24FormField>

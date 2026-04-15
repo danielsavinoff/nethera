@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
-import RefreshIcon from "@bitrix24/b24icons-vue/outline/RefreshIcon";
 import type {
   UserPickerBrowseState,
   UserPickerItem,
   UserPickerLoadState,
 } from "~~/app/composables/useUserPickerPageState";
+import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
 
 const query = defineModel<string>("query", {
   default: "",
@@ -71,7 +71,10 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
       <B24FormField
         name="user"
         :label="t('page.index.filters.user.label')"
-        class="min-w-[16rem] flex-1"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
+        class="min-w-[16rem] flex-1 text-base"
       >
         <UserLineInputMenu
           v-model="formState.user"
@@ -88,6 +91,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           value-key="id"
           label-key="label"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.index.filters.user.placeholder')"
         />
       </B24FormField>
@@ -95,7 +99,10 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
       <B24FormField
         name="year"
         :label="t('page.index.filters.year.label')"
-        class="min-w-[12rem] flex-1"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
+        class="min-w-[12rem] flex-1 text-base"
       >
         <SingleLineInputMenu
           v-model="formState.year"
@@ -104,6 +111,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           autocomplete=""
           :items="yearItems"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.index.filters.year.placeholder')"
         />
       </B24FormField>
@@ -111,7 +119,10 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
       <B24FormField
         name="week"
         :label="t('page.index.filters.week.label')"
-        class="min-w-[14rem] flex-1"
+        :b24ui="{
+          wrapper: 'mb-2',
+        }"
+        class="min-w-[14rem] flex-1 text-base"
       >
         <SingleLineInputMenu
           v-model="formState.week"
@@ -120,15 +131,18 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
           autocomplete=""
           :items="weekItems"
           size="lg"
+          :b24ui="{ base: '[--tw-ring-color:var(--ui-color-base-5)]!' }"
           :placeholder="t('page.index.filters.week.placeholder')"
         />
       </B24FormField>
 
       <B24Button
         type="submit"
-        color="air-secondary-no-accent"
-        :icon="RefreshIcon"
+        color="air-secondary-accent"
+        :icon="Refresh5Icon"
         :aria-label="t('page.index.filters.submit')"
+        class="text-(--ui-color-base-1)"
+        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1)' }"
         size="lg"
       />
     </section>

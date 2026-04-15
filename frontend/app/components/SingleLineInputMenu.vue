@@ -11,8 +11,10 @@ const singleLineInputMenuUi = {
   root: "w-full min-w-0",
   base: "flex min-w-0 flex-nowrap items-center overflow-hidden",
   tagsInput: "min-w-0 flex-1",
+  tagsItem: "pe-[13px]",
   leading: "shrink-0",
   trailing: "shrink-0",
+  tagsItemDelete: "hidden",
 };
 
 const mergedB24ui = computed(() => ({

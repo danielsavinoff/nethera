@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { NavigationMenuItem } from "@bitrix24/b24ui-nuxt";
+import { useIsIframe } from "~/composables/useIsIframe";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -49,17 +50,20 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
     active: route.path === "/settings",
   },
 ]);
+
+const isIframe = useIsIframe();
 </script>
 
 <template>
   <div
-    class="min-h-dvh bg-(--ui-color-background-primary) px-4 py-6 sm:px-6 rounded-xl"
+    class="min-h-dvh bg-(--ui-color-background-primary)"
+    :class="[!isIframe && 'px-4 py-6 sm:px-6 rounded-xl']"
   >
-    <div class="mx-auto flex w-full flex-col gap-6">
+    <div class="mx-auto flex w-full flex-col gap-2.5">
       <section class="flex flex-wrap items-center gap-x-8 gap-y-5">
-        <div class="min-w-[16rem] flex-1">
+        <div class="flex-1">
           <h1
-            class="mt-2 text-2xl font-semibold text-(--ui-color-base-1) sm:text-3xl"
+            class="text-[25px] font-medium text-(--ui-color-base-1) whitespace-nowrap"
           >
             {{ t("page.index.header.title") }}
           </h1>
@@ -70,7 +74,9 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
             orientation="horizontal"
             class="w-full"
             :aria-label="t('page.index.header.title')"
-            :b24ui="{}"
+            :b24ui="{
+              link: 'text-sm!',
+            }"
           />
         </div>
       </section>

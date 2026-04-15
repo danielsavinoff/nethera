@@ -115,6 +115,55 @@
         "reserved": "Reserved",
         "approved": "Approved",
         "total": "Total"
+      },
+      "actions": {
+        "addTimeAllocation": "Add time allocation",
+        "openMenu": "Open actions menu"
+      },
+      "dialog": {
+        "title": "Add time allocation",
+        "description": "Prepare a new time allocation entry.",
+        "group": {
+          "label": "Group",
+          "placeholder": "Enter group"
+        },
+        "task": {
+          "label": "Task",
+          "placeholder": "Enter task name"
+        },
+        "weekNumber": {
+          "label": "Week number",
+          "placeholder": "Enter week number"
+        },
+        "assignee": {
+          "label": "Assignee",
+          "placeholder": "Enter assignee name"
+        },
+        "assigner": {
+          "label": "Assigner",
+          "placeholder": "Enter assigner name"
+        },
+        "year": {
+          "label": "Year",
+          "placeholder": "Enter year"
+        },
+        "hours": {
+          "label": "Number of hours",
+          "increase": "Increase hours",
+          "decrease": "Decrease hours"
+        },
+        "automaticApproval": {
+          "label": "Automatic approval",
+          "yes": "Yes",
+          "no": "No"
+        },
+        "priority": {
+          "label": "Priority",
+          "placeholder": "Enter priority"
+        },
+        "stub": "Submitting this dialog is not wired yet.",
+        "cancel": "Cancel",
+        "submit": "Add"
       }
     },
     "settings": {

@@ -17,7 +17,7 @@ export class GetCurrentUserUseCase {
   async execute(
     command: GetCurrentUserCommand,
   ): Promise<GetCurrentUserResult> {
-    const user = await this.userRepository.findById(
+    const user = await this.userRepository.findByIdWithRoles(
       command.userId,
     );
 

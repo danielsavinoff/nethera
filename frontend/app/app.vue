@@ -47,12 +47,12 @@ useHead({
 </script>
 
 <template>
-  <B24App :locale="locales[locale]">
+  <B24App :locale="locales[locale]" class="">
     <NuxtLoadingIndicator
       color="var(--ui-color-design-filled-warning-bg)"
       :height="3"
     />
-    <B24DashboardGroup class="min-h-dvh flex flex-col p-(--content-area-shift)">
+    <B24DashboardGroup class="min-h-dvh flex flex-col">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>

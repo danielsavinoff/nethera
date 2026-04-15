@@ -34,6 +34,7 @@ async function main() {
     Permission.UserFavoriteViewOwn,
     Permission.UserFavoriteAddOwn,
     Permission.UserFavoriteDeleteOwn,
+    Permission.TimeAllocationAddAny,
   ];
 
   await prisma.role.upsert({
@@ -160,6 +161,12 @@ async function main() {
       roleId: adminRole.id,
       permissionId: permissionsByName.get(
         Permission.UserFavoriteDeleteOwn,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.TimeAllocationAddAny,
       )?.id,
     },
   ];

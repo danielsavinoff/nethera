@@ -229,12 +229,14 @@ const totals = computed(() => {
 
 <template>
   <div class="max-w-full overflow-x-auto rounded-lg">
-    <table class="min-w-max border-collapse text-sm">
+    <table
+      class="min-w-max border-collapse text-base [&_tbody_td]:h-13 [&_tbody_td]:max-h-13 [&_tbody_td]:overflow-hidden [&_tbody_td]:whitespace-nowrap [&_tfoot_td]:h-13 [&_tfoot_td]:max-h-13 [&_tfoot_td]:overflow-hidden [&_tfoot_td]:whitespace-nowrap [&_thead_th]:overflow-hidden [&_thead_th]:whitespace-nowrap"
+    >
       <thead>
-        <tr class="border-b border-(--ui-color-design-outline-stroke)">
+        <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <th
             rowspan="2"
-            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 py-3 text-left font-medium text-(--ui-color-base-1)"
+            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-medium text-(--ui-color-base-1)"
           >
             {{ t("page.actualReports.table.user") }}
           </th>
@@ -242,40 +244,40 @@ const totals = computed(() => {
             v-for="week in weekLabels"
             :key="week.number"
             colspan="6"
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ week.label }}
           </th>
         </tr>
-        <tr class="border-b border-(--ui-color-design-outline-stroke)">
+        <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <template v-for="week in weekLabels" :key="`subhead-${week.number}`">
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.reserved") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.bookingFact") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.requestsTotal") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.bookingExecution") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.totalFact") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.normExecution") }}
             </th>
@@ -286,10 +288,10 @@ const totals = computed(() => {
         <tr
           v-for="user in rows"
           :key="user.id"
-          class="border-b border-(--ui-color-design-outline-stroke)"
+          class="h-13 border-b border-(--ui-color-design-outline-stroke)"
         >
           <td
-            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3 text-(--ui-color-base-1)"
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 align-middle text-(--ui-color-base-1)"
           >
             {{ user.name }}
           </td>
@@ -297,51 +299,51 @@ const totals = computed(() => {
             v-for="week in user.weeks"
             :key="`${user.id}-${week.number}`"
           >
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.reserved }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.bookingFact }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.requestsTotal }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.bookingExecution }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.totalFact }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.normExecution }}
             </td>
           </template>
         </tr>
       </tbody>
       <tfoot>
-        <tr class="border-t border-(--ui-color-design-outline-stroke)">
+        <tr class="h-13 border-t border-(--ui-color-design-outline-stroke)">
           <td
-            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3 text-(--ui-color-base-1)"
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 align-middle text-(--ui-color-base-1)"
           >
             {{ t("page.actualReports.table.total") }}
           </td>
           <template v-for="week in totals" :key="`total-${week.number}`">
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.reserved }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.bookingFact }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.requestsTotal }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.bookingExecution }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.totalFact }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.normExecution }}
             </td>
           </template>

@@ -217,12 +217,14 @@ const totals = computed(() => {
 
 <template>
   <div class="max-w-full overflow-x-auto rounded-lg">
-    <table class="min-w-max border-collapse text-sm">
+    <table
+      class="min-w-max border-collapse text-base [&_tbody_td]:h-13 [&_tbody_td]:max-h-13 [&_tbody_td]:overflow-hidden [&_tbody_td]:whitespace-nowrap [&_tfoot_td]:h-13 [&_tfoot_td]:max-h-13 [&_tfoot_td]:overflow-hidden [&_tfoot_td]:whitespace-nowrap [&_thead_th]:overflow-hidden [&_thead_th]:whitespace-nowrap"
+    >
       <thead>
-        <tr class="border-b border-(--ui-color-design-outline-stroke)">
+        <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <th
             rowspan="2"
-            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 py-3 text-left font-medium text-(--ui-color-base-1)"
+            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-medium text-(--ui-color-base-1)"
           >
             {{ t("page.projectReports.table.project") }}
           </th>
@@ -230,48 +232,48 @@ const totals = computed(() => {
             v-for="week in weekLabels"
             :key="week.number"
             colspan="2"
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ week.label }}
           </th>
           <th
             colspan="3"
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.totalGroup") }}
           </th>
           <th
             rowspan="2"
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.overallTrackShare") }}
           </th>
         </tr>
-        <tr class="border-b border-(--ui-color-design-outline-stroke)">
+        <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <template v-for="week in weekLabels" :key="`subhead-${week.number}`">
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.projectReports.table.reserved") }}
             </th>
             <th
-              class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.projectReports.table.fact") }}
             </th>
           </template>
           <th
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.reserved") }}
           </th>
           <th
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.fact") }}
           </th>
           <th
-            class="px-4 py-3 text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.bookingExecution") }}
           </th>
@@ -281,10 +283,10 @@ const totals = computed(() => {
         <tr
           v-for="project in projectRows"
           :key="project.id"
-          class="border-b border-(--ui-color-design-outline-stroke)"
+          class="h-13 border-b border-(--ui-color-design-outline-stroke)"
         >
           <td
-            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3"
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 align-middle"
           >
             <NuxtLink
               :to="project.href"
@@ -297,52 +299,52 @@ const totals = computed(() => {
             v-for="week in project.weeks"
             :key="`${project.id}-${week.number}`"
           >
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.reserved }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.fact }}
             </td>
           </template>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ project.totalReserved }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ project.totalFact }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ project.bookingExecution }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ project.overallTrack }}
           </td>
         </tr>
       </tbody>
       <tfoot>
-        <tr class="border-t border-(--ui-color-design-outline-stroke)">
+        <tr class="h-13 border-t border-(--ui-color-design-outline-stroke)">
           <td
-            class="sticky left-0 bg-(--ui-color-background-primary) px-4 py-3 text-(--ui-color-base-1)"
+            class="sticky left-0 bg-(--ui-color-background-primary) px-4 align-middle text-(--ui-color-base-1)"
           >
             {{ t("page.projectReports.table.total") }}
           </td>
           <template v-for="week in totals.weeks" :key="`total-${week.number}`">
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.reserved }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+            <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
               {{ week.fact }}
             </td>
           </template>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ totals.totalReserved }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ totals.totalFact }}
           </td>
-          <td class="px-4 py-3 whitespace-nowrap text-(--ui-color-base-1)">
+          <td class="px-4 align-middle whitespace-nowrap text-(--ui-color-base-1)">
             {{ totals.bookingExecution }}
           </td>
-          <td class="px-4 py-3" />
+          <td class="px-4 align-middle" />
         </tr>
       </tfoot>
     </table>
