@@ -40,6 +40,16 @@ export class TimeAllocationController {
     required: false,
     type: Number,
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+  })
   @Get()
   async handleGetAll(
     @Query() query: GetTimeAllocationsQueryDto,
@@ -52,6 +62,8 @@ export class TimeAllocationController {
       weekNumber: query.weekNumber,
       weekNumberFrom: query.weekNumberFrom,
       weekNumberTo: query.weekNumberTo,
+      page: query.page,
+      limit: query.limit,
     });
 
     return this.getTimeAllocationsPresenter.present(result);

@@ -310,6 +310,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: GetTimeAllocationsUseCase,
       useFactory: (
+        userRepository: UserRepository,
         tenantRepository: TenantRepository,
         smartProcessRepository: SmartProcessRepository,
         timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
@@ -317,6 +318,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         groupProvider: GroupProvider,
       ) => {
         return new GetTimeAllocationsUseCase(
+          userRepository,
           tenantRepository,
           smartProcessRepository,
           timeAllocationSmartProcessProvider,
@@ -325,6 +327,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         );
       },
       inject: [
+        PrismaUserRepository,
         PrismaTenantRepository,
         PrismaSmartProcessRepository,
         BitrixTimeAllocationSmartProcessProvider,

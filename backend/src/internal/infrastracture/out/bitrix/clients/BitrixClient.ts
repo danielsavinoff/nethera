@@ -196,14 +196,13 @@ export class BitrixClient {
       'crm.item.list',
       {
         entityTypeId: Number(input.entityTypeId),
-        // select: input.select,
-        // ...(input.filter ? { filter: input.filter } : {}),
-        // ...(typeof input.limit === 'number'
-        //   ? { limit: input.limit }
-        //   : {}),
-        // ...(input.useOriginalUfNames
-        //   ? { useOriginalUfNames: 'Y' }
-        //   : {}),
+        ...(input.filter ? { filter: input.filter } : {}),
+        ...(typeof input.limit === 'number'
+          ? { limit: input.limit }
+          : {}),
+        ...(input.useOriginalUfNames
+          ? { useOriginalUfNames: 'Y' }
+          : {}),
       },
       input.start ?? 0,
     );

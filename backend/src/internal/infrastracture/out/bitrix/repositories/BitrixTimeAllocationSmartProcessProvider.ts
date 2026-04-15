@@ -43,15 +43,48 @@ export class BitrixTimeAllocationSmartProcessProvider
         ? smartProcessExternalId
         : String(resolvedSmartProcess.id);
 
-    const page = query.page ?? 1;
-    // const start = (page - 1) * TIME_ALLOCATIONS_PAGE_LIMIT;
+    const assigneeIdFieldName = this.getFieldName(
+      smartProcessId,
+      ExternalTimeAllocationCustomFields.AssigneeId,
+    );
+
+    const weekNumberFieldName = this.getFieldName(
+      smartProcessId,
+      ExternalTimeAllocationCustomFields.WeekNumber,
+    );
+
+    const yearFieldName = this.getFieldName(
+      smartProcessId,
+      ExternalTimeAllocationCustomFields.Year,
+    );
+
     const response = await this.bitrixClient.getCrmItems(
       credentials,
       {
         entityTypeId: smartProcessExternalId,
-        // filter: this.buildFilter(fieldNames, query),
-        // start,
-        useOriginalUfNames: true,
+        filter: {
+          [assigneeIdFieldName]: query.filters.externalUserId,
+          [yearFieldName]: query.filters.year,
+          ...(typeof query.filters.weekNumber === 'number'
+            ? {
+                [weekNumberFieldName]: query.filters.weekNumber,
+              }
+            : {}),
+          ...(typeof query.filters.weekNumberFrom === 'number'
+            ? {
+                [`>=${weekNumberFieldName}`]:
+                  query.filters.weekNumberFrom,
+              }
+            : {}),
+          ...(typeof query.filters.weekNumberTo === 'number'
+            ? {
+                [`<=${weekNumberFieldName}`]:
+                  query.filters.weekNumberTo,
+              }
+            : {}),
+        },
+        start: query.page?.skip,
+        limit: query.page?.limit,
       },
     );
 

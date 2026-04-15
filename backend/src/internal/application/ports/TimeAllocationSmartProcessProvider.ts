@@ -4,7 +4,7 @@ import type { Page } from '../models/Page.js';
 
 export interface FetchTimeAllocationsSmartProcessQuery {
   filters: {
-    userId: string;
+    externalUserId: string;
     year: number;
     weekNumber?: number;
     weekNumberFrom?: number;

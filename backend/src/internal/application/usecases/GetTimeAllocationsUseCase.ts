@@ -8,6 +8,7 @@ import type { TimeAllocationSmartProcessProvider } from '../ports/TimeAllocation
 import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
 import type { ExternalTask } from '../models/ExternalTask.js';
 import type { UserRecord } from '../../domain/user/UserRecord.js';
+import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetTimeAllocationsCommand {
   tenantId: TenantRecord['id'];
@@ -17,6 +18,7 @@ export interface GetTimeAllocationsCommand {
   weekNumberFrom?: number;
   weekNumberTo?: number;
   page?: number;
+  limit?: number;
 }
 
 export interface GetTimeAllocationsResult {
@@ -36,6 +38,7 @@ export interface GetTimeAllocationsResult {
 
 export class GetTimeAllocationsUseCase {
   constructor(
+    private readonly userRepository: UserRepository,
     private readonly tenantRepository: TenantRepository,
     private readonly smartProcessRepository: SmartProcessRepository,
     private readonly timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
@@ -47,6 +50,11 @@ export class GetTimeAllocationsUseCase {
     command: GetTimeAllocationsCommand,
   ): Promise<GetTimeAllocationsResult> {
     const page = command.page ?? 1;
+    const limit = command.limit ?? 100;
+
+    const user = await this.userRepository.findByIdOrThrow(
+      command.userId,
+    );
 
     const tenant = await this.tenantRepository.loadByIdOrThrow(
       command.tenantId,
@@ -62,7 +70,7 @@ export class GetTimeAllocationsUseCase {
         pagination: {
           total: 0,
           page,
-          limit: 0,
+          limit,
         },
       };
     }
@@ -73,13 +81,16 @@ export class GetTimeAllocationsUseCase {
         smartProcess.externalId,
         {
           filters: {
-            userId: command.userId,
+            externalUserId: String(user.externalId),
             year: command.year,
             weekNumber: command.weekNumber,
             weekNumberFrom: command.weekNumberFrom,
             weekNumberTo: command.weekNumberTo,
           },
-          page: {},
+          page: {
+            limit,
+            skip: (page - 1) * limit,
+          },
         },
       );
 
@@ -104,9 +115,6 @@ export class GetTimeAllocationsUseCase {
           ),
       ),
     ];
-
-    console.log({ externalGroupIds });
-
     const [externalGroups, externalTasks] = await Promise.all([
       this.groupProvider.fetchMany(tenant.credentials, {
         filters: {
@@ -128,13 +136,11 @@ export class GetTimeAllocationsUseCase {
       externalTasks.map((task) => [task.externalId, task]),
     );
 
-    console.log({ groupsById });
-
     return {
       pagination: {
         total: total,
         page,
-        limit: 0,
+        limit,
       },
       data: {
         items: externalTimeAllocations.map(
