@@ -1,28 +1,85 @@
-# Repository Guidelines
+# Engineering Guide
 
-## Project Structure & Module Organization
-- `backend/` is a NestJS service using hexagonal architecture (dependency rule: outer layers depend inward). Core code lives in `backend/src`: `domain/` for business models/services, `application/` for use cases + ports/interfaces, and `infrastracture/` (note spelling) for adapters and wiring (`in/` HTTP/messaging, `out/` persistence/Bitrix/logging, `bootstrap/` modules). Shared packages are under `backend/libs/common`.
-- Database schema and migrations are in `backend/prisma` (`schema.prisma`, `migrations/`).
-- `frontend/` is a Nuxt app. Pages live in `frontend/app/pages`, shared UI in `frontend/app/components`, state in `frontend/app/stores`, composables in `frontend/app/composables`, and styles in `frontend/app/assets`.
-- Static assets are in `frontend/public`, and localization files are in `frontend/i18n/locales`.
+## Backend
 
-## Build, Test, and Development Commands
-- Backend: `npm install` then `npm run start:dev` (watch mode), `npm run build`, `npm run lint`, `npm run test`, `npm run test:e2e`.
-- Frontend: `npm install` then `npm run dev`, `npm run build`, `npm run preview`, `npm run lint`.
-- Full stack (Docker): `docker compose -f docker-compose.dev.yml up` to bring up Postgres, backend, and frontend in dev mode.
+### Architecture
+- Follow hexagonal architecture.
+- Keep dependencies pointing inward.
+- `infrastructure -> application -> domain`
+- Do not depend on outer layers from inner layers.
 
-## Coding Style & Naming Conventions
-- Backend is TypeScript with ESLint + Prettier. Prettier uses single quotes, trailing commas, and `printWidth: 70` (see `backend/.prettierrc`).
-- Frontend uses ESLint via Nuxt. Keep formatting consistent with existing files.
-- Naming patterns: `*.module.ts`, `*.service.ts`, `*.controller.ts`, `*.dto.ts`, `*.interface.ts` in backend; client-only Nuxt pages use `.client.vue` suffix in `frontend/app/pages`.
+### Stack
+- NestJS, TypeScript, Prisma, Jest.
 
-## Testing Guidelines
-- Backend tests use Jest. Unit tests live alongside code as `*.spec.ts`; e2e tests live in `backend/test`.
-- Run `npm run test` for unit tests and `npm run test:e2e` for e2e. No frontend test runner is configured; add one if you introduce frontend tests.
+### Providers
+- Third-party application ports must end with `Provider`.
+- Provider fetch methods must start with `fetch`.
+- Prefer `fetch`, `fetchMany`, `fetchOrThrow`.
+- Fetch methods should usually accept `credentials` and `query`.
+- Query interfaces must be exported.
+- Query interfaces must live in the same file as the port.
+- Use `Fetch{ModelName}Query` for single-record queries.
+- Use `Fetch{ModelName}sQuery` for collection queries.
+- Single-record queries usually contain only `filters`.
+- Collection queries usually contain `filters` and `page?: { limit?: number; skip?: number }`.
+- Provider create methods must be named `create()`.
+- For multiple records, use `createMany()`.
+- Create methods should accept `credentials` and `input`.
+- Name create inputs `Create{text before Provider}Input`.
+- For plural inputs, use the plural form.
 
-## Commit & Pull Request Guidelines
-- Git history uses short, simple messages (for example “third commit”). Keep commits brief and descriptive; avoid long, multi-line formats unless needed.
-- PRs should include a concise summary, testing notes (commands and results), and screenshots or GIFs for UI changes. Link relevant issues if applicable.
+### External Models
+- Models returned from providers must start with `External`.
+- Third-party ID fields must use the `external...Id` naming style.
+- Third-party ID arrays must use `external...Ids`.
+- Examples:
+  `externalId`, `externalGroupId`, `externalParentId`.
 
-## Configuration & Secrets
-- Local config is loaded from `.env` (used by Docker and scripts). Do not commit secrets; document required variables in the PR if new ones are added.
+### Repositories
+- Database ports must end with `Repository`.
+- Repository read methods must start with `load`.
+- Use `save()` for create or update operations.
+
+### Domain Objects
+- Domain objects must expose `static hydrate(record: {DomainName}Record)`.
+- Domain objects must expose `static create(props)`.
+- Constructors must be `private`.
+- State must be stored in a private `props` field.
+- Domain objects must expose `toRecord(): {DomainName}Record`.
+
+### Exceptions
+- Prefer custom named exception classes over generic `Error`.
+- Use `throw new ExampleException()`.
+- Do not use `throw new Error('random exception')`.
+- Exception files must be named `{Name}Exception.ts`.
+
+### Use Cases
+- Every use case must define its own command type.
+- Every use case must define its own result type.
+- Every use case must expose `execute(command)`.
+- Result objects should expose `data`.
+- Keep the main payload inside `data`.
+- Add `pagination` only when needed.
+- Pass use case results to presenters.
+
+### Controllers
+- Controller method names must start with `handle`.
+- Controllers must stay thin.
+- Controllers should call a use case and pass the result to a presenter.
+- Controllers should map domain and application exceptions to HTTP exceptions.
+
+### Dev Tips
+- Build: `cd backend && npm run build`
+- Lint: `cd backend && npm run lint`
+- Tests: `cd backend && npm run test`
+- E2E tests: `cd backend && npm run test:e2e`
+
+## Frontend
+
+### Stack
+- Nuxt, TypeScript, Pinia, `@nuxtjs/i18n`.
+
+### Dev Tips
+- Dev server: `cd frontend && npm run dev`
+- Build: `cd frontend && npm run build`
+- API types: `cd frontend && npm run generate:api`
