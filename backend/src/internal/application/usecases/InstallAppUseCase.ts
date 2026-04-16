@@ -9,6 +9,7 @@ import { EventProvider } from '../ports/EventProvider.js';
 import { UserRepository } from '../ports/UserRepository.js';
 import { User } from '../../domain/user/User.js';
 import { TransactionRunner } from '../ports/TransactionRunner.js';
+import type { Role } from '../../domain/authorization/Role.js';
 import { UserRole } from '../../domain/authorization/UserRole.js';
 import { RoleRepository } from '../ports/RoleRepository.js';
 import { DefaultRolesMustExistException } from '../exceptions/DefaultRolesMustExistException.js';
@@ -23,10 +24,10 @@ import {
   EntityProvider,
   ExternalEntityType,
 } from '../ports/EntityProvider.js';
+import type { ExternalUser } from '../models/ExternalUser.js';
 import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
 import { TenantSmartProcessAlreadyExistsException } from '../exceptions/TenantSmartProcessAlreadyExistsException.js';
 import { Group } from '../../domain/group/Group.js';
-import { TenantRecord } from 'src/internal/domain/tenant/TenantRecord.js';
 
 export interface InstallAppCommand {
   accessToken: string;
@@ -112,11 +113,6 @@ export class InstallAppUseCase {
       `Installation for ${tenantCredentials.domain} initiated`,
     );
 
-    const externalUsers = await this.userProvider.fetchAll(
-      tenantCredentials,
-      {},
-    );
-
     await this.transactionRunner.run(
       async (transactionContext) => {
         const persistedTenant = await this.tenantRepository.save(
@@ -137,70 +133,15 @@ export class InstallAppUseCase {
           `Tenant groups for ${tenantCredentials.domain} synchronized`,
         );
 
-        if (externalUsers.length === 0) {
-          return;
-        }
-
-        const roles = await this.roleRepository.loadByNames(
-          [UserRole.User, UserRole.Admin],
+        await this.synchronizeUsers(
+          persistedTenant,
+          initiator,
           transactionContext,
         );
 
-        const userRole = roles.find(
-          (role) => role.name === UserRole.User,
+        this.logger.log(
+          `Tenant users for ${tenantCredentials.domain} synchronized`,
         );
-        const adminRole = roles.find(
-          (role) => role.name === UserRole.Admin,
-        );
-
-        if (!userRole || !adminRole) {
-          throw new DefaultRolesMustExistException();
-        }
-
-        for (const externalUser of externalUsers) {
-          const user =
-            await this.userRepository.findByTenantAndExternalIdWithRoles(
-              persistedTenant.id,
-              externalUser.externalId,
-              transactionContext,
-            );
-
-          if (!user) {
-            const isInitiator =
-              initiator.externalId === externalUser.externalId;
-
-            const registeredUser = User.create({
-              externalId: externalUser.externalId,
-              tenantId: persistedTenant.id,
-              active: externalUser.isActive,
-              firstName: externalUser.firstName,
-              secondName: externalUser.secondName,
-              lastName: externalUser.lastName,
-            }).withRoles([
-              userRole,
-              ...(isInitiator ? [adminRole] : []),
-            ]);
-
-            await this.userRepository.save(
-              registeredUser,
-              transactionContext,
-            );
-
-            continue;
-          }
-
-          const synchronizedUser = user.syncFromExternal({
-            active: externalUser.isActive,
-            firstName: externalUser.firstName,
-            secondName: externalUser.secondName,
-            lastName: externalUser.lastName,
-          });
-
-          await this.userRepository.save(
-            synchronizedUser,
-            transactionContext,
-          );
-        }
       },
     );
 
@@ -365,6 +306,82 @@ export class InstallAppUseCase {
       }
 
       skip += InstallAppUseCase.FETCH_GROUPS_PER_PAGE_LIMIT;
+    }
+  }
+
+  private async synchronizeUsers(
+    tenant: Tenant,
+    initiator: ExternalUser,
+    transactionContext: TransactionContext,
+  ): Promise<void> {
+    const externalUsers = await this.userProvider.fetchAll(
+      tenant.credentials,
+      {},
+    );
+
+    if (externalUsers.length === 0) {
+      return;
+    }
+
+    const roles = await this.roleRepository.loadByNames(
+      [UserRole.User, UserRole.Admin],
+      transactionContext,
+    );
+
+    const userRole = roles.find(
+      (role) => role.name === UserRole.User,
+    );
+    const adminRole = roles.find(
+      (role) => role.name === UserRole.Admin,
+    );
+
+    if (!userRole || !adminRole) {
+      throw new DefaultRolesMustExistException();
+    }
+
+    for (const externalUser of externalUsers) {
+      const user =
+        await this.userRepository.findByTenantAndExternalIdWithRoles(
+          tenant.id,
+          externalUser.externalId,
+          transactionContext,
+        );
+
+      if (!user) {
+        const isInitiator =
+          initiator.externalId === externalUser.externalId;
+
+        const registeredUser = User.create({
+          externalId: externalUser.externalId,
+          tenantId: tenant.id,
+          active: externalUser.isActive,
+          firstName: externalUser.firstName,
+          secondName: externalUser.secondName,
+          lastName: externalUser.lastName,
+        }).withRoles([
+          userRole,
+          ...(isInitiator ? [adminRole] : []),
+        ]);
+
+        await this.userRepository.save(
+          registeredUser,
+          transactionContext,
+        );
+
+        continue;
+      }
+
+      const synchronizedUser = user.syncFromExternal({
+        active: externalUser.isActive,
+        firstName: externalUser.firstName,
+        secondName: externalUser.secondName,
+        lastName: externalUser.lastName,
+      });
+
+      await this.userRepository.save(
+        synchronizedUser,
+        transactionContext,
+      );
     }
   }
 }
