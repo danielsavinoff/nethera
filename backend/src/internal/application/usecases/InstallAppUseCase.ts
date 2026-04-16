@@ -1,5 +1,6 @@
 import { ExternalTimeAllocationCustomFields } from '../models/ExternalTimeAllocation.js';
 import { ExternalSmartProcessFieldType } from '../models/ExternalSmartProcessField.js';
+import type { TransactionContext } from '../models/TransactionContext.js';
 import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
 import { TenantRepository } from '../ports/TenantRepository.js';
 import { UserProvider } from '../ports/UserProvider.js';
@@ -25,6 +26,7 @@ import {
 import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
 import { TenantSmartProcessAlreadyExistsException } from '../exceptions/TenantSmartProcessAlreadyExistsException.js';
 import { Group } from '../../domain/group/Group.js';
+import { TenantRecord } from 'src/internal/domain/tenant/TenantRecord.js';
 
 export interface InstallAppCommand {
   accessToken: string;
@@ -38,6 +40,8 @@ export interface InstallAppCommand {
 export type InstallAppResult = void;
 
 export class InstallAppUseCase {
+  private static readonly FETCH_GROUPS_PER_PAGE_LIMIT = 50;
+
   private readonly logger: Logger;
 
   constructor(
@@ -112,12 +116,6 @@ export class InstallAppUseCase {
       tenantCredentials,
       {},
     );
-    const externalGroups = await this.groupProvider.fetchMany(
-      tenantCredentials,
-      {
-        filters: {},
-      },
-    );
 
     await this.transactionRunner.run(
       async (transactionContext) => {
@@ -130,43 +128,14 @@ export class InstallAppUseCase {
           `Tenant record for ${tenantCredentials.domain} saved`,
         );
 
-        for (const externalGroup of externalGroups) {
-          const group = await this.groupRepository.load(
-            {
-              filters: {
-                tenantId: persistedTenant.id,
-                externalId: externalGroup.externalId,
-              },
-            },
-            transactionContext,
-          );
+        await this.synchronizeGroups(
+          persistedTenant,
+          transactionContext,
+        );
 
-          if (!group) {
-            const newGroup = Group.create({
-              externalId: externalGroup.externalId,
-              name: externalGroup.name,
-              tenantId: persistedTenant.id,
-              active: externalGroup.active,
-            });
-
-            await this.groupRepository.save(
-              newGroup,
-              transactionContext,
-            );
-
-            continue;
-          }
-
-          const synchronizedGroup = group.syncFromExternal({
-            name: externalGroup.name,
-            active: externalGroup.active,
-          });
-
-          await this.groupRepository.save(
-            synchronizedGroup,
-            transactionContext,
-          );
-        }
+        this.logger.log(
+          `Tenant groups for ${tenantCredentials.domain} synchronized`,
+        );
 
         if (externalUsers.length === 0) {
           return;
@@ -328,5 +297,74 @@ export class InstallAppUseCase {
     }
 
     await this.eventProvider.subscribe(tenantCredentials);
+  }
+
+  private async synchronizeGroups(
+    tenant: Tenant,
+    transactionContext: TransactionContext,
+  ): Promise<void> {
+    let skip = 0;
+
+    while (true) {
+      const page = await this.groupProvider.fetchMany(
+        tenant.credentials,
+        {
+          filters: {
+            active: true,
+          },
+          page: {
+            limit: InstallAppUseCase.FETCH_GROUPS_PER_PAGE_LIMIT,
+            skip: skip,
+          },
+        },
+      );
+
+      for (const externalGroup of page) {
+        const group = await this.groupRepository.load(
+          {
+            filters: {
+              tenantId: tenant.id,
+              externalId: externalGroup.externalId,
+            },
+          },
+          transactionContext,
+        );
+
+        if (!group) {
+          const newGroup = Group.create({
+            externalId: externalGroup.externalId,
+            name: externalGroup.name,
+            tenantId: tenant.id,
+            active: externalGroup.active,
+          });
+
+          await this.groupRepository.save(
+            newGroup,
+            transactionContext,
+          );
+
+          continue;
+        }
+
+        const synchronizedGroup = group.syncFromExternal({
+          name: externalGroup.name,
+          active: externalGroup.active,
+        });
+
+        await this.groupRepository.save(
+          synchronizedGroup,
+          transactionContext,
+        );
+      }
+
+      if (
+        page.length <
+        InstallAppUseCase.FETCH_GROUPS_PER_PAGE_LIMIT
+      ) {
+        return;
+      }
+
+      skip += InstallAppUseCase.FETCH_GROUPS_PER_PAGE_LIMIT;
+    }
   }
 }
