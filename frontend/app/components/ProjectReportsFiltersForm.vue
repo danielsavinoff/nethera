@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
+import { Icon } from "@iconify/vue";
 import type {
   UserPickerBrowseState,
   UserPickerItem,
@@ -110,6 +111,12 @@ watch(
   },
   { immediate: true },
 );
+
+const RestartIcon = () =>
+  h(Icon, {
+    icon: "iconamoon:restart-fill",
+    strokeWidth: 2,
+  });
 </script>
 
 <template>
@@ -206,9 +213,10 @@ watch(
       <B24Button
         type="submit"
         color="air-secondary-no-accent"
-        :icon="Refresh5Icon"
+        :icon="RestartIcon"
+        class="[--ui-btn-border-color:var(--ui-color-base-5)]! border"
         :aria-label="t('page.projectReports.filters.submit')"
-        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1)' }"
+        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1) rotate-135 size-5' }"
         size="lg"
       />
     </section>

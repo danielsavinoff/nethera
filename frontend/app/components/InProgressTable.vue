@@ -42,7 +42,7 @@ const { t } = useI18n();
           <th
             v-for="column in columns"
             :key="column"
-            class="px-4 align-middle font-medium text-(--ui-color-base-1)"
+            class="px-4 align-middle font-semibold text-(--ui-color-base-1)"
           >
             {{ column }}
           </th>

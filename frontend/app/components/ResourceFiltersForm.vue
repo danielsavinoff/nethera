@@ -6,6 +6,7 @@ import type {
   UserPickerLoadState,
 } from "~~/app/composables/useUserPickerPageState";
 import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
+import { Icon } from "@iconify/vue";
 
 const query = defineModel<string>("query", {
   default: "",
@@ -63,6 +64,12 @@ watch(
 );
 
 const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
+
+const RestartIcon = () =>
+  h(Icon, {
+    icon: "iconamoon:restart-fill",
+    strokeWidth: 2,
+  });
 </script>
 
 <template>
@@ -74,7 +81,7 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
         :b24ui="{
           wrapper: 'mb-2',
         }"
-        class="min-w-[16rem] flex-1 text-base"
+        class="min-w-[16rem] flex-1 text-base font-semibold"
       >
         <UserLineInputMenu
           v-model="formState.user"
@@ -139,10 +146,10 @@ const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
       <B24Button
         type="submit"
         color="air-secondary-accent"
-        :icon="Refresh5Icon"
+        :icon="RestartIcon"
         :aria-label="t('page.index.filters.submit')"
-        class="text-(--ui-color-base-1)"
-        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1)' }"
+        class="text-(--ui-color-base-1) [--ui-color-design-outline-stroke:var(--ui-color-base-5)]! border"
+        :b24ui="{ leadingIcon: 'text-(--ui-color-base-1) rotate-135 size-5' }"
         size="lg"
       />
     </section>

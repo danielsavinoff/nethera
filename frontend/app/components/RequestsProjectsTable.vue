@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { Plus30Icon } from "@bitrix24/b24icons-vue/actions";
-import { MenuIcon } from "@bitrix24/b24icons-vue/main";
 import Market1Icon from "@bitrix24/b24icons-vue/main/Market1Icon";
-import { PlusMIcon } from "@bitrix24/b24icons-vue/outline";
-import HamburgerMenuIcon from "@bitrix24/b24icons-vue/outline/HamburgerMenuIcon";
-import { PlusIcon } from "@bitrix24/b24icons-vue/solid";
+import { Icon } from "@iconify/vue";
 
 const { t } = useI18n();
 const currentUserStore = useCurrentUserStore();
@@ -144,6 +141,18 @@ const projectRows = computed(() =>
 const totals = computed(() =>
   getTotals(projects.flatMap((project) => project.tasks)),
 );
+
+const PlusIcon = () =>
+  h(Icon, {
+    icon: "tabler:plus",
+    strokeWidth: 2,
+  });
+
+const MenuIcon = () =>
+  h(Icon, {
+    icon: "material-symbols:menu-rounded",
+    strokeWidth: 2,
+  });
 </script>
 
 <template>
@@ -158,20 +167,21 @@ const totals = computed(() =>
           <th
             v-for="column in columns"
             :key="column"
-            class="px-4 align-middle font-medium text-(--ui-color-base-1)"
+            class="px-4 align-middle font-semibold text-(--ui-color-base-1)"
           >
             {{ column }}
           </th>
           <th
-            class="px-4 align-middle text-right font-medium text-(--ui-color-base-1)"
+            class="px-4 align-middle text-right font-semibold text-(--ui-color-base-1)"
           >
             <B24Button
               v-if="canAddTimeAllocationForAnyone"
-              :icon="Plus30Icon"
+              :icon="PlusIcon"
               size="lg"
               color="air-secondary-accent"
               :aria-label="t('page.requests.actions.addTimeAllocation')"
-              :b24ui="{ leadingIcon: 'text-(--ui-color-base-1)' }"
+              class="[--ui-color-design-outline-stroke:var(--ui-color-base-5)]! border"
+              :b24ui="{ leadingIcon: 'text-(--ui-color-base-1) size-5' }"
               @click="openAddTimeAllocationDialog()"
             />
           </th>
@@ -243,8 +253,9 @@ const totals = computed(() =>
               >
                 <B24Button
                   size="lg"
-                  color="air-secondary-accent"
+                  color="air-tertiary"
                   :icon="MenuIcon"
+                  :b24ui="{ leadingIcon: 'size-5' }"
                   :aria-label="t('page.requests.actions.openMenu')"
                 />
               </B24DropdownMenu>

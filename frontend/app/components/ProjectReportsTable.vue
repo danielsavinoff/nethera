@@ -224,7 +224,7 @@ const totals = computed(() => {
         <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <th
             rowspan="2"
-            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-medium text-(--ui-color-base-1)"
+            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-semibold text-(--ui-color-base-1)"
           >
             {{ t("page.projectReports.table.project") }}
           </th>
@@ -232,19 +232,19 @@ const totals = computed(() => {
             v-for="week in weekLabels"
             :key="week.number"
             colspan="2"
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ week.label }}
           </th>
           <th
             colspan="3"
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.totalGroup") }}
           </th>
           <th
             rowspan="2"
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.overallTrackShare") }}
           </th>
@@ -252,28 +252,28 @@ const totals = computed(() => {
         <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <template v-for="week in weekLabels" :key="`subhead-${week.number}`">
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.projectReports.table.reserved") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.projectReports.table.fact") }}
             </th>
           </template>
           <th
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.reserved") }}
           </th>
           <th
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.fact") }}
           </th>
           <th
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ t("page.projectReports.table.bookingExecution") }}
           </th>

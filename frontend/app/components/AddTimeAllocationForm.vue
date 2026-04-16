@@ -25,7 +25,9 @@ const formatHours = (value: number) =>
     .replace(".", ",");
 
 const updateHours = (direction: -1 | 1) => {
-  const nextValue = Number((props.form.hours + direction * HOUR_STEP).toFixed(2));
+  const nextValue = Number(
+    (props.form.hours + direction * HOUR_STEP).toFixed(2),
+  );
 
   props.form.hours = Math.max(0, nextValue);
 };
@@ -110,7 +112,7 @@ const automaticApprovalValue = computed({
       :b24ui="{
         wrapper: 'mb-2',
       }"
-      class="text-base"
+      class="text-base font-semibold"
     >
       <B24Input
         v-model="props.form.task"

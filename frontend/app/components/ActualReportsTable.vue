@@ -236,7 +236,7 @@ const totals = computed(() => {
         <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <th
             rowspan="2"
-            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-medium text-(--ui-color-base-1)"
+            class="sticky left-0 z-10 bg-(--ui-color-background-primary) px-4 align-middle text-left font-semibold text-(--ui-color-base-1)"
           >
             {{ t("page.actualReports.table.user") }}
           </th>
@@ -244,7 +244,7 @@ const totals = computed(() => {
             v-for="week in weekLabels"
             :key="week.number"
             colspan="6"
-            class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+            class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
           >
             {{ week.label }}
           </th>
@@ -252,32 +252,32 @@ const totals = computed(() => {
         <tr class="h-14 border-b border-(--ui-color-design-outline-stroke)">
           <template v-for="week in weekLabels" :key="`subhead-${week.number}`">
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.reserved") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.bookingFact") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.requestsTotal") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.bookingExecution") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.totalFact") }}
             </th>
             <th
-              class="px-4 align-middle text-left font-medium text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
+              class="px-4 align-middle text-left font-semibold text-(--ui-color-base-1) border-l border-(--ui-color-design-outline-stroke)"
             >
               {{ t("page.actualReports.table.normExecution") }}
             </th>
