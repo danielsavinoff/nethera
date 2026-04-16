@@ -7,5 +7,6 @@ export enum Permission {
   UserFavoriteViewOwn = 'user-favorite.view.own',
   UserFavoriteAddOwn = 'user-favorite.add.own',
   UserFavoriteDeleteOwn = 'user-favorite.delete.own',
+  TimeAllocationViewAny = 'time-allocation.view.any',
   TimeAllocationAddAny = 'time-allocation.add.any',
 }

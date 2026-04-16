@@ -20,6 +20,7 @@ import { DeleteUserFavoritesPresenter } from './presenters/DeleteUserFavoritesPr
 import { GetDepartmentUsersPresenter } from './presenters/GetDepartmentUsersPresenter.js';
 import { GetDepartmentsPresenter } from './presenters/GetDepartmentsPresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
+import { AddTimeAllocationPresenter } from './presenters/AddTimeAllocationPresenter.js';
 import { GetTimeAllocationsPresenter } from './presenters/GetTimeAllocationsPresenter.js';
 import { TenantGuard } from './guards/TenantGuard.js';
 import { EventGuard } from './guards/EventGuard.js';
@@ -46,6 +47,7 @@ import { EventGuard } from './guards/EventGuard.js';
     DeleteUserRolePresenter,
     DeleteUserFavoritesPresenter,
     GetRolesPresenter,
+    AddTimeAllocationPresenter,
     GetTimeAllocationsPresenter,
     TenantGuard,
     EventGuard,

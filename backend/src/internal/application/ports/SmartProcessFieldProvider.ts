@@ -2,7 +2,7 @@ import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js
 import type { ExternalSmartProcessField } from '../models/ExternalSmartProcessField.js';
 
 export interface CreateSmartProcessFieldsInput {
-  smartProcessExternalId: string;
+  smartProcessExternalTypeId: string;
   fields: ExternalSmartProcessField[];
 }
 

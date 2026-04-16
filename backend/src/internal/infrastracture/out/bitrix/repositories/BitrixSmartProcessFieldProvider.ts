@@ -25,14 +25,14 @@ export class BitrixSmartProcessFieldProvider
   ): Promise<void> {
     const smartProcess =
       await this.bitrixClient.getSmartProcessByEntityTypeId(
-        input.smartProcessExternalId,
+        input.smartProcessExternalTypeId,
         credentials,
       );
 
     const fallbackSmartProcess = smartProcess
       ? null
       : await this.bitrixClient.getSmartProcess(
-          input.smartProcessExternalId,
+          input.smartProcessExternalTypeId,
           credentials,
         );
 

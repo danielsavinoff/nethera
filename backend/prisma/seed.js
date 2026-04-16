@@ -34,6 +34,7 @@ async function main() {
     Permission.UserFavoriteViewOwn,
     Permission.UserFavoriteAddOwn,
     Permission.UserFavoriteDeleteOwn,
+    Permission.TimeAllocationViewAny,
     Permission.TimeAllocationAddAny,
   ];
 
@@ -161,6 +162,18 @@ async function main() {
       roleId: adminRole.id,
       permissionId: permissionsByName.get(
         Permission.UserFavoriteDeleteOwn,
+      )?.id,
+    },
+    {
+      roleId: userRole.id,
+      permissionId: permissionsByName.get(
+        Permission.TimeAllocationViewAny,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.TimeAllocationViewAny,
       )?.id,
     },
     {

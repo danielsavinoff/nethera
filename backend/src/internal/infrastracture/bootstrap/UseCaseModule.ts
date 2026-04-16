@@ -23,6 +23,7 @@ import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUser
 import { GetDepartmentUsersUseCase } from '../../application/usecases/GetDepartmentUsersUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetDepartmentsUseCase } from '../../application/usecases/GetDepartmentsUseCase.js';
+import { AddTimeAllocationUseCase } from '../../application/usecases/AddTimeAllocationUseCase.js';
 import { GetTimeAllocationsUseCase } from '../../application/usecases/GetTimeAllocationsUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
@@ -86,6 +87,7 @@ import { BitrixGroupProvider } from '../out/bitrix/repositories/BitrixGroupProvi
 import { JwtTokenIssuerAdapter } from '../out/auth/adapters/JwtTokenIssuerAdapter.js';
 import { JwtTokenVerifierAdapter } from '../out/auth/adapters/JwtTokenVerifierAdapter.js';
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
+import { TimeAllocationPolicy } from '../../domain/time-allocation/TimeAllocationPolicy.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
@@ -499,6 +501,43 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: AddTimeAllocationUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        tenantRepository: TenantRepository,
+        smartProcessRepository: SmartProcessRepository,
+        timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
+        timeAllocationRepository: TimeAllocationRepository,
+        taskRepository: TaskRepository,
+        groupRepository: GroupRepository,
+        transactionRunner: TransactionRunner,
+        timeAllocationPolicy: TimeAllocationPolicy,
+      ) => {
+        return new AddTimeAllocationUseCase(
+          userRepository,
+          tenantRepository,
+          smartProcessRepository,
+          timeAllocationSmartProcessProvider,
+          timeAllocationRepository,
+          taskRepository,
+          groupRepository,
+          transactionRunner,
+          timeAllocationPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaTenantRepository,
+        PrismaSmartProcessRepository,
+        BitrixTimeAllocationSmartProcessProvider,
+        PrismaTimeAllocationRepository,
+        PrismaTaskRepository,
+        PrismaGroupRepository,
+        PrismaTransactionRunner,
+        TimeAllocationPolicy,
+      ],
+    },
+    {
       provide: GetTimeAllocationsUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -507,6 +546,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
         taskProvider: TaskProvider,
         groupProvider: GroupProvider,
+        timeAllocationPolicy: TimeAllocationPolicy,
       ) => {
         return new GetTimeAllocationsUseCase(
           userRepository,
@@ -515,6 +555,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           timeAllocationSmartProcessProvider,
           taskProvider,
           groupProvider,
+          timeAllocationPolicy,
         );
       },
       inject: [
@@ -524,6 +565,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         BitrixTimeAllocationSmartProcessProvider,
         BitrixTaskProvider,
         BitrixGroupProvider,
+        TimeAllocationPolicy,
       ],
     },
     {
@@ -650,6 +692,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
     UserFavoritePolicy,
     RolePolicy,
+    TimeAllocationPolicy,
     {
       provide: EVENT_PROCESSORS,
       useFactory: (
@@ -713,6 +756,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetDepartmentsUseCase,
     GetDepartmentUsersUseCase,
     GetUsersUseCase,
+    AddTimeAllocationUseCase,
     GetTimeAllocationsUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,

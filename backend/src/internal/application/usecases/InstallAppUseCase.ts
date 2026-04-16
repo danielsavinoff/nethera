@@ -9,7 +9,6 @@ import { EventProvider } from '../ports/EventProvider.js';
 import { UserRepository } from '../ports/UserRepository.js';
 import { User } from '../../domain/user/User.js';
 import { TransactionRunner } from '../ports/TransactionRunner.js';
-import type { Role } from '../../domain/authorization/Role.js';
 import { UserRole } from '../../domain/authorization/UserRole.js';
 import { RoleRepository } from '../ports/RoleRepository.js';
 import { DefaultRolesMustExistException } from '../exceptions/DefaultRolesMustExistException.js';
@@ -172,8 +171,8 @@ export class InstallAppUseCase {
         await this.smartProcessFieldProvider.createMany(
           tenant.credentials,
           {
-            smartProcessExternalId:
-              externalSmartProcess.externalId,
+            smartProcessExternalTypeId:
+              externalSmartProcess.externalTypeId,
             fields: [
               {
                 name: ExternalTimeAllocationCustomFields.GroupId,
@@ -216,6 +215,7 @@ export class InstallAppUseCase {
         await this.smartProcessRepository.save(
           SmartProcess.create({
             externalId: externalSmartProcess.externalId,
+            externalTypeId: externalSmartProcess.externalTypeId,
             tenantId: tenant.id,
           }),
         );

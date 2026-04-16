@@ -138,49 +138,49 @@ const BITRIX_EVENT_RESOLVERS: Record<
   [SupportedBitrixEvents.OnCrmDynamicItemAdd]: (
     event: EventOnCrmDynamicItemAdd,
   ) => {
-    const externalSmartProcessId =
+    const externalSmartProcessTypeId =
       event.data.FIELDS.ENTITY_TYPE_ID;
     const externalId = event.data.FIELDS.ID;
 
-    if (!externalSmartProcessId || !externalId) {
+    if (!externalSmartProcessTypeId || !externalId) {
       return;
     }
 
     return {
-      externalSmartProcessId,
-      externalId,
+      externalSmartProcessTypeId: externalSmartProcessTypeId,
+      externalId: externalId,
     };
   },
   [SupportedBitrixEvents.OnCrmDynamicItemUpdate]: (
     event: EventOnCrmDynamicItemUpdate,
   ) => {
-    const externalSmartProcessId =
+    const externalSmartProcessTypeId =
       event.data.FIELDS.ENTITY_TYPE_ID;
     const externalId = event.data.FIELDS.ID;
 
-    if (!externalSmartProcessId || !externalId) {
+    if (!externalSmartProcessTypeId || !externalId) {
       return;
     }
 
     return {
-      externalSmartProcessId,
-      externalId,
+      externalSmartProcessTypeId: externalSmartProcessTypeId,
+      externalId: externalId,
     };
   },
   [SupportedBitrixEvents.OnCrmDynamicItemDelete]: (
     event: EventOnCrmDynamicItemDelete,
   ) => {
-    const externalSmartProcessId =
+    const externalSmartProcessTypeId =
       event.data.FIELDS.ENTITY_TYPE_ID;
     const externalId = event.data.FIELDS.ID;
 
-    if (!externalSmartProcessId || !externalId) {
+    if (!externalSmartProcessTypeId || !externalId) {
       return;
     }
 
     return {
-      externalSmartProcessId,
-      externalId,
+      externalSmartProcessTypeId: externalSmartProcessTypeId,
+      externalId: externalId,
     };
   },
 };

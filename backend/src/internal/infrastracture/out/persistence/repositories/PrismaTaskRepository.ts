@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { ExternalTaskNotFoundException } from '../../../../application/exceptions/ExternalTaskNotFoundException.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import {
   LoadTaskQuery,
@@ -18,17 +19,58 @@ export class PrismaTaskRepository implements TaskRepository {
   ): Promise<Task | null> {
     const client = this.getClient(transactionContext);
 
+    const filters = query.filters;
+
     const row = await client.task.findUnique({
       where: {
-        external_id_tenant_id: {
-          external_id: query.filters.externalId,
-          tenant_id: query.filters.tenantId,
-        },
+        ...('id' in filters
+          ? { id: filters.id }
+          : {
+              external_id_tenant_id: {
+                external_id: filters.externalId,
+                tenant_id: filters.tenantId,
+              },
+            }),
       },
     });
 
     if (!row) {
       return null;
+    }
+
+    return Task.hydrate({
+      id: row.id,
+      name: row.name,
+      status: row.status,
+      externalId: row.external_id,
+      tenantId: row.tenant_id,
+      isDeleted: row.is_deleted,
+    });
+  }
+
+  async loadOrThrow(
+    query: LoadTaskQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Task> {
+    const client = this.getClient(transactionContext);
+
+    const filters = query.filters;
+
+    const row = await client.task.findUnique({
+      where: {
+        ...('id' in filters
+          ? { id: filters.id }
+          : {
+              external_id_tenant_id: {
+                external_id: filters.externalId,
+                tenant_id: filters.tenantId,
+              },
+            }),
+      },
+    });
+
+    if (!row) {
+      throw new ExternalTaskNotFoundException();
     }
 
     return Task.hydrate({

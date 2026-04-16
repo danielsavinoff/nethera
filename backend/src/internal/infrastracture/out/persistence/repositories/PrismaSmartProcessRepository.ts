@@ -29,10 +29,12 @@ export class PrismaSmartProcessRepository
         create: {
           id: record.id,
           external_id: record.externalId,
+          external_type_id: record.externalTypeId,
           tenant_id: record.tenantId,
         },
         update: {
           external_id: record.externalId,
+          external_type_id: record.externalTypeId,
           tenant_id: record.tenantId,
         },
       });
@@ -40,6 +42,7 @@ export class PrismaSmartProcessRepository
       return SmartProcess.hydrate({
         id: row.id,
         externalId: row.external_id,
+        externalTypeId: row.external_type_id,
         tenantId: row.tenant_id,
       });
     } catch (error) {
@@ -75,6 +78,7 @@ export class PrismaSmartProcessRepository
     return SmartProcess.hydrate({
       id: row.id,
       externalId: row.external_id,
+      externalTypeId: row.external_type_id,
       tenantId: row.tenant_id,
     });
   }

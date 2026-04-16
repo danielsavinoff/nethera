@@ -228,6 +228,29 @@ export class BitrixClient {
     };
   }
 
+  async createCrmItem(
+    context: TenantCredentials,
+    input: {
+      entityTypeId: string;
+      fields: Record<string, unknown>;
+    },
+  ): Promise<Record<string, unknown> | null> {
+    const client = await this.fromAuthContext(context);
+    const response = await client.callMethod('crm.item.add', {
+      entityTypeId: Number(input.entityTypeId),
+      fields: input.fields,
+    });
+
+    const data = response.getData() as {
+      result?: {
+        item?: Record<string, unknown>;
+      };
+    };
+    const result = data.result;
+
+    return result?.item ?? null;
+  }
+
   async getTask(
     id: string,
     context: TenantCredentials,

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { ExternalGroupNotFoundException } from '../../../../application/exceptions/ExternalGroupNotFoundException.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import {
   GroupRepository,
@@ -18,17 +19,58 @@ export class PrismaGroupRepository implements GroupRepository {
   ): Promise<Group | null> {
     const client = this.getClient(transactionContext);
 
+    const filters = query.filters;
+
     const row = await client.group.findUnique({
       where: {
-        external_id_tenant_id: {
-          external_id: query.filters.externalId,
-          tenant_id: query.filters.tenantId,
-        },
+        ...('id' in filters
+          ? { id: filters.id }
+          : {
+              external_id_tenant_id: {
+                external_id: filters.externalId,
+                tenant_id: filters.tenantId,
+              },
+            }),
       },
     });
 
     if (!row) {
       return null;
+    }
+
+    return Group.hydrate({
+      id: row.id,
+      name: row.name,
+      externalId: row.external_id,
+      tenantId: row.tenant_id,
+      active: row.active,
+      isDeleted: row.is_deleted,
+    });
+  }
+
+  async loadOrThrow(
+    query: LoadGroupQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Group> {
+    const client = this.getClient(transactionContext);
+
+    const filters = query.filters;
+
+    const row = await client.group.findUnique({
+      where: {
+        ...('id' in filters
+          ? { id: filters.id }
+          : {
+              external_id_tenant_id: {
+                external_id: filters.externalId,
+                tenant_id: filters.tenantId,
+              },
+            }),
+      },
+    });
+
+    if (!row) {
+      throw new ExternalGroupNotFoundException();
     }
 
     return Group.hydrate({

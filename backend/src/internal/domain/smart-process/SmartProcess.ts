@@ -9,11 +9,13 @@ export class SmartProcess {
   static create(props: {
     id?: SmartProcessRecord['id'];
     externalId: SmartProcessRecord['externalId'];
+    externalTypeId: SmartProcessRecord['externalTypeId'];
     tenantId: TenantRecord['id'];
   }): SmartProcess {
     return new SmartProcess({
       id: props.id ?? crypto.randomUUID(),
       externalId: props.externalId,
+      externalTypeId: props.externalTypeId,
       tenantId: props.tenantId,
     });
   }
@@ -32,6 +34,10 @@ export class SmartProcess {
 
   get externalId(): SmartProcessRecord['externalId'] {
     return this.props.externalId;
+  }
+
+  get externalTypeId(): SmartProcessRecord['externalTypeId'] {
+    return this.props.externalTypeId;
   }
 
   get tenantId(): SmartProcessRecord['tenantId'] {

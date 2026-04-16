@@ -25,8 +25,8 @@ export class HandleExternalTimeAllocationDeletedUseCase
 
     if (
       !configuredSmartProcess ||
-      configuredSmartProcess.externalId !==
-        command.payload.externalSmartProcessId
+      configuredSmartProcess.externalTypeId !==
+        command.payload.externalSmartProcessTypeId
     ) {
       return;
     }

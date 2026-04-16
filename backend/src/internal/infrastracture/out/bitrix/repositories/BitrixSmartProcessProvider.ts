@@ -28,9 +28,8 @@ export class BitrixSmartProcessProvider
     }
 
     return {
-      externalId: String(
-        bitrixSmartProcess.entityTypeId ?? bitrixSmartProcess.id,
-      ),
+      externalId: String(bitrixSmartProcess.id),
+      externalTypeId: String(bitrixSmartProcess.entityTypeId),
       title: bitrixSmartProcess.title,
     };
   }
@@ -51,6 +50,9 @@ export class BitrixSmartProcessProvider
 
     return {
       externalId: String(
+        bitrixSmartProcess.id ?? bitrixSmartProcess.entityTypeId,
+      ),
+      externalTypeId: String(
         bitrixSmartProcess.entityTypeId ?? bitrixSmartProcess.id,
       ),
       title: bitrixSmartProcess.title,

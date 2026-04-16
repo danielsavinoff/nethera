@@ -66,9 +66,10 @@ model Tenant {
 }
 
 model SmartProcess {
-  id          String @id @default(uuid())
-  external_id String
-  tenant_id   String @unique
+  id               String @id @default(uuid())
+  external_id      String
+  external_type_id String
+  tenant_id        String @unique
 
   tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
 

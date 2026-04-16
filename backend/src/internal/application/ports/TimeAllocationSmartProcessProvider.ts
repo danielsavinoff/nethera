@@ -1,4 +1,5 @@
 import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
+import type { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
 import type { ExternalTimeAllocation } from '../models/ExternalTimeAllocation.js';
 import type { Page } from '../models/Page.js';
 
@@ -6,6 +7,17 @@ export interface FetchExternalTimeAllocationQuery {
   filters: {
     externalId: string;
   };
+}
+
+export interface CreateTimeAllocationSmartProcessInput {
+  externalGroupId?: string;
+  externalTaskId: string;
+  hours: number;
+  isApproved: boolean;
+  weekNumber: number;
+  year: number;
+  externalAssigneeId: string;
+  externalAssignerId: string;
 }
 
 export interface FetchTimeAllocationsSmartProcessQuery {
@@ -23,14 +35,19 @@ export interface FetchTimeAllocationsSmartProcessQuery {
 }
 
 export interface TimeAllocationSmartProcessProvider {
+  create(
+    credentials: TenantCredentials,
+    smartProcess: SmartProcess,
+    input: CreateTimeAllocationSmartProcessInput,
+  ): Promise<ExternalTimeAllocation>;
   fetchOrThrow(
     credentials: TenantCredentials,
-    externalSmartProcessId: string,
+    smartProcess: SmartProcess,
     query: FetchExternalTimeAllocationQuery,
   ): Promise<ExternalTimeAllocation>;
   fetchMany(
     credentials: TenantCredentials,
-    externalSmartProcessId: string,
+    smartProcess: SmartProcess,
     query: FetchTimeAllocationsSmartProcessQuery,
   ): Promise<Page<ExternalTimeAllocation>>;
 }

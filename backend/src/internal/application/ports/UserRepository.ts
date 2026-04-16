@@ -7,6 +7,17 @@ import { UserRecord } from '../../domain/user/UserRecord.js';
 import type { Page } from '../models/Page.js';
 import { TransactionContext } from '../models/TransactionContext.js';
 
+export interface LoadUserQuery {
+  filters:
+    | {
+        tenantId: TenantRecord['id'];
+        externalId: UserRecord['externalId'];
+      }
+    | {
+        id: UserRecord['id'];
+      };
+}
+
 export interface UserRepository {
   findById(id: UserRecord['id']): Promise<User | null>;
   findByIdOrThrow(id: UserRecord['id']): Promise<User>;
@@ -38,6 +49,10 @@ export interface UserRepository {
     tenantId: string,
     externalIds: number[],
   ): Promise<User[]>;
+  loadOrThrow(
+    query: LoadUserQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<User>;
   save(
     user: User,
     transactionContext?: TransactionContext,

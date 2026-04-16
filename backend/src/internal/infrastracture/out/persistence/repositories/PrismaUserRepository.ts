@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { UserRepository } from '../../../../application/ports/UserRepository.js';
+import {
+  LoadUserQuery,
+  UserRepository,
+} from '../../../../application/ports/UserRepository.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import type { Page } from '../../../../application/models/Page.js';
 import { User } from '../../../../domain/user/User.js';
@@ -270,6 +273,46 @@ export class PrismaUserRepository implements UserRepository {
         language: row.language ?? undefined,
       }),
     );
+  }
+
+  async loadOrThrow(
+    query: LoadUserQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<User> {
+    const client = this.getClient(transactionContext);
+
+    const filters = query.filters;
+
+    const row = await client.user.findUnique({
+      where: {
+        ...('id' in filters
+          ? { id: filters.id }
+          : {
+              external_id_tenant_id: {
+                external_id: filters.externalId,
+                tenant_id: filters.tenantId,
+              },
+            }),
+      },
+    });
+
+    if (!row) {
+      throw new UserNotFoundException();
+    }
+
+    return User.hydrate({
+      active: row.active,
+      createdAt: row.created_at,
+      deletedAt: row.deleted_at ?? undefined,
+      externalId: row.external_id,
+      firstName: row.first_name ?? undefined,
+      id: row.id,
+      lastName: row.last_name ?? undefined,
+      secondName: row.second_name ?? undefined,
+      tenantId: row.tenant_id,
+      updatedAt: row.updated_at,
+      language: row.language ?? undefined,
+    });
   }
 
   async findById(id: UserRecord['id']): Promise<User | null> {

@@ -1,5 +1,6 @@
 import { ExternalTimeAllocation } from '../models/ExternalTimeAllocation.js';
 import type { ExternalGroup } from '../models/ExternalGroup.js';
+import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import type { GroupProvider } from '../ports/GroupProvider.js';
 import type { SmartProcessRepository } from '../ports/SmartProcessRepository.js';
 import type { TaskProvider } from '../ports/TaskProvider.js';
@@ -10,8 +11,10 @@ import type { ExternalTask } from '../models/ExternalTask.js';
 import type { UserRecord } from '../../domain/user/UserRecord.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { TaskStatus } from '../../domain/task/TaskStatus.js';
+import { TimeAllocationPolicy } from '../../domain/time-allocation/TimeAllocationPolicy.js';
 
 export interface GetTimeAllocationsCommand {
+  initiatorUserId: UserRecord['id'];
   tenantId: TenantRecord['id'];
   userId: UserRecord['id'];
   year: number;
@@ -45,6 +48,7 @@ export class GetTimeAllocationsUseCase {
     private readonly timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
     private readonly taskProvider: TaskProvider,
     private readonly groupProvider: GroupProvider,
+    private readonly timeAllocationPolicy: TimeAllocationPolicy,
   ) {}
 
   async execute(
@@ -53,9 +57,28 @@ export class GetTimeAllocationsUseCase {
     const page = command.page ?? 1;
     const limit = command.limit ?? 100;
 
-    const user = await this.userRepository.findByIdOrThrow(
+    const initiator =
+      await this.userRepository.findByIdWithRoles(
+        command.initiatorUserId,
+      );
+
+    if (!initiator) {
+      throw new UserNotFoundException();
+    }
+
+    if (initiator.tenantId !== command.tenantId) {
+      throw new UserNotFoundException();
+    }
+
+    const user = await this.userRepository.findById(
       command.userId,
     );
+
+    if (!user || user.tenantId !== initiator.tenantId) {
+      throw new UserNotFoundException();
+    }
+
+    this.timeAllocationPolicy.assertCanView(initiator);
 
     const tenant = await this.tenantRepository.loadByIdOrThrow(
       command.tenantId,
@@ -79,7 +102,7 @@ export class GetTimeAllocationsUseCase {
     const { items: externalTimeAllocations, total: total } =
       await this.timeAllocationSmartProcessProvider.fetchMany(
         tenant.credentials,
-        smartProcess.externalId,
+        smartProcess,
         {
           filters: {
             externalUserId: String(user.externalId),

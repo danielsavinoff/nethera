@@ -4,10 +4,14 @@ import type { GroupRecord } from '../../domain/group/GroupRecord.js';
 import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
 
 export interface LoadGroupQuery {
-  filters: {
-    tenantId: TenantRecord['id'];
-    externalId: GroupRecord['externalId'];
-  };
+  filters:
+    | {
+        tenantId: TenantRecord['id'];
+        externalId: GroupRecord['externalId'];
+      }
+    | {
+        id: GroupRecord['id'];
+      };
 }
 
 export interface GroupRepository {
@@ -15,6 +19,10 @@ export interface GroupRepository {
     query: LoadGroupQuery,
     transactionContext?: TransactionContext,
   ): Promise<Group | null>;
+  loadOrThrow(
+    query: LoadGroupQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Group>;
   save(
     group: Group,
     transactionContext?: TransactionContext,

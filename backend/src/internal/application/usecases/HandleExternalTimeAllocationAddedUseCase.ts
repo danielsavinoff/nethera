@@ -52,6 +52,13 @@ export class HandleExternalTimeAllocationAddedUseCase
       return;
     }
 
+    if (
+      configuredSmartProcess.externalTypeId !==
+      command.payload.externalSmartProcessTypeId
+    ) {
+      return;
+    }
+
     const existingTimeAllocation =
       await this.timeAllocationRepository.load({
         filters: {
@@ -67,7 +74,7 @@ export class HandleExternalTimeAllocationAddedUseCase
     const externalTimeAllocation =
       await this.timeAllocationSmartProcessProvider.fetchOrThrow(
         command.tenant.credentials,
-        command.payload.externalSmartProcessId,
+        configuredSmartProcess,
         {
           filters: {
             externalId: command.payload.externalId,
