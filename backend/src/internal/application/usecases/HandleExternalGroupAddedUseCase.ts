@@ -1,3 +1,4 @@
+import { Group } from '../../domain/group/Group.js';
 import { ExternalGroupReference } from '../models/ExternalGroupReference.js';
 import { GroupProvider } from '../ports/GroupProvider.js';
 import { GroupRepository } from '../ports/GroupRepository.js';
@@ -6,9 +7,8 @@ import {
   EventHandlerResult,
   EventHandlerUseCase,
 } from './DispatchIncomingWebhookUseCase.js';
-import { Group } from '../../domain/group/Group.js';
 
-export class HandleExternalGroupUpsertUseCase
+export class HandleExternalGroupAddedUseCase
   implements EventHandlerUseCase
 {
   constructor(
@@ -39,24 +39,17 @@ export class HandleExternalGroupUpsertUseCase
       },
     });
 
-    if (!existingGroup) {
-      const createdGroup = Group.create({
-        externalId: externalGroup.externalId,
-        tenantId: command.tenant.id,
-        name: externalGroup.name,
-        active: externalGroup.active,
-      });
-
-      await this.groupRepository.save(createdGroup);
-
+    if (existingGroup) {
       return;
     }
 
-    const synchronizedGroup = existingGroup.syncFromExternal({
+    const group = Group.create({
+      externalId: externalGroup.externalId,
+      tenantId: command.tenant.id,
       name: externalGroup.name,
       active: externalGroup.active,
     });
 
-    await this.groupRepository.save(synchronizedGroup);
+    await this.groupRepository.save(group);
   }
 }

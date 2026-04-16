@@ -4,11 +4,14 @@ import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
 import { DispatchIncomingWebhookUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
 import type { EventHandlerUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
 import { HandleExternalUserAddedUseCase } from '../../application/usecases/HandleExternalUserAddedUseCase.js';
-import { HandleExternalTaskUpsertUseCase } from '../../application/usecases/HandleExternalTaskUpsertUseCase.js';
+import { HandleExternalTaskAddedUseCase } from '../../application/usecases/HandleExternalTaskAddedUseCase.js';
+import { HandleExternalTaskUpdatedUseCase } from '../../application/usecases/HandleExternalTaskUpdatedUseCase.js';
 import { HandleExternalTaskDeletedUseCase } from '../../application/usecases/HandleExternalTaskDeletedUseCase.js';
-import { HandleExternalGroupUpsertUseCase } from '../../application/usecases/HandleExternalGroupUpsertUseCase.js';
+import { HandleExternalGroupAddedUseCase } from '../../application/usecases/HandleExternalGroupAddedUseCase.js';
+import { HandleExternalGroupUpdatedUseCase } from '../../application/usecases/HandleExternalGroupUpdatedUseCase.js';
 import { HandleExternalGroupDeletedUseCase } from '../../application/usecases/HandleExternalGroupDeletedUseCase.js';
-import { HandleExternalTimeAllocationUpsertUseCase } from '../../application/usecases/HandleExternalTimeAllocationUpsertUseCase.js';
+import { HandleExternalTimeAllocationAddedUseCase } from '../../application/usecases/HandleExternalTimeAllocationAddedUseCase.js';
+import { HandleExternalTimeAllocationUpdatedUseCase } from '../../application/usecases/HandleExternalTimeAllocationUpdatedUseCase.js';
 import { HandleExternalTimeAllocationDeletedUseCase } from '../../application/usecases/HandleExternalTimeAllocationDeletedUseCase.js';
 import { InstallAppUseCase } from '../../application/usecases/InstallAppUseCase.js';
 import { HandleAppInstalledUseCase } from '../../application/usecases/HandleAppInstalledUseCase.js';
@@ -134,12 +137,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: HandleExternalTaskUpsertUseCase,
+      provide: HandleExternalTaskAddedUseCase,
       useFactory: (
         taskProvider: TaskProvider,
         taskRepository: TaskRepository,
       ) => {
-        return new HandleExternalTaskUpsertUseCase(
+        return new HandleExternalTaskAddedUseCase(
+          taskProvider,
+          taskRepository,
+        );
+      },
+      inject: [BitrixTaskProvider, PrismaTaskRepository],
+    },
+    {
+      provide: HandleExternalTaskUpdatedUseCase,
+      useFactory: (
+        taskProvider: TaskProvider,
+        taskRepository: TaskRepository,
+      ) => {
+        return new HandleExternalTaskUpdatedUseCase(
           taskProvider,
           taskRepository,
         );
@@ -156,12 +172,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaTaskRepository],
     },
     {
-      provide: HandleExternalGroupUpsertUseCase,
+      provide: HandleExternalGroupAddedUseCase,
       useFactory: (
         groupProvider: GroupProvider,
         groupRepository: GroupRepository,
       ) => {
-        return new HandleExternalGroupUpsertUseCase(
+        return new HandleExternalGroupAddedUseCase(
+          groupProvider,
+          groupRepository,
+        );
+      },
+      inject: [BitrixGroupProvider, PrismaGroupRepository],
+    },
+    {
+      provide: HandleExternalGroupUpdatedUseCase,
+      useFactory: (
+        groupProvider: GroupProvider,
+        groupRepository: GroupRepository,
+      ) => {
+        return new HandleExternalGroupUpdatedUseCase(
           groupProvider,
           groupRepository,
         );
@@ -178,7 +207,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [PrismaGroupRepository],
     },
     {
-      provide: HandleExternalTimeAllocationUpsertUseCase,
+      provide: HandleExternalTimeAllocationAddedUseCase,
       useFactory: (
         smartProcessRepository: SmartProcessRepository,
         timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
@@ -192,7 +221,50 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         roleRepository: RoleRepository,
         transactionRunner: TransactionRunner,
       ) => {
-        return new HandleExternalTimeAllocationUpsertUseCase(
+        return new HandleExternalTimeAllocationAddedUseCase(
+          smartProcessRepository,
+          timeAllocationSmartProcessProvider,
+          timeAllocationRepository,
+          taskRepository,
+          groupRepository,
+          userRepository,
+          taskProvider,
+          groupProvider,
+          userProvider,
+          roleRepository,
+          transactionRunner,
+        );
+      },
+      inject: [
+        PrismaSmartProcessRepository,
+        BitrixTimeAllocationSmartProcessProvider,
+        PrismaTimeAllocationRepository,
+        PrismaTaskRepository,
+        PrismaGroupRepository,
+        PrismaUserRepository,
+        BitrixTaskProvider,
+        BitrixGroupProvider,
+        BitrixUserProvider,
+        PrismaRoleRepository,
+        PrismaTransactionRunner,
+      ],
+    },
+    {
+      provide: HandleExternalTimeAllocationUpdatedUseCase,
+      useFactory: (
+        smartProcessRepository: SmartProcessRepository,
+        timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
+        timeAllocationRepository: TimeAllocationRepository,
+        taskRepository: TaskRepository,
+        groupRepository: GroupRepository,
+        userRepository: UserRepository,
+        taskProvider: TaskProvider,
+        groupProvider: GroupProvider,
+        userProvider: UserProvider,
+        roleRepository: RoleRepository,
+        transactionRunner: TransactionRunner,
+      ) => {
+        return new HandleExternalTimeAllocationUpdatedUseCase(
           smartProcessRepository,
           timeAllocationSmartProcessProvider,
           timeAllocationRepository,
@@ -583,36 +655,42 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       useFactory: (
         handleExternalUserAddedUseCase: HandleExternalUserAddedUseCase,
         handleAppInstalledUseCase: HandleAppInstalledUseCase,
-        handleExternalTaskUpsertUseCase: HandleExternalTaskUpsertUseCase,
+        handleExternalTaskAddedUseCase: HandleExternalTaskAddedUseCase,
+        handleExternalTaskUpdatedUseCase: HandleExternalTaskUpdatedUseCase,
         handleExternalTaskDeletedUseCase: HandleExternalTaskDeletedUseCase,
-        handleExternalGroupUpsertUseCase: HandleExternalGroupUpsertUseCase,
+        handleExternalGroupAddedUseCase: HandleExternalGroupAddedUseCase,
+        handleExternalGroupUpdatedUseCase: HandleExternalGroupUpdatedUseCase,
         handleExternalGroupDeletedUseCase: HandleExternalGroupDeletedUseCase,
-        handleExternalTimeAllocationUpsertUseCase: HandleExternalTimeAllocationUpsertUseCase,
+        handleExternalTimeAllocationAddedUseCase: HandleExternalTimeAllocationAddedUseCase,
+        handleExternalTimeAllocationUpdatedUseCase: HandleExternalTimeAllocationUpdatedUseCase,
         handleExternalTimeAllocationDeletedUseCase: HandleExternalTimeAllocationDeletedUseCase,
       ) => ({
         ONUSERADD: handleExternalUserAddedUseCase,
         ONAPPINSTALL: handleAppInstalledUseCase,
-        ONTASKADD: handleExternalTaskUpsertUseCase,
-        ONTASKUPDATE: handleExternalTaskUpsertUseCase,
+        ONTASKADD: handleExternalTaskAddedUseCase,
+        ONTASKUPDATE: handleExternalTaskUpdatedUseCase,
         ONTASKDELETE: handleExternalTaskDeletedUseCase,
-        ONSONETGROUPADD: handleExternalGroupUpsertUseCase,
-        ONSONETGROUPUPDATE: handleExternalGroupUpsertUseCase,
+        ONSONETGROUPADD: handleExternalGroupAddedUseCase,
+        ONSONETGROUPUPDATE: handleExternalGroupUpdatedUseCase,
         ONSONETGROUPDELETE: handleExternalGroupDeletedUseCase,
         ONCRMDYNAMICITEMADD:
-          handleExternalTimeAllocationUpsertUseCase,
+          handleExternalTimeAllocationAddedUseCase,
         ONCRMDYNAMICITEMUPDATE:
-          handleExternalTimeAllocationUpsertUseCase,
+          handleExternalTimeAllocationUpdatedUseCase,
         ONCRMDYNAMICITEMDELETE:
           handleExternalTimeAllocationDeletedUseCase,
       }),
       inject: [
         HandleExternalUserAddedUseCase,
         HandleAppInstalledUseCase,
-        HandleExternalTaskUpsertUseCase,
+        HandleExternalTaskAddedUseCase,
+        HandleExternalTaskUpdatedUseCase,
         HandleExternalTaskDeletedUseCase,
-        HandleExternalGroupUpsertUseCase,
+        HandleExternalGroupAddedUseCase,
+        HandleExternalGroupUpdatedUseCase,
         HandleExternalGroupDeletedUseCase,
-        HandleExternalTimeAllocationUpsertUseCase,
+        HandleExternalTimeAllocationAddedUseCase,
+        HandleExternalTimeAllocationUpdatedUseCase,
         HandleExternalTimeAllocationDeletedUseCase,
       ],
     },

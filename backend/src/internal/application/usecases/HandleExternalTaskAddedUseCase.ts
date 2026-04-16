@@ -1,3 +1,4 @@
+import { Task } from '../../domain/task/Task.js';
 import { ExternalTaskReference } from '../models/ExternalTaskReference.js';
 import { TaskProvider } from '../ports/TaskProvider.js';
 import { TaskRepository } from '../ports/TaskRepository.js';
@@ -6,9 +7,8 @@ import {
   EventHandlerResult,
   EventHandlerUseCase,
 } from './DispatchIncomingWebhookUseCase.js';
-import { Task } from '../../domain/task/Task.js';
 
-export class HandleExternalTaskUpsertUseCase
+export class HandleExternalTaskAddedUseCase
   implements EventHandlerUseCase
 {
   constructor(
@@ -39,17 +39,16 @@ export class HandleExternalTaskUpsertUseCase
       },
     });
 
-    const task = existingTask
-      ? existingTask.syncFromExternal({
-          name: externalTask.title,
-          status: externalTask.status,
-        })
-      : Task.create({
-          externalId: externalTask.externalId,
-          tenantId: command.tenant.id,
-          name: externalTask.title,
-          status: externalTask.status,
-        });
+    if (existingTask) {
+      return;
+    }
+
+    const task = Task.create({
+      externalId: externalTask.externalId,
+      tenantId: command.tenant.id,
+      name: externalTask.title,
+      status: externalTask.status,
+    });
 
     await this.taskRepository.save(task);
   }
