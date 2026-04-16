@@ -36,6 +36,7 @@ interface BitrixTask {
 interface BitrixGroup {
   ID?: number | string;
   NAME?: string;
+  ACTIVE?: boolean | string | number;
 }
 
 @Injectable()
@@ -308,16 +309,19 @@ export class BitrixClient {
   }
 
   async getGroups(
-    ids: string[],
+    ids: string[] | undefined,
     context: TenantCredentials,
     query?: {
+      filters?: {
+        active?: boolean;
+      };
       page?: {
         limit?: number;
         skip?: number;
       };
     },
   ): Promise<BitrixGroup[]> {
-    if (ids.length === 0) {
+    if (Array.isArray(ids) && ids.length === 0) {
       return [];
     }
 
@@ -329,7 +333,12 @@ export class BitrixClient {
       'sonet_group.get',
       {
         FILTER: {
-          GROUP_ID: ids.map(Number),
+          ...(Array.isArray(ids)
+            ? { GROUP_ID: ids.map(Number) }
+            : {}),
+          ...(query?.filters?.active === true
+            ? { ACTIVE: 'Y' }
+            : {}),
         },
         ...(typeof limit === 'number' ? { LIMIT: limit } : {}),
       },

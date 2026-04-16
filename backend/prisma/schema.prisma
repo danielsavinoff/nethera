@@ -76,10 +76,11 @@ model SmartProcess {
 }
 
 model Group {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   external_id String
   tenant_id   String
+  active      Boolean @default(true)
 
   tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   timeAllocations TimeAllocation[]

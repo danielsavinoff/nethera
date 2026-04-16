@@ -10,6 +10,7 @@ export interface FetchExternalGroupQuery {
 export interface FetchExternalGroupsQuery {
   filters: {
     externalIds?: string[];
+    active?: boolean;
   };
   page?: {
     limit?: number;

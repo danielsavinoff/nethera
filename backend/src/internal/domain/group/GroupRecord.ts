@@ -3,4 +3,5 @@ export interface GroupRecord {
   name: string;
   externalId: string;
   tenantId: string;
+  active: boolean;
 }

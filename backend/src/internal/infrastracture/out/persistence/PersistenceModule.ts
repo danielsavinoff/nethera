@@ -7,6 +7,7 @@ import { PrismaRoleRepository } from './repositories/PrismaRoleRepository.js';
 import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.js';
 import { PrismaSmartProcessRepository } from './repositories/PrismaSmartProcessRepository.js';
 import { PrismaUserFavoriteRepository } from './repositories/PrismaUserFavoriteRepository.js';
+import { PrismaGroupRepository } from './repositories/PrismaGroupRepository.js';
 
 @Module({
   providers: [
@@ -16,6 +17,7 @@ import { PrismaUserFavoriteRepository } from './repositories/PrismaUserFavoriteR
     PrismaRoleRepository,
     PrismaSmartProcessRepository,
     PrismaUserFavoriteRepository,
+    PrismaGroupRepository,
     PrismaTransactionRunner,
   ],
   exports: [
@@ -25,6 +27,7 @@ import { PrismaUserFavoriteRepository } from './repositories/PrismaUserFavoriteR
     PrismaRoleRepository,
     PrismaSmartProcessRepository,
     PrismaUserFavoriteRepository,
+    PrismaGroupRepository,
     PrismaTransactionRunner,
   ],
   imports: [LoggingWiringModule],

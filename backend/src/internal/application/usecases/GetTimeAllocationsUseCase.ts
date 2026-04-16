@@ -158,6 +158,7 @@ export class GetTimeAllocationsUseCase {
             ) ?? {
               externalId: externalTimeAllocation.externalGroupId,
               name: '',
+              active: true,
             },
             externalTimeAllocation: externalTimeAllocation,
           }),

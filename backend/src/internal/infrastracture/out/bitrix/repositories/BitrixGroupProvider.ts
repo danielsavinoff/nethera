@@ -28,6 +28,11 @@ export class BitrixGroupProvider implements GroupProvider {
     return {
       externalId: String(bitrixGroup.ID),
       name: String(bitrixGroup.NAME),
+      active:
+        bitrixGroup.ACTIVE === true ||
+        bitrixGroup.ACTIVE === 'Y' ||
+        bitrixGroup.ACTIVE === 1 ||
+        bitrixGroup.ACTIVE === '1',
     };
   }
 
@@ -35,21 +40,57 @@ export class BitrixGroupProvider implements GroupProvider {
     credentials: TenantCredentials,
     query: FetchExternalGroupsQuery,
   ): Promise<ExternalGroup[]> {
-    const externalIds = query.filters.externalIds ?? [];
+    const externalIds = query.filters.externalIds;
 
-    if (externalIds.length === 0) {
+    if (Array.isArray(externalIds) && externalIds.length === 0) {
       return [];
     }
 
     const skip = query.page?.skip ?? 0;
     const limit = query.page?.limit;
 
-    const pagedExternalIds = externalIds.slice(
-      skip,
-      limit == null ? undefined : skip + limit,
-    );
+    const pagedExternalIds = Array.isArray(externalIds)
+      ? externalIds.slice(
+          skip,
+          limit == null ? undefined : skip + limit,
+        )
+      : undefined;
 
     const groups: ExternalGroup[] = [];
+
+    if (!pagedExternalIds) {
+      const bitrixGroups = await this.bitrixClient.getGroups(
+        undefined,
+        credentials,
+        {
+          filters: {
+            active: query.filters.active,
+          },
+          page: {
+            limit: limit,
+            skip: skip,
+          },
+        },
+      );
+
+      for (const bitrixGroup of bitrixGroups) {
+        if (!bitrixGroup.ID) {
+          continue;
+        }
+
+        groups.push({
+          externalId: String(bitrixGroup.ID),
+          name: String(bitrixGroup.NAME),
+          active:
+            bitrixGroup.ACTIVE === true ||
+            bitrixGroup.ACTIVE === 'Y' ||
+            bitrixGroup.ACTIVE === 1 ||
+            bitrixGroup.ACTIVE === '1',
+        });
+      }
+
+      return groups;
+    }
 
     for (
       let chunkStart = 0;
@@ -65,6 +106,9 @@ export class BitrixGroupProvider implements GroupProvider {
         chunkExternalIds,
         credentials,
         {
+          filters: {
+            active: query.filters.active,
+          },
           page: {
             limit: chunkExternalIds.length,
             skip: 0,
@@ -80,6 +124,11 @@ export class BitrixGroupProvider implements GroupProvider {
         groups.push({
           externalId: String(bitrixGroup.ID),
           name: String(bitrixGroup.NAME),
+          active:
+            bitrixGroup.ACTIVE === true ||
+            bitrixGroup.ACTIVE === 'Y' ||
+            bitrixGroup.ACTIVE === 1 ||
+            bitrixGroup.ACTIVE === '1',
         });
       }
     }

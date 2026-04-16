@@ -16,12 +16,15 @@ import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
 import { SmartProcessRepository } from '../ports/SmartProcessRepository.js';
 import { SmartProcessProvider } from '../ports/SmartProcessProvider.js';
 import { SmartProcessFieldProvider } from '../ports/SmartProcessFieldProvider.js';
+import { GroupProvider } from '../ports/GroupProvider.js';
+import { GroupRepository } from '../ports/GroupRepository.js';
 import {
   EntityProvider,
   ExternalEntityType,
 } from '../ports/EntityProvider.js';
 import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
 import { TenantSmartProcessAlreadyExistsException } from '../exceptions/TenantSmartProcessAlreadyExistsException.js';
+import { Group } from '../../domain/group/Group.js';
 
 export interface InstallAppCommand {
   accessToken: string;
@@ -43,9 +46,11 @@ export class InstallAppUseCase {
     private readonly eventProvider: EventProvider,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly groupRepository: GroupRepository,
     private readonly smartProcessRepository: SmartProcessRepository,
     private readonly smartProcessProvider: SmartProcessProvider,
     private readonly smartProcessFieldProvider: SmartProcessFieldProvider,
+    private readonly groupProvider: GroupProvider,
     private readonly entityProvider: EntityProvider,
     private readonly transactionRunner: TransactionRunner,
     logger: Logger,
@@ -107,6 +112,12 @@ export class InstallAppUseCase {
       tenantCredentials,
       {},
     );
+    const externalGroups = await this.groupProvider.fetchMany(
+      tenantCredentials,
+      {
+        filters: {},
+      },
+    );
 
     await this.transactionRunner.run(
       async (transactionContext) => {
@@ -118,6 +129,44 @@ export class InstallAppUseCase {
         this.logger.log(
           `Tenant record for ${tenantCredentials.domain} saved`,
         );
+
+        for (const externalGroup of externalGroups) {
+          const group = await this.groupRepository.load(
+            {
+              filters: {
+                tenantId: persistedTenant.id,
+                externalId: externalGroup.externalId,
+              },
+            },
+            transactionContext,
+          );
+
+          if (!group) {
+            const newGroup = Group.create({
+              externalId: externalGroup.externalId,
+              name: externalGroup.name,
+              tenantId: persistedTenant.id,
+              active: externalGroup.active,
+            });
+
+            await this.groupRepository.save(
+              newGroup,
+              transactionContext,
+            );
+
+            continue;
+          }
+
+          const synchronizedGroup = group.syncFromExternal({
+            name: externalGroup.name,
+            active: externalGroup.active,
+          });
+
+          await this.groupRepository.save(
+            synchronizedGroup,
+            transactionContext,
+          );
+        }
 
         if (externalUsers.length === 0) {
           return;

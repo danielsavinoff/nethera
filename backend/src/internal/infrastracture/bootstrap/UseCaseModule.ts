@@ -31,6 +31,7 @@ import type { RoleRepository } from '../../application/ports/RoleRepository.js';
 import type { DepartmentProvider } from '../../application/ports/DepartmentProvider.js';
 import type { EventProvider } from '../../application/ports/EventProvider.js';
 import type { GroupProvider } from '../../application/ports/GroupProvider.js';
+import type { GroupRepository } from '../../application/ports/GroupRepository.js';
 import type { UserProvider } from '../../application/ports/UserProvider.js';
 import type { OauthProvider } from '../../application/ports/OauthProvider.js';
 import type { SmartProcessProvider } from '../../application/ports/SmartProcessProvider.js';
@@ -53,6 +54,7 @@ import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRole
 import { PrismaSmartProcessRepository } from '../out/persistence/repositories/PrismaSmartProcessRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaUserFavoriteRepository } from '../out/persistence/repositories/PrismaUserFavoriteRepository.js';
+import { PrismaGroupRepository } from '../out/persistence/repositories/PrismaGroupRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { BitrixUserProvider } from '../out/bitrix/repositories/BitrixUserProvider.js';
 import { BitrixEventProvider } from '../out/bitrix/repositories/BitrixEventProvider.js';
@@ -208,9 +210,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         eventProvider: EventProvider,
         userRepository: UserRepository,
         roleRepository: RoleRepository,
+        groupRepository: GroupRepository,
         smartProcessRepository: SmartProcessRepository,
         smartProcessProvider: SmartProcessProvider,
         smartProcessFieldProvider: SmartProcessFieldProvider,
+        groupProvider: GroupProvider,
         entityProvider: EntityProvider,
         transactionRunner: PrismaTransactionRunner,
         logger: Logger,
@@ -221,9 +225,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           eventProvider,
           userRepository,
           roleRepository,
+          groupRepository,
           smartProcessRepository,
           smartProcessProvider,
           smartProcessFieldProvider,
+          groupProvider,
           entityProvider,
           transactionRunner,
           logger,
@@ -235,9 +241,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         BitrixEventProvider,
         PrismaUserRepository,
         PrismaRoleRepository,
+        PrismaGroupRepository,
         PrismaSmartProcessRepository,
         BitrixSmartProcessProvider,
         BitrixSmartProcessFieldProvider,
+        BitrixGroupProvider,
         BitrixEntityProvider,
         PrismaTransactionRunner,
         NestConsoleLogger,
