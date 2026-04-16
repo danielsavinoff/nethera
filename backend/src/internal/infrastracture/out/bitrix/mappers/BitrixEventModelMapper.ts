@@ -1,6 +1,8 @@
 import {
   EventHandlerParams,
   EventOnAppInstallHandlerParams,
+  EventOnCrmDynamicItemAdd,
+  EventOnCrmDynamicItemUpdate,
   EventOnUserAddHandlerParams,
 } from '@bitrix24/b24jssdk';
 import { Injectable } from '@nestjs/common';
@@ -15,7 +17,7 @@ import { IncomingWebhookPayload } from '../../../../application/models/IncomingW
 const BITRIX_EVENT_RESOLVERS: Record<
   string,
   (
-    data: EventHandlerParams,
+    data: any,
   ) =>
     | SupportedBitrixEventsToModels[SupportedBitrixEvents]
     | undefined
@@ -40,6 +42,22 @@ const BITRIX_EVENT_RESOLVERS: Record<
       applicationToken: event.auth.application_token,
       clientEndpoint: event.auth.client_endpoint,
       serverEndpoint: event.auth.server_endpoint,
+    };
+  },
+  [SupportedBitrixEvents.OnCrmDynamicItemAdd]: (
+    event: EventOnCrmDynamicItemAdd,
+  ) => {
+    return {
+      externalSmartProcessId: event.FIELDS.ENTITY_TYPE_ID,
+      externalId: event.FIELDS.ID,
+    };
+  },
+  [SupportedBitrixEvents.OnCrmDynamicItemUpdate]: (
+    event: EventOnCrmDynamicItemUpdate,
+  ) => {
+    return {
+      externalSmartProcessId: event.FIELDS.ENTITY_TYPE_ID,
+      externalId: event.FIELDS.ID,
     };
   },
 };

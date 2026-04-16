@@ -13,10 +13,10 @@ export interface ExternalTimeAllocation {
   externalId: string;
   externalGroupId: string;
   externalTaskId: string;
-  [ExternalTimeAllocationCustomFields.Hours]: number;
-  [ExternalTimeAllocationCustomFields.IsApproved]: boolean;
-  [ExternalTimeAllocationCustomFields.WeekNumber]: number;
-  [ExternalTimeAllocationCustomFields.Year]: number;
+  hours: number;
+  isApproved: boolean;
+  weekNumber: number;
+  year: number;
   externalAssigneeId: string;
   externalAssignerId: string;
 }

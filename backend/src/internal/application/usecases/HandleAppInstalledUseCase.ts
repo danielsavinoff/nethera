@@ -5,10 +5,10 @@ import {
   EventHandlerCommand,
   EventHandlerResult,
   EventHandlerUseCase,
-} from './HandleIncomingWebhookUseCase.js';
+} from './DispatchIncomingWebhookUseCase.js';
 import { ConnectionInfo } from '../models/ConnectionInfo.js';
 
-export class ProcessAppInstallUseCase
+export class HandleAppInstalledUseCase
   implements EventHandlerUseCase
 {
   private readonly logger: Logger;
@@ -18,7 +18,7 @@ export class ProcessAppInstallUseCase
     logger: Logger,
   ) {
     this.logger = logger.withContext(
-      ProcessAppInstallUseCase.name,
+      HandleAppInstalledUseCase.name,
     );
   }
 

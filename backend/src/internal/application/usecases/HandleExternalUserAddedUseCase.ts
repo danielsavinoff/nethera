@@ -6,12 +6,12 @@ import {
   EventHandlerCommand,
   EventHandlerResult,
   EventHandlerUseCase,
-} from './HandleIncomingWebhookUseCase.js';
+} from './DispatchIncomingWebhookUseCase.js';
 import { Entity } from '../models/Entity.js';
 import { UserRole } from '../../domain/authorization/UserRole.js';
 import { RoleRepository } from '../ports/RoleRepository.js';
 
-export class ProcessExternalUserAddUseCase
+export class HandleExternalUserAddedUseCase
   implements EventHandlerUseCase
 {
   constructor(

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import type { Logger } from '../../domain/logging/Logger.js';
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
-import { HandleIncomingWebhookUseCase } from '../../application/usecases/HandleIncomingWebhookUseCase.js';
-import { ProcessExternalUserAddUseCase } from '../../application/usecases/ProcessExternalUserAddUseCase.js';
+import { DispatchIncomingWebhookUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
+import { HandleExternalUserAddedUseCase } from '../../application/usecases/HandleExternalUserAddedUseCase.js';
 import { InstallAppUseCase } from '../../application/usecases/InstallAppUseCase.js';
-import { ProcessAppInstallUseCase } from '../../application/usecases/ProcessAppInstallUseCase.js';
+import { HandleAppInstalledUseCase } from '../../application/usecases/HandleAppInstalledUseCase.js';
 import { LoginWithOauthProviderUseCase } from '../../application/usecases/LoginWithOauthProviderUseCase.js';
 import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAccessTokenUseCase.js';
 import { EnsureTenantAuthValidityUseCase } from '../../application/usecases/EnsureTenantAuthValidityUseCase.js';
@@ -82,17 +82,17 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
   ],
   providers: [
     {
-      provide: HandleIncomingWebhookUseCase,
+      provide: DispatchIncomingWebhookUseCase,
       useFactory: (
         eventProcessors: Record<
           string,
-          | ProcessAppInstallUseCase
-          | ProcessExternalUserAddUseCase
+          | HandleAppInstalledUseCase
+          | HandleExternalUserAddedUseCase
         >,
         userProvider: UserProvider,
         ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
       ) => {
-        return new HandleIncomingWebhookUseCase(
+        return new DispatchIncomingWebhookUseCase(
           eventProcessors,
           userProvider,
           ensureTenantAuthValidityUseCase,
@@ -105,13 +105,13 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: ProcessExternalUserAddUseCase,
+      provide: HandleExternalUserAddedUseCase,
       useFactory: (
         userProvider: UserProvider,
         userRepository: UserRepository,
         roleRepository: RoleRepository,
       ) => {
-        return new ProcessExternalUserAddUseCase(
+        return new HandleExternalUserAddedUseCase(
           userProvider,
           userRepository,
           roleRepository,
@@ -244,12 +244,12 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: ProcessAppInstallUseCase,
+      provide: HandleAppInstalledUseCase,
       useFactory: (
         tenantRepository: TenantRepository,
         logger: Logger,
       ) => {
-        return new ProcessAppInstallUseCase(
+        return new HandleAppInstalledUseCase(
           tenantRepository,
           logger,
         );
@@ -462,15 +462,15 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: EVENT_PROCESSORS,
       useFactory: (
-        processBitrixUserAdd: ProcessExternalUserAddUseCase,
-        processAppInstallUseCase: ProcessAppInstallUseCase,
+        handleExternalUserAddedUseCase: HandleExternalUserAddedUseCase,
+        handleAppInstalledUseCase: HandleAppInstalledUseCase,
       ) => ({
-        ONUSERADD: processBitrixUserAdd,
-        ONAPPINSTALL: processAppInstallUseCase,
+        ONUSERADD: handleExternalUserAddedUseCase,
+        ONAPPINSTALL: handleAppInstalledUseCase,
       }),
       inject: [
-        ProcessExternalUserAddUseCase,
-        ProcessAppInstallUseCase,
+        HandleExternalUserAddedUseCase,
+        HandleAppInstalledUseCase,
       ],
     },
     {
@@ -482,9 +482,9 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
   ],
   exports: [
-    HandleIncomingWebhookUseCase,
+    DispatchIncomingWebhookUseCase,
     InstallAppUseCase,
-    ProcessExternalUserAddUseCase,
+    HandleExternalUserAddedUseCase,
     LoginWithOauthProviderUseCase,
     RefreshAccessTokenUseCase,
     EnsureTenantAuthValidityUseCase,

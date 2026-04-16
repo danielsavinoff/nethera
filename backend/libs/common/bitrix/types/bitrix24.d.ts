@@ -270,4 +270,20 @@ declare module '@bitrix24/b24jssdk' {
     };
     auth: HandlerAuthParams;
   }
+
+  export interface EventOnCrmDynamicItemAdd
+    extends EventHandlerParams {
+    FIELDS: {
+      ID: string;
+      ENTITY_TYPE_ID: string;
+    };
+  }
+
+  export interface EventOnCrmDynamicItemUpdate
+    extends EventHandlerParams {
+    FIELDS: {
+      ID: string;
+      ENTITY_TYPE_ID: string;
+    };
+  }
 }

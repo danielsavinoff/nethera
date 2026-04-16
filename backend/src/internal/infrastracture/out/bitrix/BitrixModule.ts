@@ -5,7 +5,6 @@ import { BitrixNotificationRepository } from './repositories/BitrixNotificationR
 import { BitrixClient } from './clients/BitrixClient.js';
 import { BitrixOauthAuthContextMapper } from './mappers/BitrixOauthAuthContextMapper.js';
 import { BitrixEventModelMapper } from './mappers/BitrixEventModelMapper.js';
-import { BitrixEventAuthContextMapper } from './mappers/BitrixEventAuthContextMapper.js';
 import { BitrixTenantCredentialsRenewer } from './adapters/BitrixTenantCredentialsRenewer.js';
 import { BitrixOauthProvider } from './oauth/BitrixOauthProvider.js';
 import { BitrixSmartProcessProvider } from './repositories/BitrixSmartProcessProvider.js';
@@ -23,7 +22,6 @@ import { BitrixGroupProvider } from './repositories/BitrixGroupProvider.js';
     BitrixNotificationRepository,
     BitrixClient,
     BitrixOauthAuthContextMapper,
-    BitrixEventAuthContextMapper,
     BitrixEventModelMapper,
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,
@@ -40,7 +38,6 @@ import { BitrixGroupProvider } from './repositories/BitrixGroupProvider.js';
     BitrixUserProvider,
     BitrixNotificationRepository,
     BitrixOauthAuthContextMapper,
-    BitrixEventAuthContextMapper,
     BitrixEventModelMapper,
     BitrixOauthProvider,
     BitrixTenantCredentialsRenewer,

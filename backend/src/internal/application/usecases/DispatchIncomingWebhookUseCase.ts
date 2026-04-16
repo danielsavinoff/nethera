@@ -21,16 +21,16 @@ export interface EventHandlerUseCase {
   ): Promise<EventHandlerResult>;
 }
 
-export interface HandleIncomingWebhookCommand {
+export interface DispatchIncomingWebhookCommand {
   eventName: string;
   payload: IncomingWebhookPayload;
   tenantCredentials: TenantCredentials;
   tenant: Tenant;
 }
 
-export type HandleIncomingWebhookResult = void;
+export type DispatchIncomingWebhookResult = void;
 
-export class HandleIncomingWebhookUseCase {
+export class DispatchIncomingWebhookUseCase {
   constructor(
     private readonly handlers: Record<
       string,
@@ -41,8 +41,8 @@ export class HandleIncomingWebhookUseCase {
   ) {}
 
   async execute(
-    command: HandleIncomingWebhookCommand,
-  ): Promise<HandleIncomingWebhookResult> {
+    command: DispatchIncomingWebhookCommand,
+  ): Promise<DispatchIncomingWebhookResult> {
     const user = await this.userProvider.fetchMe(
       command.tenantCredentials,
     );

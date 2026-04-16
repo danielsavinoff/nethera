@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   AjaxError as B24JsSdkException,
-  type EventHandlerParams as EventHandlerBody,
+  type EventHandlerParams as HandleWebhookRequestBody,
 } from '@bitrix24/b24jssdk';
 import { EventSubscriptionFailedException } from '../../../../application/exceptions/EventSubscriptionFailedException.js';
 import { UnknownTenantException } from '../../../../application/exceptions/UnknownTenantException.js';
@@ -22,19 +22,19 @@ import { EventGuard } from '../guards/EventGuard.js';
 import { TenantDecorator } from '../decorators/Tenant.js';
 import { BitrixEventModelMapper } from '../../../out/bitrix/mappers/BitrixEventModelMapper.js';
 import { TenantGuard } from '../guards/TenantGuard.js';
-import { BitrixEventAuthContextMapper } from '../../../out/bitrix/mappers/BitrixEventAuthContextMapper.js';
 import { Tenant } from '../../../../../internal/domain/tenant/Tenant.js';
 import { Public } from '../decorators/Public.js';
 import { HandleInstallationRequestDto } from '../dtos/HandleInstallationRequestDto.js';
-import { HandleIncomingWebhookUseCase } from '../../../../application/usecases/HandleIncomingWebhookUseCase.js';
+import { DispatchIncomingWebhookUseCase } from '../../../../application/usecases/DispatchIncomingWebhookUseCase.js';
+import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
+import { TenantCredentialsMissingException } from '../../../../application/exceptions/TenantCredentialsMissingException.js';
 
 @Public()
 @Controller('bitrix')
 export class BitrixController {
   constructor(
     private readonly bitrixEventModelMapper: BitrixEventModelMapper,
-    private readonly bitrixEventAuthContextMapper: BitrixEventAuthContextMapper,
-    private readonly handleIncomingWebhookUseCase: HandleIncomingWebhookUseCase,
+    private readonly dispatchIncomingWebhookUseCase: DispatchIncomingWebhookUseCase,
     private readonly installAppUseCase: InstallAppUseCase,
   ) {}
 
@@ -81,20 +81,33 @@ export class BitrixController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(TenantGuard, EventGuard)
   async handleWebhook(
-    @Body() event: EventHandlerBody,
+    @Body() handleWebhookRequestBody: HandleWebhookRequestBody,
     @TenantDecorator() tenant: Tenant,
   ) {
     try {
-      const eventName = event.event;
-      const eventModel = this.bitrixEventModelMapper.map(event);
-      const tenantCredentials =
-        this.bitrixEventAuthContextMapper.map({
-          auth: event.auth,
-          tenant: tenant,
-        });
+      const auth = handleWebhookRequestBody.auth;
 
-      await this.handleIncomingWebhookUseCase.execute({
-        eventName: eventName,
+      if (!auth) {
+        throw new TenantCredentialsMissingException();
+      }
+
+      const event = handleWebhookRequestBody.event;
+
+      const eventModel = this.bitrixEventModelMapper.map(
+        handleWebhookRequestBody,
+      );
+
+      const tenantCredentials = TenantCredentials.hydrate({
+        accessToken: auth.access_token,
+        refreshToken: auth.refresh_token,
+        expiresIn: Number(auth.expires_in),
+        memberId: auth.member_id,
+        domain: auth.domain,
+        clientEndpoint: auth.client_endpoint,
+      });
+
+      await this.dispatchIncomingWebhookUseCase.execute({
+        eventName: event,
         payload: eventModel,
         tenantCredentials: tenantCredentials,
         tenant: tenant,
@@ -108,6 +121,11 @@ export class BitrixController {
       if (error instanceof UserNotBitrixAdminException) {
         throw new ForbiddenException(
           'Only an administrator is allowed to send events.',
+        );
+      }
+      if (error instanceof TenantCredentialsMissingException) {
+        throw new UnauthorizedException(
+          'Tenant credentials are missing.',
         );
       }
 
