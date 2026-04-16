@@ -31,6 +31,34 @@
         "settings": "Settings"
       }
     },
+    "install": {
+      "seo": {
+        "title": "Install Resource Management"
+      },
+      "header": {
+        "title": "Installing application"
+      },
+      "steps": {
+        "init": {
+          "caption": "Preparing Bitrix installation"
+        },
+        "demo": {
+          "caption": "Running demo setup"
+        },
+        "placement": {
+          "caption": "Registering placements"
+        },
+        "userFields": {
+          "caption": "Registering user field types"
+        },
+        "serverSide": {
+          "caption": "Saving server-side installation data"
+        },
+        "finish": {
+          "caption": "Finishing installation"
+        }
+      }
+    },
     "projectReports": {
       "filters": {
         "user": {

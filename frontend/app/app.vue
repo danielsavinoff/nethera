@@ -18,6 +18,16 @@ watchEffect(async () => {
 
 const { locale, defaultLocale, setLocale, availableLocales } = useI18n();
 
+const b24Language = ref<string | undefined>();
+
+try {
+  const { $initializeB24Frame } = useNuxtApp();
+
+  const $b24 = await $initializeB24Frame();
+
+  b24Language.value = $b24.getLang();
+} catch {}
+
 const userLanguage = computed<string | undefined>(() => user.value?.language);
 
 const language = computed(() => {
@@ -26,6 +36,13 @@ const language = computed(() => {
     availableLocales.includes(userLanguage.value as any)
   ) {
     return userLanguage.value;
+  }
+
+  if (
+    b24Language.value &&
+    availableLocales.includes(b24Language.value as any)
+  ) {
+    return b24Language.value;
   }
 
   return locales[locale.value]?.code ?? String(defaultLocale);
@@ -41,9 +58,9 @@ watch(
   { immediate: true },
 );
 
-useHead({
+useHead(() => ({
   htmlAttrs: { lang: language.value, dir: direction.value },
-});
+}));
 </script>
 
 <template>

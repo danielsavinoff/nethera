@@ -8,20 +8,23 @@ import { withoutTrailingSlash } from "ufo";
 import Logo from "~/components/Logo.vue";
 import { useInstallationStore } from "~/stores/installation";
 
-const { t, locales: localesI18n, setLocale } = useI18n();
-
-useHead({
-  title: t("page.install.seo.title"),
+definePageMeta({
+  layout: "install",
 });
+
+const { t } = useI18n();
+
+useHead(() => ({
+  title: t("page.install.seo.title"),
+}));
 
 // region Init ////
 const config = useRuntimeConfig();
 const appUrl = withoutTrailingSlash(config.public.appUrl);
 
-const { $logger, initLang, processErrorGlobal } = useAppInit("Install");
+const { $logger, processErrorGlobal } = useAppInit("Install");
 const { $initializeB24Frame } = useNuxtApp();
 const $b24: B24Frame = await $initializeB24Frame();
-await initLang($b24, localesI18n, setLocale);
 
 const confetti = useConfetti();
 
@@ -36,17 +39,17 @@ const installationStore = useInstallationStore();
 // region Steps ////
 const steps = ref<Record<string, IStep>>({
   init: {
-    caption: t("page.install.step.init.caption"),
+    caption: t("page.install.steps.init.caption"),
     action: makeInit,
   },
   demo: {
-    caption: t("page.install.step.demo.caption"),
+    caption: t("page.install.steps.demo.caption"),
     action: async () => {
       return sleepAction(1000);
     },
   },
   // events: {
-  //   caption: t('page.install.step.events.caption'),
+  //   caption: t('page.install.steps.events.caption'),
   //   action: async () => {
   //     /**
   //      * Registering onAppInstall | onAppUninstall
@@ -84,7 +87,7 @@ const steps = ref<Record<string, IStep>>({
   //   }
   // },
   placement: {
-    caption: t("page.install.step.placement.caption"),
+    caption: t("page.install.steps.placement.caption"),
     action: async () => {
       const key = {
         placement: "CRM_DEAL_DETAIL_TAB",
@@ -139,7 +142,7 @@ const steps = ref<Record<string, IStep>>({
     },
   },
   userFields: {
-    caption: t("page.install.step.userFields.caption"),
+    caption: t("page.install.steps.userFields.caption"),
     action: async () => {
       const typeId = `some_type_${import.meta.dev ? "dev" : "prod"}`;
 
@@ -188,7 +191,7 @@ const steps = ref<Record<string, IStep>>({
     },
   },
   // crm: {
-  //   caption: t('page.install.step.crm.caption'),
+  //   caption: t('page.install.steps.crm.caption'),
   //   action: async () => {
   //     /**
   //      * Some actions for crm
@@ -203,7 +206,7 @@ const steps = ref<Record<string, IStep>>({
   //   }
   // },
   serverSide: {
-    caption: t("page.install.step.serverSide.caption"),
+    caption: t("page.install.steps.serverSide.caption"),
     action: async () => {
       const authData = $b24.auth.getAuthData();
 
@@ -221,11 +224,26 @@ const steps = ref<Record<string, IStep>>({
     },
   },
   finish: {
-    caption: t("page.install.step.finish.caption"),
+    caption: t("page.install.steps.finish.caption"),
     action: makeFinish,
   },
 });
 const stepCode = ref<string>("init" as const);
+
+const stepCaptionKeyByCode: Record<string, string> = {
+  init: "page.install.steps.init.caption",
+  demo: "page.install.steps.demo.caption",
+  placement: "page.install.steps.placement.caption",
+  userFields: "page.install.steps.userFields.caption",
+  serverSide: "page.install.steps.serverSide.caption",
+  finish: "page.install.steps.finish.caption",
+};
+
+const currentStepCaption = computed(() => {
+  const key = stepCaptionKeyByCode[stepCode.value];
+
+  return key ? t(key) : "...";
+});
 // endregion ////
 
 // region Actions ////
@@ -329,10 +347,10 @@ onMounted(async () => {
     />
     <div class="mt-6 flex flex-col items-center justify-center gap-2">
       <ProseH1 class="text-nowrap mb-0">
-        {{ $t("page.install.ui.title") }}
+        {{ $t("page.install.header.title") }}
       </ProseH1>
       <ProseP small accent="less">
-        {{ steps[stepCode]?.caption || "..." }}
+        {{ currentStepCaption }}
       </ProseP>
     </div>
 
