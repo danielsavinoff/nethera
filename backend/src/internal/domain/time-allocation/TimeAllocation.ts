@@ -1,6 +1,7 @@
 import type { TenantRecord } from '../tenant/TenantRecord.js';
 import type { UserRecord } from '../user/UserRecord.js';
 import type { TimeAllocationRecord } from './TimeAllocationRecord.js';
+import { TimeAllocationPriority } from './TimeAllocationPriority.js';
 
 export class TimeAllocation {
   static hydrate(props: TimeAllocationRecord): TimeAllocation {
@@ -13,7 +14,7 @@ export class TimeAllocation {
     tenantId: TenantRecord['id'];
     groupId?: TimeAllocationRecord['groupId'];
     taskId: TimeAllocationRecord['taskId'];
-    priority: TimeAllocationRecord['priority'];
+    priority: TimeAllocationPriority;
     hours: TimeAllocationRecord['hours'];
     isApproved: TimeAllocationRecord['isApproved'];
     weekNumber: TimeAllocationRecord['weekNumber'];
@@ -61,8 +62,16 @@ export class TimeAllocation {
     return this.props.taskId;
   }
 
-  get priority(): TimeAllocationRecord['priority'] {
-    return this.props.priority;
+  get priority(): TimeAllocationPriority {
+    if (
+      Object.values(TimeAllocationPriority).includes(
+        this.props.priority as any,
+      )
+    ) {
+      return this.props.priority as TimeAllocationPriority;
+    }
+
+    return TimeAllocationPriority.Medium;
   }
 
   get hours(): TimeAllocationRecord['hours'] {
