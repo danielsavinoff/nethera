@@ -5,8 +5,17 @@ import type {
   FetchExternalTasksQuery,
   TaskProvider,
 } from '../../../../application/ports/TaskProvider.js';
+import { TaskStatus } from '../../../../domain/task/TaskStatus.js';
 import type { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { BitrixClient } from '../clients/BitrixClient.js';
+
+export enum BitrixTaskStatus {
+  WaitsExecution = 2,
+  InProgress = 3,
+  AwaitingControl = 4,
+  Completed = 5,
+  Deferred = 6,
+}
 
 @Injectable()
 export class BitrixTaskProvider implements TaskProvider {
@@ -32,6 +41,7 @@ export class BitrixTaskProvider implements TaskProvider {
         bitrixTask.groupId == null
           ? undefined
           : String(bitrixTask.groupId),
+      status: this.mapStatus(bitrixTask.status),
     };
   }
 
@@ -88,6 +98,7 @@ export class BitrixTaskProvider implements TaskProvider {
             bitrixTask.groupId == null
               ? undefined
               : String(bitrixTask.groupId),
+          status: this.mapStatus(bitrixTask.status),
         };
 
         tasks.push(task);
@@ -95,5 +106,21 @@ export class BitrixTaskProvider implements TaskProvider {
     }
 
     return tasks;
+  }
+
+  private mapStatus(
+    rawStatus?: number | string | null,
+  ): TaskStatus {
+    const status =
+      typeof rawStatus === 'string'
+        ? Number(rawStatus)
+        : rawStatus;
+
+    switch (status) {
+      case 5:
+        return TaskStatus.Completed;
+      default:
+        return TaskStatus.InProgress;
+    }
   }
 }

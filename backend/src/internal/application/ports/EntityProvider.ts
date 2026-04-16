@@ -1,13 +1,13 @@
 import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
-import { ExternalEntity } from '../models/ExternalEntity.js';
+import { ExternalEntityType } from '../models/ExternalEntityType.js';
 
-export enum ExternalEntityType {
+export enum ExternalEntityKind {
   User = 'user',
 }
 
 export interface FetchExternalEntityQuery {
   filters: {
-    entityType: ExternalEntityType;
+    entityType: ExternalEntityKind;
   };
 }
 
@@ -15,5 +15,5 @@ export interface EntityProvider {
   fetch(
     credentials: TenantCredentials,
     query: FetchExternalEntityQuery,
-  ): Promise<ExternalEntity>;
+  ): Promise<ExternalEntityType>;
 }

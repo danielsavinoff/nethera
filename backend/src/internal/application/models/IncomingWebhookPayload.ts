@@ -1,8 +1,12 @@
 import { ConnectionInfo } from './ConnectionInfo.js';
-import { Entity } from './Entity.js';
+import { ExternalEntity } from './ExternalEntity.js';
+import { ExternalGroupReference } from './ExternalGroupReference.js';
 import { ExternalSmartProcessReference } from './ExternalSmartProcessReference.js';
+import { ExternalTaskReference } from './ExternalTaskReference.js';
 
 export type IncomingWebhookPayload =
   | ConnectionInfo
-  | Entity
+  | ExternalEntity
+  | ExternalTaskReference
+  | ExternalGroupReference
   | ExternalSmartProcessReference;

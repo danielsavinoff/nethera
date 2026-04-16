@@ -97,9 +97,13 @@ export class BitrixController {
         handleWebhookRequestBody,
       );
 
+      const refreshToken = auth.refresh_token
+        ? auth.refresh_token
+        : tenant.credentials.refreshToken;
+
       const tenantCredentials = TenantCredentials.hydrate({
         accessToken: auth.access_token,
-        refreshToken: auth.refresh_token,
+        refreshToken: refreshToken,
         expiresIn: Number(auth.expires_in),
         memberId: auth.member_id,
         domain: auth.domain,

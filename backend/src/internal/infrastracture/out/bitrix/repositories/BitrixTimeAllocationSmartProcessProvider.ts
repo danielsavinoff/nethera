@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ExternalTimeAllocationNotFoundException } from '../../../../application/exceptions/ExternalTimeAllocationNotFoundException.js';
 import {
   ExternalTimeAllocation,
   ExternalTimeAllocationCustomFields,
 } from '../../../../application/models/ExternalTimeAllocation.js';
 import type {
+  FetchExternalTimeAllocationQuery,
   FetchTimeAllocationsSmartProcessQuery,
   TimeAllocationSmartProcessProvider,
 } from '../../../../application/ports/TimeAllocationSmartProcessProvider.js';
@@ -17,51 +19,120 @@ export class BitrixTimeAllocationSmartProcessProvider
 {
   constructor(private readonly bitrixClient: BitrixClient) {}
 
+  async fetchOrThrow(
+    credentials: TenantCredentials,
+    externalSmartProcessId: string,
+    query: FetchExternalTimeAllocationQuery,
+  ): Promise<ExternalTimeAllocation> {
+    const response = await this.bitrixClient.getCrmItems(
+      credentials,
+      {
+        entityTypeId: externalSmartProcessId,
+        filter: {
+          id: Number(query.filters.externalId),
+        },
+        limit: 1,
+      },
+    );
+
+    const item = response.items.at(0);
+
+    if (!item) {
+      throw new ExternalTimeAllocationNotFoundException();
+    }
+
+    return {
+      externalAssigneeId: String(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.AssigneeId,
+          )
+        ],
+      ),
+      externalAssignerId: String(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.AssignerId,
+          )
+        ],
+      ),
+      externalGroupId: String(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.GroupId,
+          )
+        ],
+      ),
+      externalTaskId: String(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.TaskId,
+          )
+        ],
+      ),
+      [ExternalTimeAllocationCustomFields.Hours]: Number(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.Hours,
+          )
+        ],
+      ),
+      [ExternalTimeAllocationCustomFields.IsApproved]:
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.IsApproved,
+          )
+        ] === 'Y',
+      [ExternalTimeAllocationCustomFields.WeekNumber]: Number(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.WeekNumber,
+          )
+        ],
+      ),
+      [ExternalTimeAllocationCustomFields.Year]: Number(
+        item[
+          this.getFieldName(
+            externalSmartProcessId,
+            ExternalTimeAllocationCustomFields.Year,
+          )
+        ],
+      ),
+      externalId: String(item.id),
+    };
+  }
+
   async fetchMany(
     credentials: TenantCredentials,
-    smartProcessExternalId: string,
+    externalSmartProcessId: string,
     query: FetchTimeAllocationsSmartProcessQuery,
   ): Promise<Page<ExternalTimeAllocation>> {
-    const smartProcess =
-      await this.bitrixClient.getSmartProcessByEntityTypeId(
-        smartProcessExternalId,
-        credentials,
-      );
-
-    const fallbackSmartProcess = smartProcess
-      ? null
-      : await this.bitrixClient.getSmartProcess(
-          smartProcessExternalId,
-          credentials,
-        );
-
-    const resolvedSmartProcess =
-      smartProcess ?? fallbackSmartProcess;
-
-    const smartProcessId =
-      resolvedSmartProcess?.id == null
-        ? smartProcessExternalId
-        : String(resolvedSmartProcess.id);
-
     const assigneeIdFieldName = this.getFieldName(
-      smartProcessId,
+      externalSmartProcessId,
       ExternalTimeAllocationCustomFields.AssigneeId,
     );
 
     const weekNumberFieldName = this.getFieldName(
-      smartProcessId,
+      externalSmartProcessId,
       ExternalTimeAllocationCustomFields.WeekNumber,
     );
 
     const yearFieldName = this.getFieldName(
-      smartProcessId,
+      externalSmartProcessId,
       ExternalTimeAllocationCustomFields.Year,
     );
 
     const response = await this.bitrixClient.getCrmItems(
       credentials,
       {
-        entityTypeId: smartProcessExternalId,
+        entityTypeId: externalSmartProcessId,
         filter: {
           [assigneeIdFieldName]: query.filters.externalUserId,
           [yearFieldName]: query.filters.year,
@@ -94,7 +165,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         externalAssigneeId: String(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.AssigneeId,
             )
           ],
@@ -102,7 +173,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         externalAssignerId: String(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.AssignerId,
             )
           ],
@@ -110,7 +181,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         externalGroupId: String(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.GroupId,
             )
           ],
@@ -118,7 +189,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         externalTaskId: String(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.TaskId,
             )
           ],
@@ -126,7 +197,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         [ExternalTimeAllocationCustomFields.Hours]: Number(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.Hours,
             )
           ],
@@ -134,14 +205,14 @@ export class BitrixTimeAllocationSmartProcessProvider
         [ExternalTimeAllocationCustomFields.IsApproved]:
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.IsApproved,
             )
           ] === 'Y',
         [ExternalTimeAllocationCustomFields.WeekNumber]: Number(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.WeekNumber,
             )
           ],
@@ -149,7 +220,7 @@ export class BitrixTimeAllocationSmartProcessProvider
         [ExternalTimeAllocationCustomFields.Year]: Number(
           item[
             this.getFieldName(
-              smartProcessId,
+              externalSmartProcessId,
               ExternalTimeAllocationCustomFields.Year,
             )
           ],

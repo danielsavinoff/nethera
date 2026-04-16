@@ -21,6 +21,7 @@ export class TimeAllocation {
     year: TimeAllocationRecord['year'];
     assigneeId: UserRecord['id'];
     assignerId: UserRecord['id'];
+    isDeleted?: TimeAllocationRecord['isDeleted'];
   }): TimeAllocation {
     return new TimeAllocation({
       id: props.id ?? crypto.randomUUID(),
@@ -35,6 +36,7 @@ export class TimeAllocation {
       year: props.year,
       assigneeId: props.assigneeId,
       assignerId: props.assignerId,
+      isDeleted: props.isDeleted ?? false,
     });
   }
 
@@ -96,6 +98,43 @@ export class TimeAllocation {
 
   get assignerId(): TimeAllocationRecord['assignerId'] {
     return this.props.assignerId;
+  }
+
+  get isDeleted(): TimeAllocationRecord['isDeleted'] {
+    return this.props.isDeleted;
+  }
+
+  syncFromExternal(data: {
+    groupId?: TimeAllocationRecord['groupId'];
+    taskId: TimeAllocationRecord['taskId'];
+    priority: TimeAllocationPriority;
+    hours: TimeAllocationRecord['hours'];
+    isApproved: TimeAllocationRecord['isApproved'];
+    weekNumber: TimeAllocationRecord['weekNumber'];
+    year: TimeAllocationRecord['year'];
+    assigneeId: UserRecord['id'];
+    assignerId: UserRecord['id'];
+  }): TimeAllocation {
+    return new TimeAllocation({
+      ...this.props,
+      groupId: data.groupId,
+      taskId: data.taskId,
+      priority: data.priority,
+      hours: data.hours,
+      isApproved: data.isApproved,
+      weekNumber: data.weekNumber,
+      year: data.year,
+      assigneeId: data.assigneeId,
+      assignerId: data.assignerId,
+      isDeleted: false,
+    });
+  }
+
+  markDeleted(): TimeAllocation {
+    return new TimeAllocation({
+      ...this.props,
+      isDeleted: true,
+    });
   }
 
   toRecord(): TimeAllocationRecord {

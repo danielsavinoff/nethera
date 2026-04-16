@@ -9,6 +9,7 @@ import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
 import type { ExternalTask } from '../models/ExternalTask.js';
 import type { UserRecord } from '../../domain/user/UserRecord.js';
 import type { UserRepository } from '../ports/UserRepository.js';
+import { TaskStatus } from '../../domain/task/TaskStatus.js';
 
 export interface GetTimeAllocationsCommand {
   tenantId: TenantRecord['id'];
@@ -152,6 +153,7 @@ export class GetTimeAllocationsUseCase {
               title: '',
               externalGroupId:
                 externalTimeAllocation.externalGroupId,
+              status: TaskStatus.InProgress,
             },
             externalGroup: groupsById.get(
               externalTimeAllocation.externalGroupId,

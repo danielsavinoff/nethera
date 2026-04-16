@@ -4,4 +4,5 @@ export interface GroupRecord {
   externalId: string;
   tenantId: string;
   active: boolean;
+  isDeleted: boolean;
 }

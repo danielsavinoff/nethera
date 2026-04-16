@@ -22,7 +22,7 @@ import { GroupProvider } from '../ports/GroupProvider.js';
 import { GroupRepository } from '../ports/GroupRepository.js';
 import {
   EntityProvider,
-  ExternalEntityType,
+  ExternalEntityKind,
 } from '../ports/EntityProvider.js';
 import type { ExternalUser } from '../models/ExternalUser.js';
 import { SmartProcess } from '../../domain/smart-process/SmartProcess.js';
@@ -164,10 +164,10 @@ export class InstallAppUseCase {
         const userEntityId = (
           await this.entityProvider.fetch(tenant.credentials, {
             filters: {
-              entityType: ExternalEntityType.User,
+              entityType: ExternalEntityKind.User,
             },
           })
-        ).externalTypeId;
+        ).externalId;
 
         await this.smartProcessFieldProvider.createMany(
           tenant.credentials,

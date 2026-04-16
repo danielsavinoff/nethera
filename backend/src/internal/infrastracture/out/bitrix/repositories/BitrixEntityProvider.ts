@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import {
   EntityProvider,
-  ExternalEntityType,
+  ExternalEntityKind,
   FetchExternalEntityQuery,
 } from '../../../../application/ports/EntityProvider.js';
-import { ExternalEntity } from '../../../../application/models/ExternalEntity.js';
+
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { BitrixClient } from '../clients/BitrixClient.js';
 import { ResolveEntityFailureException } from '../exceptions/ResolveEntityFailureException.js';
+import { ExternalEntityType } from '../../../../application/models/ExternalEntityType.js';
 
 const DEAL_ENTITY_TYPE_ID = 2;
 
@@ -18,8 +19,8 @@ export class BitrixEntityProvider implements EntityProvider {
   async fetch(
     credentials: TenantCredentials,
     query: FetchExternalEntityQuery,
-  ): Promise<ExternalEntity> {
-    if (query.filters.entityType !== ExternalEntityType.User) {
+  ): Promise<ExternalEntityType> {
+    if (query.filters.entityType !== ExternalEntityKind.User) {
       throw new ResolveEntityFailureException();
     }
 
@@ -28,14 +29,14 @@ export class BitrixEntityProvider implements EntityProvider {
       credentials,
     );
 
-    const externalTypeId = fields.assignedById?.type;
+    const externalId = fields.assignedById?.type;
 
-    if (!externalTypeId) {
+    if (!externalId) {
       throw new ResolveEntityFailureException();
     }
 
     return {
-      externalTypeId,
+      externalId: externalId,
     };
   }
 }

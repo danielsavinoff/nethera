@@ -2,7 +2,14 @@ import { Module } from '@nestjs/common';
 import type { Logger } from '../../domain/logging/Logger.js';
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
 import { DispatchIncomingWebhookUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
+import type { EventHandlerUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
 import { HandleExternalUserAddedUseCase } from '../../application/usecases/HandleExternalUserAddedUseCase.js';
+import { HandleExternalTaskUpsertUseCase } from '../../application/usecases/HandleExternalTaskUpsertUseCase.js';
+import { HandleExternalTaskDeletedUseCase } from '../../application/usecases/HandleExternalTaskDeletedUseCase.js';
+import { HandleExternalGroupUpsertUseCase } from '../../application/usecases/HandleExternalGroupUpsertUseCase.js';
+import { HandleExternalGroupDeletedUseCase } from '../../application/usecases/HandleExternalGroupDeletedUseCase.js';
+import { HandleExternalTimeAllocationUpsertUseCase } from '../../application/usecases/HandleExternalTimeAllocationUpsertUseCase.js';
+import { HandleExternalTimeAllocationDeletedUseCase } from '../../application/usecases/HandleExternalTimeAllocationDeletedUseCase.js';
 import { InstallAppUseCase } from '../../application/usecases/InstallAppUseCase.js';
 import { HandleAppInstalledUseCase } from '../../application/usecases/HandleAppInstalledUseCase.js';
 import { LoginWithOauthProviderUseCase } from '../../application/usecases/LoginWithOauthProviderUseCase.js';
@@ -38,11 +45,14 @@ import type { SmartProcessProvider } from '../../application/ports/SmartProcessP
 import type { SmartProcessRepository } from '../../application/ports/SmartProcessRepository.js';
 import type { SmartProcessFieldProvider } from '../../application/ports/SmartProcessFieldProvider.js';
 import type { TaskProvider } from '../../application/ports/TaskProvider.js';
+import type { TaskRepository } from '../../application/ports/TaskRepository.js';
 import type { TimeAllocationSmartProcessProvider } from '../../application/ports/TimeAllocationSmartProcessProvider.js';
+import type { TimeAllocationRepository } from '../../application/ports/TimeAllocationRepository.js';
 import type { EntityProvider } from '../../application/ports/EntityProvider.js';
 import type { TokenIssuer } from '../../application/ports/TokenIssuer.js';
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
 import type { TokenVerifier } from '../../application/ports/TokenVerifier.js';
+import type { TransactionRunner } from '../../application/ports/TransactionRunner.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { BitrixModule } from '../out/bitrix/BitrixModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
@@ -55,6 +65,8 @@ import { PrismaSmartProcessRepository } from '../out/persistence/repositories/Pr
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaUserFavoriteRepository } from '../out/persistence/repositories/PrismaUserFavoriteRepository.js';
 import { PrismaGroupRepository } from '../out/persistence/repositories/PrismaGroupRepository.js';
+import { PrismaTaskRepository } from '../out/persistence/repositories/PrismaTaskRepository.js';
+import { PrismaTimeAllocationRepository } from '../out/persistence/repositories/PrismaTimeAllocationRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { BitrixUserProvider } from '../out/bitrix/repositories/BitrixUserProvider.js';
 import { BitrixEventProvider } from '../out/bitrix/repositories/BitrixEventProvider.js';
@@ -86,11 +98,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: DispatchIncomingWebhookUseCase,
       useFactory: (
-        eventProcessors: Record<
-          string,
-          | HandleAppInstalledUseCase
-          | HandleExternalUserAddedUseCase
-        >,
+        eventProcessors: Record<string, EventHandlerUseCase>,
         userProvider: UserProvider,
         ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
       ) => {
@@ -123,6 +131,109 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         BitrixUserProvider,
         PrismaUserRepository,
         PrismaRoleRepository,
+      ],
+    },
+    {
+      provide: HandleExternalTaskUpsertUseCase,
+      useFactory: (
+        taskProvider: TaskProvider,
+        taskRepository: TaskRepository,
+      ) => {
+        return new HandleExternalTaskUpsertUseCase(
+          taskProvider,
+          taskRepository,
+        );
+      },
+      inject: [BitrixTaskProvider, PrismaTaskRepository],
+    },
+    {
+      provide: HandleExternalTaskDeletedUseCase,
+      useFactory: (taskRepository: TaskRepository) => {
+        return new HandleExternalTaskDeletedUseCase(
+          taskRepository,
+        );
+      },
+      inject: [PrismaTaskRepository],
+    },
+    {
+      provide: HandleExternalGroupUpsertUseCase,
+      useFactory: (
+        groupProvider: GroupProvider,
+        groupRepository: GroupRepository,
+      ) => {
+        return new HandleExternalGroupUpsertUseCase(
+          groupProvider,
+          groupRepository,
+        );
+      },
+      inject: [BitrixGroupProvider, PrismaGroupRepository],
+    },
+    {
+      provide: HandleExternalGroupDeletedUseCase,
+      useFactory: (groupRepository: GroupRepository) => {
+        return new HandleExternalGroupDeletedUseCase(
+          groupRepository,
+        );
+      },
+      inject: [PrismaGroupRepository],
+    },
+    {
+      provide: HandleExternalTimeAllocationUpsertUseCase,
+      useFactory: (
+        smartProcessRepository: SmartProcessRepository,
+        timeAllocationSmartProcessProvider: TimeAllocationSmartProcessProvider,
+        timeAllocationRepository: TimeAllocationRepository,
+        taskRepository: TaskRepository,
+        groupRepository: GroupRepository,
+        userRepository: UserRepository,
+        taskProvider: TaskProvider,
+        groupProvider: GroupProvider,
+        userProvider: UserProvider,
+        roleRepository: RoleRepository,
+        transactionRunner: TransactionRunner,
+      ) => {
+        return new HandleExternalTimeAllocationUpsertUseCase(
+          smartProcessRepository,
+          timeAllocationSmartProcessProvider,
+          timeAllocationRepository,
+          taskRepository,
+          groupRepository,
+          userRepository,
+          taskProvider,
+          groupProvider,
+          userProvider,
+          roleRepository,
+          transactionRunner,
+        );
+      },
+      inject: [
+        PrismaSmartProcessRepository,
+        BitrixTimeAllocationSmartProcessProvider,
+        PrismaTimeAllocationRepository,
+        PrismaTaskRepository,
+        PrismaGroupRepository,
+        PrismaUserRepository,
+        BitrixTaskProvider,
+        BitrixGroupProvider,
+        BitrixUserProvider,
+        PrismaRoleRepository,
+        PrismaTransactionRunner,
+      ],
+    },
+    {
+      provide: HandleExternalTimeAllocationDeletedUseCase,
+      useFactory: (
+        smartProcessRepository: SmartProcessRepository,
+        timeAllocationRepository: TimeAllocationRepository,
+      ) => {
+        return new HandleExternalTimeAllocationDeletedUseCase(
+          smartProcessRepository,
+          timeAllocationRepository,
+        );
+      },
+      inject: [
+        PrismaSmartProcessRepository,
+        PrismaTimeAllocationRepository,
       ],
     },
     {
@@ -472,13 +583,37 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       useFactory: (
         handleExternalUserAddedUseCase: HandleExternalUserAddedUseCase,
         handleAppInstalledUseCase: HandleAppInstalledUseCase,
+        handleExternalTaskUpsertUseCase: HandleExternalTaskUpsertUseCase,
+        handleExternalTaskDeletedUseCase: HandleExternalTaskDeletedUseCase,
+        handleExternalGroupUpsertUseCase: HandleExternalGroupUpsertUseCase,
+        handleExternalGroupDeletedUseCase: HandleExternalGroupDeletedUseCase,
+        handleExternalTimeAllocationUpsertUseCase: HandleExternalTimeAllocationUpsertUseCase,
+        handleExternalTimeAllocationDeletedUseCase: HandleExternalTimeAllocationDeletedUseCase,
       ) => ({
         ONUSERADD: handleExternalUserAddedUseCase,
         ONAPPINSTALL: handleAppInstalledUseCase,
+        ONTASKADD: handleExternalTaskUpsertUseCase,
+        ONTASKUPDATE: handleExternalTaskUpsertUseCase,
+        ONTASKDELETE: handleExternalTaskDeletedUseCase,
+        ONSONETGROUPADD: handleExternalGroupUpsertUseCase,
+        ONSONETGROUPUPDATE: handleExternalGroupUpsertUseCase,
+        ONSONETGROUPDELETE: handleExternalGroupDeletedUseCase,
+        ONCRMDYNAMICITEMADD:
+          handleExternalTimeAllocationUpsertUseCase,
+        ONCRMDYNAMICITEMUPDATE:
+          handleExternalTimeAllocationUpsertUseCase,
+        ONCRMDYNAMICITEMDELETE:
+          handleExternalTimeAllocationDeletedUseCase,
       }),
       inject: [
         HandleExternalUserAddedUseCase,
         HandleAppInstalledUseCase,
+        HandleExternalTaskUpsertUseCase,
+        HandleExternalTaskDeletedUseCase,
+        HandleExternalGroupUpsertUseCase,
+        HandleExternalGroupDeletedUseCase,
+        HandleExternalTimeAllocationUpsertUseCase,
+        HandleExternalTimeAllocationDeletedUseCase,
       ],
     },
     {

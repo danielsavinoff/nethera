@@ -7,7 +7,7 @@ import {
   EventHandlerResult,
   EventHandlerUseCase,
 } from './DispatchIncomingWebhookUseCase.js';
-import { Entity } from '../models/Entity.js';
+import type { ExternalEntity } from '../models/ExternalEntity.js';
 import { UserRole } from '../../domain/authorization/UserRole.js';
 import { RoleRepository } from '../ports/RoleRepository.js';
 
@@ -21,15 +21,13 @@ export class HandleExternalUserAddedUseCase
   ) {}
 
   async execute(
-    command: EventHandlerCommand<Entity>,
+    command: EventHandlerCommand<ExternalEntity>,
   ): Promise<EventHandlerResult> {
-    const entityId = command.payload.id;
-
     const externalUser = await this.userProvider.fetchOneOrThrow(
       command.tenant.credentials,
       {
         filters: {
-          externalId: entityId,
+          externalId: command.payload.externalId,
         },
       },
     );

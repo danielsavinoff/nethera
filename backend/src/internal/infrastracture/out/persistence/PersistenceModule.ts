@@ -8,6 +8,8 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
 import { PrismaSmartProcessRepository } from './repositories/PrismaSmartProcessRepository.js';
 import { PrismaUserFavoriteRepository } from './repositories/PrismaUserFavoriteRepository.js';
 import { PrismaGroupRepository } from './repositories/PrismaGroupRepository.js';
+import { PrismaTaskRepository } from './repositories/PrismaTaskRepository.js';
+import { PrismaTimeAllocationRepository } from './repositories/PrismaTimeAllocationRepository.js';
 
 @Module({
   providers: [
@@ -18,6 +20,8 @@ import { PrismaGroupRepository } from './repositories/PrismaGroupRepository.js';
     PrismaSmartProcessRepository,
     PrismaUserFavoriteRepository,
     PrismaGroupRepository,
+    PrismaTaskRepository,
+    PrismaTimeAllocationRepository,
     PrismaTransactionRunner,
   ],
   exports: [
@@ -28,6 +32,8 @@ import { PrismaGroupRepository } from './repositories/PrismaGroupRepository.js';
     PrismaSmartProcessRepository,
     PrismaUserFavoriteRepository,
     PrismaGroupRepository,
+    PrismaTaskRepository,
+    PrismaTimeAllocationRepository,
     PrismaTransactionRunner,
   ],
   imports: [LoggingWiringModule],

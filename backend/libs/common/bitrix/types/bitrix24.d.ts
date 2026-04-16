@@ -232,22 +232,89 @@ declare module '@bitrix24/b24jssdk' {
     DATE_STOP: string;
   }
 
-  // on task update
+  export interface EventOnTaskAddHandlerParams
+    extends EventHandlerParams {
+    data: {
+      FIELDS_BEFORE:
+        | {
+            ID: number;
+          }
+        | undefined;
+      FIELDS_AFTER:
+        | {
+            ID: number;
+          }
+        | undefined;
+      IS_ACCESSIBLE_BEFORE: 'Y' | 'N' | undefined;
+      IS_ACCESSIBLE_AFTER: 'Y' | 'N' | undefined;
+    };
+    auth: HandlerAuthParams;
+  }
+
   export interface EventOnTaskUpdateHandlerParams
     extends EventHandlerParams {
     data: {
       FIELDS_BEFORE:
         | {
-            ID: Number;
+            ID: number;
           }
         | undefined;
       FIELDS_AFTER:
         | {
-            ID: Number;
+            ID: number;
           }
         | undefined;
       IS_ACCESSIBLE_BEFORE: 'Y' | 'N' | undefined;
       IS_ACCESSIBLE_AFTER: 'Y' | 'N' | undefined;
+    };
+    auth: HandlerAuthParams;
+  }
+
+  export interface EventOnTaskDeleteHandlerParams
+    extends EventHandlerParams {
+    data: {
+      FIELDS_BEFORE:
+        | {
+            ID: number;
+          }
+        | undefined;
+      FIELDS_AFTER:
+        | {
+            ID: number;
+          }
+        | undefined;
+      IS_ACCESSIBLE_BEFORE: 'Y' | 'N' | undefined;
+      IS_ACCESSIBLE_AFTER: 'Y' | 'N' | undefined;
+    };
+    auth: HandlerAuthParams;
+  }
+
+  export interface EventOnSonetGroupAddHandlerParams
+    extends EventHandlerParams {
+    data: {
+      FIELDS: {
+        ID: string;
+      };
+    };
+    auth: HandlerAuthParams;
+  }
+
+  export interface EventOnSonetGroupUpdateHandlerParams
+    extends EventHandlerParams {
+    data: {
+      FIELDS: {
+        ID: string;
+      };
+    };
+    auth: HandlerAuthParams;
+  }
+
+  export interface EventOnSonetGroupDeleteHandlerParams
+    extends EventHandlerParams {
+    data: {
+      FIELDS: {
+        ID: string;
+      };
     };
     auth: HandlerAuthParams;
   }
@@ -273,17 +340,31 @@ declare module '@bitrix24/b24jssdk' {
 
   export interface EventOnCrmDynamicItemAdd
     extends EventHandlerParams {
-    FIELDS: {
-      ID: string;
-      ENTITY_TYPE_ID: string;
+    data: {
+      FIELDS: {
+        ID: string;
+        ENTITY_TYPE_ID: string;
+      };
     };
   }
 
   export interface EventOnCrmDynamicItemUpdate
     extends EventHandlerParams {
-    FIELDS: {
-      ID: string;
-      ENTITY_TYPE_ID: string;
+    data: {
+      FIELDS: {
+        ID: string;
+        ENTITY_TYPE_ID: string;
+      };
+    };
+  }
+
+  export interface EventOnCrmDynamicItemDelete
+    extends EventHandlerParams {
+    data: {
+      FIELDS: {
+        ID: string;
+        ENTITY_TYPE_ID: string;
+      };
     };
   }
 }

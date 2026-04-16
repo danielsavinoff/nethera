@@ -1,6 +1,7 @@
 import { B24OAuth, Result, UserBrief } from '@bitrix24/b24jssdk';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TaskStatus as BitrixTaskStatus } from '@bitrix24/b24jssdk';
 import { TenantCredentials } from '../../../../domain/tenant/TenantCredentials.js';
 import { SupportedBitrixEvents } from '../enums/SupportedBitrixEventsToModels.js';
 import type { FetchExternalUsersQuery } from '../../../../application/ports/UserProvider.js';
@@ -31,6 +32,7 @@ interface BitrixTask {
   id?: number | string;
   title?: string;
   groupId?: number | string | null;
+  status?: BitrixTaskStatus | `${BitrixTaskStatus}` | null;
 }
 
 interface BitrixGroup {
@@ -235,7 +237,7 @@ export class BitrixClient {
       filter: {
         ID: Number(id),
       },
-      select: ['ID', 'TITLE', 'GROUP_ID'],
+      select: ['ID', 'TITLE', 'GROUP_ID', 'STATUS'],
     });
 
     const data = response.getData() as {
@@ -273,7 +275,7 @@ export class BitrixClient {
         filter: {
           ID: ids.map(Number),
         },
-        select: ['ID', 'TITLE', 'GROUP_ID'],
+        select: ['ID', 'TITLE', 'GROUP_ID', 'STATUS'],
         ...(typeof limit === 'number' ? { limit } : {}),
       },
       skip,

@@ -13,6 +13,7 @@ export class Group {
     externalId: GroupRecord['externalId'];
     tenantId: TenantRecord['id'];
     active: GroupRecord['active'];
+    isDeleted?: GroupRecord['isDeleted'];
   }): Group {
     return new Group({
       id: props.id ?? crypto.randomUUID(),
@@ -20,6 +21,7 @@ export class Group {
       externalId: props.externalId,
       tenantId: props.tenantId,
       active: props.active,
+      isDeleted: props.isDeleted ?? false,
     });
   }
 
@@ -45,11 +47,23 @@ export class Group {
     return this.props.active;
   }
 
+  get isDeleted(): GroupRecord['isDeleted'] {
+    return this.props.isDeleted;
+  }
+
   syncFromExternal(data: SynchronizableGroupData): Group {
     return new Group({
       ...this.props,
       name: data.name,
       active: data.active,
+      isDeleted: false,
+    });
+  }
+
+  markDeleted(): Group {
+    return new Group({
+      ...this.props,
+      isDeleted: true,
     });
   }
 

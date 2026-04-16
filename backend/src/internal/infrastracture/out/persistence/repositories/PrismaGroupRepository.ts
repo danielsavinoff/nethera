@@ -17,6 +17,7 @@ export class PrismaGroupRepository implements GroupRepository {
     transactionContext?: TransactionContext,
   ): Promise<Group | null> {
     const client = this.getClient(transactionContext);
+
     const row = await client.group.findUnique({
       where: {
         external_id_tenant_id: {
@@ -36,6 +37,7 @@ export class PrismaGroupRepository implements GroupRepository {
       externalId: row.external_id,
       tenantId: row.tenant_id,
       active: row.active,
+      isDeleted: row.is_deleted,
     });
   }
 
@@ -44,7 +46,9 @@ export class PrismaGroupRepository implements GroupRepository {
     transactionContext?: TransactionContext,
   ): Promise<Group> {
     const client = this.getClient(transactionContext);
+
     const record = group.toRecord();
+
     const row = await client.group.upsert({
       where: {
         external_id_tenant_id: {
@@ -58,10 +62,12 @@ export class PrismaGroupRepository implements GroupRepository {
         external_id: record.externalId,
         tenant_id: record.tenantId,
         active: record.active,
+        is_deleted: record.isDeleted,
       },
       update: {
         name: record.name,
         active: record.active,
+        is_deleted: record.isDeleted,
       },
     });
 
@@ -71,6 +77,7 @@ export class PrismaGroupRepository implements GroupRepository {
       externalId: row.external_id,
       tenantId: row.tenant_id,
       active: row.active,
+      isDeleted: row.is_deleted,
     });
   }
 
