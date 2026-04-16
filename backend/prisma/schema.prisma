@@ -92,6 +92,7 @@ model Group {
 model Task {
   id          String @id @default(uuid())
   name        String
+  status      String @db.VarChar(64)
   external_id String
   tenant_id   String
 

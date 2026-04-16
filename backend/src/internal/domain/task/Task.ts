@@ -1,5 +1,6 @@
 import type { TenantRecord } from '../tenant/TenantRecord.js';
 import type { TaskRecord } from './TaskRecord.js';
+import { TaskStatus } from './TaskStatus.js';
 
 export class Task {
   static hydrate(props: TaskRecord): Task {
@@ -9,12 +10,14 @@ export class Task {
   static create(props: {
     id?: TaskRecord['id'];
     name: TaskRecord['name'];
+    status: TaskStatus;
     externalId: TaskRecord['externalId'];
     tenantId: TenantRecord['id'];
   }): Task {
     return new Task({
       id: props.id ?? crypto.randomUUID(),
       name: props.name,
+      status: props.status,
       externalId: props.externalId,
       tenantId: props.tenantId,
     });
@@ -30,6 +33,18 @@ export class Task {
 
   get name(): TaskRecord['name'] {
     return this.props.name;
+  }
+
+  get status(): TaskStatus {
+    if (
+      Object.values(TaskStatus).includes(
+        this.props.status as any,
+      )
+    ) {
+      return this.props.status as TaskStatus;
+    }
+
+    return TaskStatus.InProgress;
   }
 
   get externalId(): TaskRecord['externalId'] {
