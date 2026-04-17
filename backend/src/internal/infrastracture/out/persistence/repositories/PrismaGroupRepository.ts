@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { ExternalGroupNotFoundException } from '../../../../application/exceptions/ExternalGroupNotFoundException.js';
+import type { Page } from '../../../../application/models/Page.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import {
   GroupRepository,
   LoadGroupQuery,
+  LoadGroupsQuery,
 } from '../../../../application/ports/GroupRepository.js';
 import { Group } from '../../../../domain/group/Group.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
@@ -12,6 +14,48 @@ import { PrismaTransactionContext } from '../transaction/PrismaTransactionContex
 @Injectable()
 export class PrismaGroupRepository implements GroupRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async loadMany(
+    query: LoadGroupsQuery,
+  ): Promise<Page<Group>> {
+    const where: Prisma.GroupWhereInput = {
+      tenant_id: query.filters.tenantId,
+      ...(typeof query.filters.isDeleted === 'boolean'
+        ? {
+            is_deleted: query.filters.isDeleted,
+          }
+        : {}),
+    };
+
+    const limit = query.page?.limit;
+    const skip = query.page?.skip ?? 0;
+
+    const [total, rows] = await this.prisma.$transaction([
+      this.prisma.group.count({
+        where,
+      }),
+      this.prisma.group.findMany({
+        where,
+        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+        skip,
+        ...(typeof limit === 'number' ? { take: limit } : {}),
+      }),
+    ]);
+
+    return {
+      total,
+      items: rows.map((row) =>
+        Group.hydrate({
+          id: row.id,
+          name: row.name,
+          externalId: row.external_id,
+          tenantId: row.tenant_id,
+          active: row.active,
+          isDeleted: row.is_deleted,
+        }),
+      ),
+    };
+  }
 
   async load(
     query: LoadGroupQuery,

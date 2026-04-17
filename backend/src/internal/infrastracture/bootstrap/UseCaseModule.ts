@@ -21,6 +21,8 @@ import { EnsureTenantAuthValidityUseCase } from '../../application/usecases/Ensu
 import { SendNotificationsUseCase } from '../../application/usecases/SendNotificationsUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
 import { GetDepartmentUsersUseCase } from '../../application/usecases/GetDepartmentUsersUseCase.js';
+import { GetGroupsUseCase } from '../../application/usecases/GetGroupsUseCase.js';
+import { GetTasksUseCase } from '../../application/usecases/GetTasksUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetDepartmentsUseCase } from '../../application/usecases/GetDepartmentsUseCase.js';
 import { AddTimeAllocationUseCase } from '../../application/usecases/AddTimeAllocationUseCase.js';
@@ -482,6 +484,32 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: GetGroupsUseCase,
+      useFactory: (
+        groupRepository: GroupRepository,
+        tenantRepository: TenantRepository,
+      ) => {
+        return new GetGroupsUseCase(
+          groupRepository,
+          tenantRepository,
+        );
+      },
+      inject: [PrismaGroupRepository, PrismaTenantRepository],
+    },
+    {
+      provide: GetTasksUseCase,
+      useFactory: (
+        taskRepository: TaskRepository,
+        tenantRepository: TenantRepository,
+      ) => {
+        return new GetTasksUseCase(
+          taskRepository,
+          tenantRepository,
+        );
+      },
+      inject: [PrismaTaskRepository, PrismaTenantRepository],
+    },
+    {
       provide: GetUsersUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -755,6 +783,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     SendNotificationsUseCase,
     GetDepartmentsUseCase,
     GetDepartmentUsersUseCase,
+    GetGroupsUseCase,
+    GetTasksUseCase,
     GetUsersUseCase,
     AddTimeAllocationUseCase,
     GetTimeAllocationsUseCase,

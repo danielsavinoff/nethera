@@ -1,4 +1,5 @@
 import type { TransactionContext } from '../models/TransactionContext.js';
+import type { Page } from '../models/Page.js';
 import type { Task } from '../../domain/task/Task.js';
 import type { TaskRecord } from '../../domain/task/TaskRecord.js';
 import type { TenantRecord } from '../../domain/tenant/TenantRecord.js';
@@ -14,7 +15,19 @@ export interface LoadTaskQuery {
       };
 }
 
+export interface LoadTasksQuery {
+  filters: {
+    tenantId: TenantRecord['id'];
+    isDeleted?: TaskRecord['isDeleted'];
+  };
+  page?: {
+    limit?: number;
+    skip?: number;
+  };
+}
+
 export interface TaskRepository {
+  loadMany(query: LoadTasksQuery): Promise<Page<Task>>;
   load(
     query: LoadTaskQuery,
     transactionContext?: TransactionContext,

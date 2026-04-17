@@ -4,7 +4,9 @@ import { BitrixController } from './controllers/BitrixController.js';
 import { UseCaseModule } from '../../bootstrap/UseCaseModule.js';
 import { AuthController } from './controllers/AuthController.js';
 import { DepartmentController } from './controllers/DepartmentController.js';
+import { GroupController } from './controllers/GroupController.js';
 import { RoleController } from './controllers/RoleController.js';
+import { TaskController } from './controllers/TaskController.js';
 import { UserController } from './controllers/UserController.js';
 import { TimeAllocationController } from './controllers/TimeAllocationController.js';
 import { BitrixModule } from '../../out/bitrix/BitrixModule.js';
@@ -19,7 +21,9 @@ import { AddUserFavoritesPresenter } from './presenters/AddUserFavoritesPresente
 import { DeleteUserFavoritesPresenter } from './presenters/DeleteUserFavoritesPresenter.js';
 import { GetDepartmentUsersPresenter } from './presenters/GetDepartmentUsersPresenter.js';
 import { GetDepartmentsPresenter } from './presenters/GetDepartmentsPresenter.js';
+import { GetGroupsPresenter } from './presenters/GetGroupsPresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
+import { GetTasksPresenter } from './presenters/GetTasksPresenter.js';
 import { AddTimeAllocationPresenter } from './presenters/AddTimeAllocationPresenter.js';
 import { GetTimeAllocationsPresenter } from './presenters/GetTimeAllocationsPresenter.js';
 import { TenantGuard } from './guards/TenantGuard.js';
@@ -31,13 +35,16 @@ import { EventGuard } from './guards/EventGuard.js';
     BitrixController,
     AuthController,
     DepartmentController,
+    GroupController,
     RoleController,
+    TaskController,
     UserController,
     TimeAllocationController,
   ],
   providers: [
     GetDepartmentUsersPresenter,
     GetDepartmentsPresenter,
+    GetGroupsPresenter,
     GetUsersPresenter,
     GetCurrentUserPresenter,
     GetUserRolesPresenter,
@@ -47,6 +54,7 @@ import { EventGuard } from './guards/EventGuard.js';
     DeleteUserRolePresenter,
     DeleteUserFavoritesPresenter,
     GetRolesPresenter,
+    GetTasksPresenter,
     AddTimeAllocationPresenter,
     GetTimeAllocationsPresenter,
     TenantGuard,

@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { ExternalTaskNotFoundException } from '../../../../application/exceptions/ExternalTaskNotFoundException.js';
+import type { Page } from '../../../../application/models/Page.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import {
   LoadTaskQuery,
+  LoadTasksQuery,
   TaskRepository,
 } from '../../../../application/ports/TaskRepository.js';
 import { Task } from '../../../../domain/task/Task.js';
@@ -12,6 +14,48 @@ import { PrismaTransactionContext } from '../transaction/PrismaTransactionContex
 @Injectable()
 export class PrismaTaskRepository implements TaskRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async loadMany(
+    query: LoadTasksQuery,
+  ): Promise<Page<Task>> {
+    const where: Prisma.TaskWhereInput = {
+      tenant_id: query.filters.tenantId,
+      ...(typeof query.filters.isDeleted === 'boolean'
+        ? {
+            is_deleted: query.filters.isDeleted,
+          }
+        : {}),
+    };
+
+    const limit = query.page?.limit;
+    const skip = query.page?.skip ?? 0;
+
+    const [total, rows] = await this.prisma.$transaction([
+      this.prisma.task.count({
+        where,
+      }),
+      this.prisma.task.findMany({
+        where,
+        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+        skip,
+        ...(typeof limit === 'number' ? { take: limit } : {}),
+      }),
+    ]);
+
+    return {
+      total,
+      items: rows.map((row) =>
+        Task.hydrate({
+          id: row.id,
+          name: row.name,
+          status: row.status,
+          externalId: row.external_id,
+          tenantId: row.tenant_id,
+          isDeleted: row.is_deleted,
+        }),
+      ),
+    };
+  }
 
   async load(
     query: LoadTaskQuery,
