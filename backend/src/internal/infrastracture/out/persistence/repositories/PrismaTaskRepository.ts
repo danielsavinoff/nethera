@@ -15,9 +15,7 @@ import { PrismaTransactionContext } from '../transaction/PrismaTransactionContex
 export class PrismaTaskRepository implements TaskRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async loadMany(
-    query: LoadTasksQuery,
-  ): Promise<Page<Task>> {
+  async loadMany(query: LoadTasksQuery): Promise<Page<Task>> {
     const where: Prisma.TaskWhereInput = {
       tenant_id: query.filters.tenantId,
       ...(typeof query.filters.isDeleted === 'boolean'
@@ -52,6 +50,8 @@ export class PrismaTaskRepository implements TaskRepository {
           externalId: row.external_id,
           tenantId: row.tenant_id,
           isDeleted: row.is_deleted,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
         }),
       ),
     };
@@ -89,6 +89,8 @@ export class PrismaTaskRepository implements TaskRepository {
       externalId: row.external_id,
       tenantId: row.tenant_id,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 
@@ -124,6 +126,8 @@ export class PrismaTaskRepository implements TaskRepository {
       externalId: row.external_id,
       tenantId: row.tenant_id,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 
@@ -149,11 +153,14 @@ export class PrismaTaskRepository implements TaskRepository {
         external_id: record.externalId,
         tenant_id: record.tenantId,
         is_deleted: record.isDeleted,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
       },
       update: {
         name: record.name,
         status: record.status,
         is_deleted: record.isDeleted,
+        updated_at: record.updatedAt,
       },
     });
 
@@ -164,6 +171,8 @@ export class PrismaTaskRepository implements TaskRepository {
       externalId: row.external_id,
       tenantId: row.tenant_id,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 

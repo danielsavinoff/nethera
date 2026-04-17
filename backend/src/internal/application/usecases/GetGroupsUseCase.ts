@@ -19,6 +19,8 @@ export interface GetGroupsResult {
       id: string;
       name: string;
       active: boolean;
+      createdAt: Date;
+      updatedAt: Date;
     }[];
   };
 }
@@ -61,6 +63,8 @@ export class GetGroupsUseCase {
           id: group.id,
           name: group.name,
           active: group.active,
+          createdAt: group.createdAt,
+          updatedAt: group.updatedAt,
         })),
       },
     };

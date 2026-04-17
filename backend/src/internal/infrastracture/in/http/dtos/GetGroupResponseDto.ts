@@ -10,6 +10,12 @@ export class GetGroupResponseDto {
   @ApiProperty()
   active!: boolean;
 
+  @ApiProperty()
+  createdAt!: Date;
+
+  @ApiProperty()
+  updatedAt!: Date;
+
   constructor(data: GetGroupResponseDto) {
     Object.assign(this, data);
   }

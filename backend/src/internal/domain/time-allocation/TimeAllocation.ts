@@ -22,6 +22,8 @@ export class TimeAllocation {
     assigneeId: UserRecord['id'];
     assignerId: UserRecord['id'];
     isDeleted?: TimeAllocationRecord['isDeleted'];
+    createdAt?: TimeAllocationRecord['createdAt'];
+    updatedAt?: TimeAllocationRecord['updatedAt'];
   }): TimeAllocation {
     return new TimeAllocation({
       id: props.id ?? crypto.randomUUID(),
@@ -37,6 +39,8 @@ export class TimeAllocation {
       assigneeId: props.assigneeId,
       assignerId: props.assignerId,
       isDeleted: props.isDeleted ?? false,
+      createdAt: props.createdAt ?? new Date(),
+      updatedAt: props.updatedAt ?? new Date(),
     });
   }
 
@@ -104,6 +108,14 @@ export class TimeAllocation {
     return this.props.isDeleted;
   }
 
+  get createdAt(): TimeAllocationRecord['createdAt'] {
+    return this.props.createdAt;
+  }
+
+  get updatedAt(): TimeAllocationRecord['updatedAt'] {
+    return this.props.updatedAt;
+  }
+
   syncFromExternal(data: {
     groupId?: TimeAllocationRecord['groupId'];
     taskId: TimeAllocationRecord['taskId'];
@@ -127,6 +139,7 @@ export class TimeAllocation {
       assigneeId: data.assigneeId,
       assignerId: data.assignerId,
       isDeleted: false,
+      updatedAt: new Date(),
     });
   }
 
@@ -134,6 +147,7 @@ export class TimeAllocation {
     return new TimeAllocation({
       ...this.props,
       isDeleted: true,
+      updatedAt: new Date(),
     });
   }
 

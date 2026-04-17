@@ -12,4 +12,6 @@ export interface TimeAllocationRecord {
   assigneeId: string;
   assignerId: string;
   isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -16,6 +16,8 @@ export class GetGroupsPresenter {
             id: group.id,
             name: group.name,
             active: group.active,
+            createdAt: group.createdAt,
+            updatedAt: group.updatedAt,
           }),
       ),
     });

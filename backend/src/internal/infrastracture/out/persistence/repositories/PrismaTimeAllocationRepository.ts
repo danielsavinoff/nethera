@@ -47,6 +47,8 @@ export class PrismaTimeAllocationRepository
       assigneeId: row.assignee_id,
       assignerId: row.assigner_id,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 
@@ -79,6 +81,8 @@ export class PrismaTimeAllocationRepository
         assignee_id: record.assigneeId,
         assigner_id: record.assignerId,
         is_deleted: record.isDeleted,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
       },
       update: {
         group_id: record.groupId,
@@ -91,6 +95,7 @@ export class PrismaTimeAllocationRepository
         assignee_id: record.assigneeId,
         assigner_id: record.assignerId,
         is_deleted: record.isDeleted,
+        updated_at: record.updatedAt,
       },
     });
 
@@ -108,6 +113,8 @@ export class PrismaTimeAllocationRepository
       assigneeId: row.assignee_id,
       assignerId: row.assigner_id,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 

@@ -77,27 +77,32 @@ model SmartProcess {
 }
 
 model Group {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   external_id String
   tenant_id   String
-  active      Boolean @default(true)
-  is_deleted  Boolean @default(false)
+  active      Boolean  @default(true)
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   timeAllocations TimeAllocation[]
 
   @@unique([external_id, tenant_id])
+  @@index([tenant_id, is_deleted])
   @@map("groups")
 }
 
 model Task {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
-  status      String @db.VarChar(64)
+  status      String   @db.VarChar(64)
   external_id String
   tenant_id   String
-  is_deleted  Boolean @default(false)
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   timeAllocations TimeAllocation[]
@@ -107,19 +112,21 @@ model Task {
 }
 
 model TimeAllocation {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   external_id String
   tenant_id   String
   group_id    String?
   task_id     String
-  priority    String  @db.VarChar(64)
+  priority    String   @db.VarChar(64)
   hours       Float
   is_approved Boolean
   week_number Int
   year        Int
   assignee_id String
   assigner_id String
-  is_deleted  Boolean @default(false)
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   tenant   Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   group    Group? @relation(fields: [group_id], references: [id], onDelete: SetNull)

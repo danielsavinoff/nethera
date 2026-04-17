@@ -5,4 +5,6 @@ export interface TaskRecord {
   externalId: string;
   tenantId: string;
   isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

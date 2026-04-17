@@ -20,6 +20,8 @@ export interface GetTasksResult {
       id: string;
       name: string;
       status: TaskStatus;
+      createdAt: Date;
+      updatedAt: Date;
     }[];
   };
 }
@@ -62,6 +64,8 @@ export class GetTasksUseCase {
           id: task.id,
           name: task.name,
           status: task.status,
+          createdAt: task.createdAt,
+          updatedAt: task.updatedAt,
         })),
       },
     };

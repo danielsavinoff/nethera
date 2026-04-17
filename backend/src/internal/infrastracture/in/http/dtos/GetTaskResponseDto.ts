@@ -14,6 +14,12 @@ export class GetTaskResponseDto {
   })
   status!: TaskStatus;
 
+  @ApiProperty()
+  createdAt!: Date;
+
+  @ApiProperty()
+  updatedAt!: Date;
+
   constructor(data: GetTaskResponseDto) {
     Object.assign(this, data);
   }

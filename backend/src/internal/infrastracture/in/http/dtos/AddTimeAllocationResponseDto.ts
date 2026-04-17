@@ -42,6 +42,12 @@ export class AddTimeAllocationResponseDto {
   @ApiProperty()
   assignerId!: string;
 
+  @ApiProperty()
+  createdAt!: Date;
+
+  @ApiProperty()
+  updatedAt!: Date;
+
   constructor(data: AddTimeAllocationResponseDto) {
     Object.assign(this, data);
   }

@@ -148,15 +148,16 @@ export class AddTimeAllocationUseCase {
           assignerId: assigner.id,
         });
 
-        await this.timeAllocationRepository.save(
-          timeAllocation,
-          transactionContext,
-        );
+        const savedTimeAllocation =
+          await this.timeAllocationRepository.save(
+            timeAllocation,
+            transactionContext,
+          );
 
         return {
           task,
           group,
-          timeAllocation,
+          timeAllocation: savedTimeAllocation,
           assignee,
           assigner,
         };

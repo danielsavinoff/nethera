@@ -16,6 +16,8 @@ export class GetTasksPresenter {
             id: task.id,
             name: task.name,
             status: task.status,
+            createdAt: task.createdAt,
+            updatedAt: task.updatedAt,
           }),
       ),
     });

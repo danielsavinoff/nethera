@@ -33,6 +33,8 @@ export class AddTimeAllocationPresenter {
       year: result.data.timeAllocation.year,
       assigneeId: result.data.assignee.id,
       assignerId: result.data.assigner.id,
+      createdAt: result.data.timeAllocation.createdAt,
+      updatedAt: result.data.timeAllocation.updatedAt,
     });
   }
 }

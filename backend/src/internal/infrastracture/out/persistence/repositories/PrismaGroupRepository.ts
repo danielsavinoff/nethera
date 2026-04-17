@@ -15,9 +15,7 @@ import { PrismaTransactionContext } from '../transaction/PrismaTransactionContex
 export class PrismaGroupRepository implements GroupRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async loadMany(
-    query: LoadGroupsQuery,
-  ): Promise<Page<Group>> {
+  async loadMany(query: LoadGroupsQuery): Promise<Page<Group>> {
     const where: Prisma.GroupWhereInput = {
       tenant_id: query.filters.tenantId,
       ...(typeof query.filters.isDeleted === 'boolean'
@@ -36,7 +34,6 @@ export class PrismaGroupRepository implements GroupRepository {
       }),
       this.prisma.group.findMany({
         where,
-        orderBy: [{ name: 'asc' }, { id: 'asc' }],
         skip,
         ...(typeof limit === 'number' ? { take: limit } : {}),
       }),
@@ -52,6 +49,8 @@ export class PrismaGroupRepository implements GroupRepository {
           tenantId: row.tenant_id,
           active: row.active,
           isDeleted: row.is_deleted,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
         }),
       ),
     };
@@ -89,6 +88,8 @@ export class PrismaGroupRepository implements GroupRepository {
       tenantId: row.tenant_id,
       active: row.active,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 
@@ -124,6 +125,8 @@ export class PrismaGroupRepository implements GroupRepository {
       tenantId: row.tenant_id,
       active: row.active,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 
@@ -149,11 +152,14 @@ export class PrismaGroupRepository implements GroupRepository {
         tenant_id: record.tenantId,
         active: record.active,
         is_deleted: record.isDeleted,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
       },
       update: {
         name: record.name,
         active: record.active,
         is_deleted: record.isDeleted,
+        updated_at: record.updatedAt,
       },
     });
 
@@ -164,6 +170,8 @@ export class PrismaGroupRepository implements GroupRepository {
       tenantId: row.tenant_id,
       active: row.active,
       isDeleted: row.is_deleted,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     });
   }
 

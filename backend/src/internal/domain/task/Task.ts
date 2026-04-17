@@ -14,6 +14,8 @@ export class Task {
     externalId: TaskRecord['externalId'];
     tenantId: TenantRecord['id'];
     isDeleted?: TaskRecord['isDeleted'];
+    createdAt?: TaskRecord['createdAt'];
+    updatedAt?: TaskRecord['updatedAt'];
   }): Task {
     return new Task({
       id: props.id ?? crypto.randomUUID(),
@@ -22,6 +24,8 @@ export class Task {
       externalId: props.externalId,
       tenantId: props.tenantId,
       isDeleted: props.isDeleted ?? false,
+      createdAt: props.createdAt ?? new Date(),
+      updatedAt: props.updatedAt ?? new Date(),
     });
   }
 
@@ -59,6 +63,14 @@ export class Task {
     return this.props.isDeleted;
   }
 
+  get createdAt(): TaskRecord['createdAt'] {
+    return this.props.createdAt;
+  }
+
+  get updatedAt(): TaskRecord['updatedAt'] {
+    return this.props.updatedAt;
+  }
+
   syncFromExternal(data: {
     name: TaskRecord['name'];
     status: TaskStatus;
@@ -68,6 +80,7 @@ export class Task {
       name: data.name,
       status: data.status,
       isDeleted: false,
+      updatedAt: new Date(),
     });
   }
 
@@ -75,6 +88,7 @@ export class Task {
     return new Task({
       ...this.props,
       isDeleted: true,
+      updatedAt: new Date(),
     });
   }
 

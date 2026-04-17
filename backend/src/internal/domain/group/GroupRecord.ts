@@ -5,4 +5,6 @@ export interface GroupRecord {
   tenantId: string;
   active: boolean;
   isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
