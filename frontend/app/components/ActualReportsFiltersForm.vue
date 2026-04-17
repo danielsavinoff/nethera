@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@bitrix24/b24ui-nuxt";
-import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
 import { Icon } from "@iconify/vue";
 
 const { t } = useI18n();
@@ -9,33 +8,23 @@ const emit = defineEmits<{
 }>();
 
 const departmentItems = ref(["Engineering", "Operations", "Design", "HR"]);
-const yearItems = ref(["2024", "2025", "2026"]);
-const weekNumbers = [12, 13, 14, 15];
-
-const getWeekLabel = (value: string) => {
-  const number = value.match(/\d+/)?.[0];
-
-  return t("page.actualReports.table.weekLabel", {
-    number: number ?? value,
-  });
-};
-
-const weekItems = computed(() =>
-  weekNumbers.map((weekNumber) =>
-    t("page.actualReports.table.weekLabel", { number: weekNumber }),
-  ),
-);
-
-const getWeekNumber = (value: string) =>
-  Number(value.match(/\d+/)?.[0] ?? "15");
+const { years: yearItems, currentYear } = useYears();
 
 const formState = reactive({
   department: ["Engineering"],
-  year: ["2026"],
-  weekFrom: [getWeekLabel("12")],
-  weekTo: [getWeekLabel("15")],
+  year: [String(currentYear)],
+  weekFrom: ["12"],
+  weekTo: ["15"],
   onlyFree: false,
 });
+
+const selectedYear = computed(() => Number(formState.year[0] ?? String(currentYear)));
+const { weeks: isoWeeks } = useIsoWeeks(selectedYear);
+
+const weekItems = computed(() => isoWeeks.value.map(String));
+
+const getWeekNumber = (value: string | undefined, fallback: number) =>
+  Number(value ?? String(fallback));
 
 type FilterFormState = typeof formState;
 
@@ -61,6 +50,18 @@ watch(
   },
 );
 
+const syncSelectedWeeks = () => {
+  const firstWeek = isoWeeks.value[0] ?? 1;
+  const lastWeek = isoWeeks.value.at(-1) ?? firstWeek;
+  const clampWeek = (value: string | undefined, fallback: number) =>
+    Math.min(Math.max(getWeekNumber(value, fallback), firstWeek), lastWeek);
+
+  formState.weekFrom = [String(clampWeek(formState.weekFrom[0], 12))];
+  formState.weekTo = [String(clampWeek(formState.weekTo[0], 15))];
+};
+
+watch(selectedYear, syncSelectedWeeks, { immediate: true });
+
 watch(
   () => formState.weekFrom,
   (values) => {
@@ -78,8 +79,10 @@ watch(
 const onSubmit = (_event: FormSubmitEvent<FilterFormState>) => {};
 
 const selectedWeekRange = computed(() => {
-  const from = getWeekNumber(formState.weekFrom[0] ?? "12");
-  const to = getWeekNumber(formState.weekTo[0] ?? "15");
+  const firstWeek = isoWeeks.value[0] ?? 1;
+  const lastWeek = isoWeeks.value.at(-1) ?? firstWeek;
+  const from = getWeekNumber(formState.weekFrom[0], firstWeek);
+  const to = getWeekNumber(formState.weekTo[0], lastWeek);
 
   return {
     from: Math.min(from, to),

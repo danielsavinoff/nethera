@@ -5,7 +5,6 @@ import type {
   UserPickerItem,
   UserPickerLoadState,
 } from "~~/app/composables/useUserPickerPageState";
-import { Refresh5Icon } from "@bitrix24/b24icons-vue/actions";
 import { Icon } from "@iconify/vue";
 
 const query = defineModel<string>("query", {
@@ -23,14 +22,22 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const yearItems = ref(["2024", "2025", "2026"]);
-const weekItems = ref(["Week 12", "Week 13", "Week 14", "Week 15"]);
+const { years: yearItems, currentYear } = useYears();
 
 const formState = reactive({
   user: [],
-  year: ["2026"],
-  week: ["Week 14"],
+  year: [String(currentYear)],
+  week: ["14"],
 });
+
+const selectedYear = computed(() => Number(formState.year[0] ?? String(currentYear)));
+
+const { weeks: isoWeeks } = useIsoWeeks(selectedYear);
+
+const weekItems = computed(() => isoWeeks.value.map(String));
+
+const getWeekNumber = (value: string | undefined, fallback: number) =>
+  Number(value ?? String(fallback));
 
 type FilterFormState = typeof formState;
 
@@ -55,6 +62,19 @@ watch(
     formState.year = keepLastSelection(values);
   },
 );
+
+const syncSelectedWeek = () => {
+  const firstWeek = isoWeeks.value[0] ?? 1;
+  const lastWeek = isoWeeks.value.at(-1) ?? firstWeek;
+  const weekNumber = Math.min(
+    Math.max(getWeekNumber(formState.week[0], 14), firstWeek),
+    lastWeek,
+  );
+
+  formState.week = [String(weekNumber)];
+};
+
+watch(selectedYear, syncSelectedWeek, { immediate: true });
 
 watch(
   () => formState.week,

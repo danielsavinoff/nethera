@@ -9,6 +9,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const { currentYear } = useYears();
 
 const isMobile = useIsMobile();
 
@@ -19,7 +20,7 @@ const addTimeAllocationForm = reactive({
   weekNumber: "",
   assignee: "",
   assigner: "",
-  year: "2026",
+  year: String(currentYear),
   automaticApproval: false,
   priority: "",
 });
@@ -31,7 +32,7 @@ const resetAddTimeAllocationForm = (taskName = "") => {
   addTimeAllocationForm.weekNumber = "";
   addTimeAllocationForm.assignee = "";
   addTimeAllocationForm.assigner = "";
-  addTimeAllocationForm.year = "2026";
+  addTimeAllocationForm.year = String(currentYear);
   addTimeAllocationForm.automaticApproval = false;
   addTimeAllocationForm.priority = "";
 };
