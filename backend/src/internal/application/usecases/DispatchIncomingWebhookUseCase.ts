@@ -1,5 +1,4 @@
 import { EventProcessorNotFoundException } from '../exceptions/EventProcessorNotFoundException.js';
-import { UserProvider } from '../ports/UserProvider.js';
 import { IncomingWebhookPayload } from '../models/IncomingWebhookPayload.js';
 
 export interface EventHandlerCommand<
@@ -29,7 +28,6 @@ export class DispatchIncomingWebhookUseCase {
       string,
       EventHandlerUseCase
     >,
-    private readonly userProvider: UserProvider,
   ) {}
 
   async execute(

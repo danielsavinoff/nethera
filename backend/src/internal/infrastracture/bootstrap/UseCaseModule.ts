@@ -236,7 +236,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
   ],
   exports: [
-    DispatchIncomingWebhookUseCase,
+    // DispatchIncomingWebhookUseCase,
     SendMagicLinkUseCase,
     LoginWithMagicLinkUseCase,
     RefreshAccessTokenUseCase,
