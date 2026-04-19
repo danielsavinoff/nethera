@@ -1,6 +1,5 @@
 import { User } from '../../domain/user/User.js';
 import { UserRecord } from '../../domain/user/UserRecord.js';
-import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetCurrentUserCommand {
@@ -17,13 +16,14 @@ export class GetCurrentUserUseCase {
   async execute(
     command: GetCurrentUserCommand,
   ): Promise<GetCurrentUserResult> {
-    const user = await this.userRepository.findByIdWithRoles(
-      command.userId,
-    );
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
+    const user = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.userId,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
     return {
       user: user,

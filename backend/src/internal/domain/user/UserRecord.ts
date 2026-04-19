@@ -1,10 +1,6 @@
 export interface UserRecord {
   id: string;
-  externalId: number;
-  tenantId: string;
-  firstName?: string;
-  secondName?: string;
-  lastName?: string;
+  email: string;
   language?: string;
   active: boolean;
   createdAt: Date;

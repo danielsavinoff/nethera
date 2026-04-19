@@ -1,52 +1,49 @@
-import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
+import type { IssuedAccessToken } from '../models/IssuedAccessToken.js';
+import type { AccessTokenService } from '../ports/AccessTokenService.js';
+import type { RefreshTokenService } from '../ports/RefreshTokenService.js';
 import type { SessionRepository } from '../ports/SessionRepository.js';
-import type { TenantRepository } from '../ports/TenantRepository.js';
-import type { TokenIssuer } from '../ports/TokenIssuer.js';
-import type { TokenVerifier } from '../ports/TokenVerifier.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface RefreshAccessTokenCommand {
   refreshToken: string;
 }
 
+export interface RefreshAccessTokenResult
+  extends IssuedAccessToken {}
+
 export class RefreshAccessTokenUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly sessionRepository: SessionRepository,
-    private readonly tenantRepository: TenantRepository,
-    private readonly tokenIssuer: TokenIssuer,
-    private readonly tokenVerifier: TokenVerifier,
+    private readonly accessTokenService: AccessTokenService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async execute(command: RefreshAccessTokenCommand) {
+  async execute(
+    command: RefreshAccessTokenCommand,
+  ): Promise<RefreshAccessTokenResult> {
     const authClaim =
-      await this.tokenVerifier.verifyRefreshToken(
+      await this.refreshTokenService.verify(
         command.refreshToken,
       );
 
-    const tenant = await this.tenantRepository.loadByIdOrThrow(
-      authClaim.tid,
-    );
-
-    const user = await this.userRepository.findByIdWithRoles(
-      authClaim.sub,
-    );
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
+    const user = await this.userRepository.loadOrThrow({
+      filters: {
+        id: authClaim.sub,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
     const session = await this.sessionRepository.loadByIdOrThrow(
       authClaim.sid,
     );
 
-    const token = await this.tokenIssuer.issue({
-      claims: {
-        sub: user.id,
-        sid: session.id,
-        tid: tenant.id,
-        roles: user.roles?.map((role) => role.name) ?? [],
-      },
+    const token = await this.accessTokenService.issue({
+      sub: user.id,
+      sid: session.id,
+      roles: user.roles?.map((role) => role.name) ?? [],
     });
 
     return token;

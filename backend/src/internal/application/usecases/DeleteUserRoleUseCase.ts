@@ -1,5 +1,4 @@
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
-import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import { UserRoleAssignmentNotFoundException } from '../exceptions/UserRoleAssignmentNotFoundException.js';
 import type { RoleRepository } from '../ports/RoleRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
@@ -24,26 +23,23 @@ export class DeleteUserRoleUseCase {
   async execute(
     command: DeleteUserRoleCommand,
   ): Promise<DeleteUserRoleResult> {
-    const initiator =
-      await this.userRepository.findByIdWithRoles(
-        command.initiatorUserId,
-      );
+    const initiator = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.initiatorUserId,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
-    if (!initiator) {
-      throw new UserNotFoundException();
-    }
-
-    const targetUser =
-      await this.userRepository.findByIdWithRoles(
-        command.userId,
-      );
-
-    if (
-      !targetUser ||
-      targetUser.tenantId !== initiator.tenantId
-    ) {
-      throw new UserNotFoundException();
-    }
+    const targetUser = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.userId,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
     this.rolePolicy.assertCanRemove(initiator);
 

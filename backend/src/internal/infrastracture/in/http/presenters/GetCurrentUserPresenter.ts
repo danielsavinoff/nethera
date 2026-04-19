@@ -21,7 +21,6 @@ export class GetCurrentUserPresenter {
     return new GetCurrentUserResponseDto({
       displayName: result.user.displayName,
       id: result.user.id,
-      tenantId: result.user.tenantId,
       language: result.user.language,
       permissions,
     });

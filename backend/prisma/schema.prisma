@@ -26,6 +26,19 @@ model User {
 
   @@map("users")
 }
+
+model AuthToken {
+  id                   String   @id @default(uuid())
+  created_at           DateTime @default(now())
+  email                String   @db.Citext
+  expires_at           DateTime
+  requested_ip         String?  @db.Inet
+  requested_user_agent String?
+  token_hash           String   @unique
+  used_at              DateTime?
+
+  @@map("auth_tokens")
+}
 model Session {
   id            String   @id @default(uuid())
   refresh_token String   @unique

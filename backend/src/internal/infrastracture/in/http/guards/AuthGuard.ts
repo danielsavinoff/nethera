@@ -7,7 +7,7 @@ import {
 import type { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/Public.js';
-import { JwtTokenVerifierAdapter } from '../../../out/auth/adapters/JwtTokenVerifierAdapter.js';
+import { JwtAccessTokenService } from '../../../out/auth/services/JwtAccessTokenService.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { ConfigService } from '@nestjs/config';
 
@@ -24,9 +24,8 @@ export enum AuthCookie {
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly tokenVerifier: JwtTokenVerifierAdapter,
+    private readonly accessTokenService: JwtAccessTokenService,
     private readonly reflector: Reflector,
-    private readonly configService: ConfigService,
   ) {}
 
   async canActivate(
@@ -53,21 +52,6 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const isBrowser = Boolean(
-      instance.headers['sec-fetch-site'],
-    );
-
-    if (isBrowser) {
-      const referer = instance.headers.referer;
-      const allowedDomain = String(
-        this.configService.getOrThrow('DOMAIN'),
-      );
-
-      if (!referer?.startsWith(`https://${allowedDomain}`)) {
-        throw new UnauthorizedException();
-      }
-    }
-
     const token = instance.cookies[AuthCookie.AccessToken];
 
     if (!token) {
@@ -76,7 +60,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload =
-        await this.tokenVerifier.verifyAccessToken(token);
+        await this.accessTokenService.verify(token);
 
       instance.claims = payload;
     } catch {

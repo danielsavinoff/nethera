@@ -10,10 +10,6 @@ export class GetCurrentUserResponseDto {
 
   @Expose()
   @ApiProperty()
-  tenantId!: string;
-
-  @Expose()
-  @ApiProperty()
   displayName!: string;
 
   @Expose()

@@ -24,27 +24,15 @@ import { GetUserRolesUseCase } from '../../../../application/usecases/GetUserRol
 import { GetUserRolesResponseDto } from '../dtos/GetUserRolesResponseDto.js';
 import { GetUserRolesPresenter } from '../presenters/GetUserRolesPresenter.js';
 import { AddUserRoleUseCase } from '../../../../application/usecases/AddUserRoleUseCase.js';
-import { GetUserFavoritesUseCase } from '../../../../application/usecases/GetUserFavoritesUseCase.js';
-import { AddUserFavoritesUseCase } from '../../../../application/usecases/AddUserFavoritesUseCase.js';
-import { DeleteUserFavoritesUseCase } from '../../../../application/usecases/DeleteUserFavoritesUseCase.js';
 import { AddUserRoleRequestDto } from '../dtos/AddUserRoleRequestDto.js';
 import { AddUserRoleResponseDto } from '../dtos/AddUserRoleResponseDto.js';
 import { AddUserRolePresenter } from '../presenters/AddUserRolePresenter.js';
-import { AddUserFavoritesRequestDto } from '../dtos/AddUserFavoritesRequestDto.js';
-import { AddUserFavoritesResponseDto } from '../dtos/AddUserFavoritesResponseDto.js';
-import { GetUserFavoritesResponseDto } from '../dtos/GetUserFavoritesResponseDto.js';
-import { DeleteUserFavoritesResponseDto } from '../dtos/DeleteUserFavoritesResponseDto.js';
 import { DeleteUserRoleUseCase } from '../../../../application/usecases/DeleteUserRoleUseCase.js';
 import { DeleteUserRolePresenter } from '../presenters/DeleteUserRolePresenter.js';
 import { DeleteUserRoleResponseDto } from '../dtos/DeleteUserRoleResponseDto.js';
 import { RoleNotFoundException } from '../../../../application/exceptions/RoleNotFoundException.js';
 import { UserRoleAssignmentNotFoundException } from '../../../../application/exceptions/UserRoleAssignmentNotFoundException.js';
 import { RoleActionForbiddenException } from '../../../../domain/authorization/RoleActionForbiddenException.js';
-import { UserFavoriteNotFoundException } from '../../../../application/exceptions/UserFavoriteNotFoundException.js';
-import { UserFavoriteActionForbiddenException } from '../../../../domain/user/UserFavoriteActionForbiddenException.js';
-import { GetUserFavoritesPresenter } from '../presenters/GetUserFavoritesPresenter.js';
-import { AddUserFavoritesPresenter } from '../presenters/AddUserFavoritesPresenter.js';
-import { DeleteUserFavoritesPresenter } from '../presenters/DeleteUserFavoritesPresenter.js';
 
 @Controller('users')
 export class UserController {
@@ -53,16 +41,10 @@ export class UserController {
     private readonly getUsersPresenter: GetUsersPresenter,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly getCurrentUserPresenter: GetCurrentUserPresenter,
-    private readonly getUserFavoritesUseCase: GetUserFavoritesUseCase,
-    private readonly getUserFavoritesPresenter: GetUserFavoritesPresenter,
     private readonly getUserRolesUseCase: GetUserRolesUseCase,
     private readonly getUserRolesPresenter: GetUserRolesPresenter,
-    private readonly addUserFavoritesUseCase: AddUserFavoritesUseCase,
-    private readonly addUserFavoritesPresenter: AddUserFavoritesPresenter,
     private readonly addUserRoleUseCase: AddUserRoleUseCase,
     private readonly addUserRolePresenter: AddUserRolePresenter,
-    private readonly deleteUserFavoritesUseCase: DeleteUserFavoritesUseCase,
-    private readonly deleteUserFavoritesPresenter: DeleteUserFavoritesPresenter,
     private readonly deleteUserRoleUseCase: DeleteUserRoleUseCase,
     private readonly deleteUserRolePresenter: DeleteUserRolePresenter,
   ) {}
@@ -89,12 +71,8 @@ export class UserController {
     type: Number,
   })
   @Get()
-  async handleGetUsers(
-    @Query() query: GetUsersQueryDto,
-    @Claims() claims: AuthClaim,
-  ) {
+  async handleGetUsers(@Query() query: GetUsersQueryDto) {
     const result = await this.getUsersUseCase.execute({
-      tenantId: claims.tid,
       active: query.active,
       q: query.q,
       page: query.page,
@@ -112,97 +90,6 @@ export class UserController {
     });
 
     return this.getCurrentUserPresenter.present(result);
-  }
-
-  @ApiOkResponse({ type: GetUserFavoritesResponseDto })
-  @Get('me/favorites')
-  async handleGetFavorites(@Claims() claims: AuthClaim) {
-    try {
-      const result = await this.getUserFavoritesUseCase.execute({
-        initiatorUserId: claims.sub,
-        userId: claims.sub,
-      });
-
-      return this.getUserFavoritesPresenter.present(result);
-    } catch (error) {
-      if (error instanceof UserNotFoundException) {
-        throw new NotFoundException('User does not exist.');
-      }
-
-      if (
-        error instanceof UserFavoriteActionForbiddenException
-      ) {
-        throw new ForbiddenException(error.message);
-      }
-
-      throw error;
-    }
-  }
-
-  @ApiOkResponse({ type: AddUserFavoritesResponseDto })
-  @Post('me/favorites')
-  async handleAddFavorites(
-    @Body()
-    addUserFavoritesRequestDto: AddUserFavoritesRequestDto,
-    @Claims() claims: AuthClaim,
-  ) {
-    try {
-      const result = await this.addUserFavoritesUseCase.execute({
-        initiatorUserId: claims.sub,
-        userId: claims.sub,
-        favoriteUserId:
-          addUserFavoritesRequestDto.favoriteUserId,
-      });
-
-      return this.addUserFavoritesPresenter.present(result);
-    } catch (error) {
-      if (error instanceof UserNotFoundException) {
-        throw new NotFoundException('User does not exist.');
-      }
-
-      if (
-        error instanceof UserFavoriteActionForbiddenException
-      ) {
-        throw new ForbiddenException(error.message);
-      }
-
-      throw error;
-    }
-  }
-
-  @ApiOkResponse({ type: DeleteUserFavoritesResponseDto })
-  @Delete('me/favorites/:favoriteId')
-  async handleDeleteFavorites(
-    @Param('favoriteId') favoriteId: string,
-    @Claims() claims: AuthClaim,
-  ) {
-    try {
-      const result =
-        await this.deleteUserFavoritesUseCase.execute({
-          initiatorUserId: claims.sub,
-          favoriteId,
-        });
-
-      return this.deleteUserFavoritesPresenter.present(result);
-    } catch (error) {
-      if (error instanceof UserNotFoundException) {
-        throw new NotFoundException('User does not exist.');
-      }
-
-      if (error instanceof UserFavoriteNotFoundException) {
-        throw new NotFoundException(
-          'User favorite does not exist.',
-        );
-      }
-
-      if (
-        error instanceof UserFavoriteActionForbiddenException
-      ) {
-        throw new ForbiddenException(error.message);
-      }
-
-      throw error;
-    }
   }
 
   @ApiOkResponse({ type: GetUserRolesResponseDto })

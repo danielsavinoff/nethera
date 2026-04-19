@@ -1,6 +1,5 @@
 import { Role } from '../../domain/authorization/Role.js';
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
-import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetUserRolesCommand {
@@ -21,26 +20,23 @@ export class GetUserRolesUseCase {
   async execute(
     command: GetUserRolesCommand,
   ): Promise<GetUserRolesResult> {
-    const initiator =
-      await this.userRepository.findByIdWithRoles(
-        command.initiatorUserId,
-      );
+    const initiator = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.initiatorUserId,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
-    if (!initiator) {
-      throw new UserNotFoundException();
-    }
-
-    const targetUser =
-      await this.userRepository.findByIdWithRoles(
-        command.userId,
-      );
-
-    if (
-      !targetUser ||
-      targetUser.tenantId !== initiator.tenantId
-    ) {
-      throw new UserNotFoundException();
-    }
+    const targetUser = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.userId,
+      },
+      with: {
+        roles: true,
+      },
+    });
 
     this.rolePolicy.assertCanView(initiator, targetUser.id);
 

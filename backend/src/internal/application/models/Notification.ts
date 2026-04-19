@@ -7,7 +7,7 @@ export enum NotificationChannel {
 export interface NotificationRecipient {
   displayName?: string;
   userId: UserRecord['id'];
-  externalId: UserRecord['externalId'];
+  email: UserRecord['email'];
 }
 
 export type NotificationContent =

@@ -1,6 +1,5 @@
 import { Permission } from '../authorization/Permission.js';
 import { Role } from '../authorization/Role.js';
-import { SynchronizableUserData } from './SynchronizableUserData.js';
 import { UserRecord } from './UserRecord.js';
 import { UserRolesNotLoadedException } from './UserRolesNotLoadedException.js';
 
@@ -11,11 +10,7 @@ export class User {
 
   static create(props: {
     id?: string;
-    externalId: number;
-    tenantId: string;
-    firstName?: string;
-    secondName?: string;
-    lastName?: string;
+    email: string;
     language?: string;
     active?: boolean;
     createdAt?: Date;
@@ -24,11 +19,7 @@ export class User {
   }): User {
     return new User({
       id: props.id ?? crypto.randomUUID(),
-      externalId: props.externalId,
-      tenantId: props.tenantId,
-      firstName: props.firstName,
-      secondName: props.secondName,
-      lastName: props.lastName,
+      email: props.email,
       language: props.language,
       active: props.active ?? true,
       createdAt: props.createdAt ?? new Date(),
@@ -46,12 +37,8 @@ export class User {
     return this.props.id;
   }
 
-  get externalId(): UserRecord['externalId'] {
-    return this.props.externalId;
-  }
-
-  get tenantId(): UserRecord['tenantId'] {
-    return this.props.tenantId;
+  get email(): UserRecord['email'] {
+    return this.props.email;
   }
 
   get active(): UserRecord['active'] {
@@ -59,12 +46,7 @@ export class User {
   }
 
   get displayName(): string {
-    const fullName =
-      (this.props.firstName ?? '') +
-      (this.props.lastName ? ` ${this.props.lastName}` : '');
-    const fallback = 'Unnamed user';
-
-    return fullName || fallback;
+    return this.props.email || 'Unnamed user';
   }
 
   get language(): UserRecord['language'] {
@@ -76,19 +58,6 @@ export class User {
       {
         ...this.props,
         language: language,
-      },
-      this.roles,
-    );
-  }
-
-  syncFromExternal(data: SynchronizableUserData): User {
-    return new User(
-      {
-        ...this.props,
-        active: data.active ?? this.props.active,
-        firstName: data.firstName,
-        secondName: data.secondName,
-        lastName: data.lastName,
       },
       this.roles,
     );

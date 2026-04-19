@@ -1,9 +1,18 @@
 import { Module } from '@nestjs/common';
-import { JwtTokenIssuerAdapter } from './adapters/JwtTokenIssuerAdapter.js';
-import { JwtTokenVerifierAdapter } from './adapters/JwtTokenVerifierAdapter.js';
+import { CryptoMagicLinkTokenService } from './services/CryptoMagicLinkTokenService.js';
+import { JwtAccessTokenService } from './services/JwtAccessTokenService.js';
+import { JwtRefreshTokenService } from './services/JwtRefreshTokenService.js';
 
 @Module({
-  providers: [JwtTokenIssuerAdapter, JwtTokenVerifierAdapter],
-  exports: [JwtTokenIssuerAdapter, JwtTokenVerifierAdapter],
+  providers: [
+    CryptoMagicLinkTokenService,
+    JwtAccessTokenService,
+    JwtRefreshTokenService,
+  ],
+  exports: [
+    CryptoMagicLinkTokenService,
+    JwtAccessTokenService,
+    JwtRefreshTokenService,
+  ],
 })
 export class AuthModule {}

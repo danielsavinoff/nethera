@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './controllers/AppController.js';
-import { BitrixController } from './controllers/BitrixController.js';
 import { UseCaseModule } from '../../bootstrap/UseCaseModule.js';
 import { AuthController } from './controllers/AuthController.js';
-import { DepartmentController } from './controllers/DepartmentController.js';
-import { GroupController } from './controllers/GroupController.js';
 import { RoleController } from './controllers/RoleController.js';
-import { TaskController } from './controllers/TaskController.js';
 import { UserController } from './controllers/UserController.js';
-import { TimeAllocationController } from './controllers/TimeAllocationController.js';
-import { BitrixModule } from '../../out/bitrix/BitrixModule.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
 import { GetUsersPresenter } from './presenters/GetUsersPresenter.js';
@@ -32,14 +26,9 @@ import { EventGuard } from './guards/EventGuard.js';
 @Module({
   controllers: [
     AppController,
-    BitrixController,
     AuthController,
-    DepartmentController,
-    GroupController,
     RoleController,
-    TaskController,
     UserController,
-    TimeAllocationController,
   ],
   providers: [
     GetDepartmentUsersPresenter,
@@ -60,6 +49,6 @@ import { EventGuard } from './guards/EventGuard.js';
     TenantGuard,
     EventGuard,
   ],
-  imports: [UseCaseModule, BitrixModule, PersistenceModule],
+  imports: [UseCaseModule, PersistenceModule],
 })
 export class HttpModule {}
