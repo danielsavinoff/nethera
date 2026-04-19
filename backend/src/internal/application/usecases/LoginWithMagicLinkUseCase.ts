@@ -1,6 +1,5 @@
 import { UserNotFoundException } from '../exceptions/UserNotFoundException.js';
-import type { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
-import type { Tenant } from '../../domain/tenant/Tenant.js';
+
 import type { OauthProvider } from '../ports/OauthProvider.js';
 import type { SessionRepository } from '../ports/SessionRepository.js';
 import type { TokenIssuer } from '../ports/TokenIssuer.js';
@@ -8,13 +7,11 @@ import type { UserRepository } from '../ports/UserRepository.js';
 import type { AccessAndRefreshTokens } from '../models/IssuedTokenSet.js';
 import { Session } from '../../domain/user/Session.js';
 
-export interface LoginWithOauthProviderCommand {
-  tenantCredentials: TenantCredentials;
-  tenant: Tenant;
+export interface LoginWithMagicLinkCommand {
   language?: string;
 }
 
-export interface LoginWithOauthProviderResult {
+export interface LoginWithMagicLinkResult {
   tokens: AccessAndRefreshTokens;
 }
 
@@ -27,8 +24,8 @@ export class LoginWithOauthProviderUseCase {
   ) {}
 
   async execute(
-    command: LoginWithOauthProviderCommand,
-  ): Promise<LoginWithOauthProviderResult> {
+    command: LoginWithMagicLinkCommand,
+  ): Promise<LoginWithMagicLinkResult> {
     const identity = await this.oauthProvider.fetchIdentity(
       command.tenantCredentials,
     );

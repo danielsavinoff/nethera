@@ -9,135 +9,23 @@ datasource db {
 
 model User {
   id          String @id @default(uuid())
-  external_id Int
-  tenant_id   String
 
-  first_name  String?
-  second_name String?
-  last_name   String?
-  active      Boolean @default(true)
+  email       String @db.Citext @unique
+  is_active      Boolean @default(true)
+  is_deleted  Boolean   @default(false)
   language    String? @db.VarChar(2)
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  
   deleted_at DateTime?
 
-  tenant                  Tenant?              @relation(fields: [tenant_id], references: [id])
   session                 Session[]
   userRoles               UserRoleAssignment[]
-  favoritesAsFavoriter    UserFavorite[]       @relation("user_favorites_favoriter")
-  favoritesAsFavorited    UserFavorite[]       @relation("user_favorites_favorited")
-  assignedTimeAllocations TimeAllocation[]     @relation("time_allocation_assignee")
-  createdTimeAllocations  TimeAllocation[]     @relation("time_allocation_assigner")
 
-  @@unique([external_id, tenant_id])
+
   @@map("users")
 }
-
-model Tenant {
-  id String @id @default(uuid())
-
-  domain    String @unique
-  member_id String @unique
-
-  is_admin      Boolean @default(false)
-  refresh_token String
-
-  access_token              String
-  access_token_ttl_seconds  Int
-  access_token_refreshed_at DateTime @default(now())
-
-  server_endpoint   String?
-  client_endpoint   String?
-  application_token String?
-  is_installed      Boolean @default(false)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  users           User[]
-  userRoles       UserRoleAssignment[]
-  smartProcess    SmartProcess?
-  groups          Group[]
-  tasks           Task[]
-  timeAllocations TimeAllocation[]
-
-  @@map("tenants")
-}
-
-model SmartProcess {
-  id               String @id @default(uuid())
-  external_id      String
-  external_type_id String
-  tenant_id        String @unique
-
-  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-
-  @@map("smart_processes")
-}
-
-model Group {
-  id          String   @id @default(uuid())
-  name        String
-  external_id String
-  tenant_id   String
-  active      Boolean  @default(true)
-  is_deleted  Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  timeAllocations TimeAllocation[]
-
-  @@unique([external_id, tenant_id])
-  @@index([tenant_id, is_deleted])
-  @@map("groups")
-}
-
-model Task {
-  id          String   @id @default(uuid())
-  name        String
-  status      String   @db.VarChar(64)
-  external_id String
-  tenant_id   String
-  is_deleted  Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  timeAllocations TimeAllocation[]
-
-  @@unique([external_id, tenant_id])
-  @@map("tasks")
-}
-
-model TimeAllocation {
-  id          String   @id @default(uuid())
-  external_id String
-  tenant_id   String
-  group_id    String?
-  task_id     String
-  priority    String   @db.VarChar(64)
-  hours       Float
-  is_approved Boolean
-  week_number Int
-  year        Int
-  assignee_id String
-  assigner_id String
-  is_deleted  Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  tenant   Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  group    Group? @relation(fields: [group_id], references: [id], onDelete: SetNull)
-  task     Task   @relation(fields: [task_id], references: [id], onDelete: Cascade)
-  assignee User   @relation("time_allocation_assignee", fields: [assignee_id], references: [id], onDelete: Cascade)
-  assigner User   @relation("time_allocation_assigner", fields: [assigner_id], references: [id], onDelete: Cascade)
-
-  @@unique([external_id, tenant_id])
-  @@map("time_allocations")
-}
-
 model Session {
   id            String   @id @default(uuid())
   refresh_token String   @unique
@@ -149,20 +37,6 @@ model Session {
 
   @@map("sessions")
 }
-
-model UserFavorite {
-  id                String   @id @default(uuid())
-  favoriter_user_id String
-  favorited_user_id String
-  created_at        DateTime @default(now())
-
-  favoriter User @relation("user_favorites_favoriter", fields: [favoriter_user_id], references: [id], onDelete: Cascade)
-  favorited User @relation("user_favorites_favorited", fields: [favorited_user_id], references: [id], onDelete: Cascade)
-
-  @@unique([favoriter_user_id, favorited_user_id])
-  @@map("favorite_users")
-}
-
 model Role {
   id   String @id @default(uuid())
   name String @unique @db.VarChar(255)
@@ -202,14 +76,12 @@ model PermissionOnRole {
 
 model UserRoleAssignment {
   user_id    String
-  tenant_id  String
   role_id    String
   created_at DateTime @default(now())
 
   user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   role   Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
 
-  @@id([user_id, tenant_id, role_id])
+  @@id([user_id, role_id])
   @@map("user_roles")
 }
