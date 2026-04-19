@@ -14,7 +14,7 @@ import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseC
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
 import { NotificationChannel } from '../../application/models/Notification.js';
-import type { NotificationSender } from '../../application/ports/NotificationSender.js';
+import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
 
@@ -70,7 +70,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       useFactory: (
         notificationChannels: Record<
           NotificationChannel,
-          NotificationSender
+          NotificationService
         >,
       ) => {
         return new SendNotificationsUseCase(
@@ -230,7 +230,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     {
       provide: NOTIFICATION_CHANNELS,
       useFactory: (
-        notificationSender: NotificationSender,
+        NotificationService: NotificationService,
       ) => ({}),
       inject: [],
     },

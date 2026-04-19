@@ -10,6 +10,7 @@ import { AuthModule } from '../out/auth/AuthModule.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { AuthGuard } from '../in/http/guards/AuthGuard.js';
 import { I18Module } from '../out/i18n/I18Module.js';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Global()
 @Module({
@@ -19,6 +20,24 @@ import { I18Module } from '../out/i18n/I18Module.js';
     }),
     JwtModule.register({
       global: true,
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transport: {
+          host: config.getOrThrow('SMTP_HOST'),
+          port: config.getOrThrow('SMTP_PORT'),
+          secure: true,
+          auth: {
+            user: config.getOrThrow('SMTP_USER'),
+            pass: config.getOrThrow('SMTP_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${config.getOrThrow('SMTP_SENDER')}>`,
+        },
+      }),
     }),
     I18Module,
     HttpModule,
@@ -31,14 +50,17 @@ import { I18Module } from '../out/i18n/I18Module.js';
       provide: PrismaClient,
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        const server = config.get<string>('DATABASE_SERVER');
-        const user = config.get<string>('DATABASE_USER');
-        const pass = config.get<string>('DATABASE_PASS');
-        const host = config.get<string>('DATABASE_HOST');
-        const port = config.get<string>('DATABASE_PORT');
-        const db = config.get<string>('DATABASE');
+        const server = config.getOrThrow<string>(
+          'DATABASE_SERVER',
+        );
+        const user = config.getOrThrow<string>('DATABASE_USER');
+        const pass = config.getOrThrow<string>('DATABASE_PASS');
+        const host = config.getOrThrow<string>('DATABASE_HOST');
+        const port = config.getOrThrow<string>('DATABASE_PORT');
+        const db = config.getOrThrow<string>('DATABASE');
 
         const connectionString = `${server}://${user}:${pass}@${host}:${port}/${db}`;
+
         const adapter = new PrismaPg({ connectionString });
         const prisma = new PrismaClient({ adapter });
 
