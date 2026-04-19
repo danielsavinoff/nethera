@@ -10,7 +10,6 @@ import { AuthModule } from '../out/auth/AuthModule.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { AuthGuard } from '../in/http/guards/AuthGuard.js';
 import { I18Module } from '../out/i18n/I18Module.js';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 @Global()
 @Module({
@@ -20,24 +19,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
     JwtModule.register({
       global: true,
-    }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transport: {
-          host: config.getOrThrow('SMTP_HOST'),
-          port: config.getOrThrow('SMTP_PORT'),
-          secure: true,
-          auth: {
-            user: config.getOrThrow('SMTP_USER'),
-            pass: config.getOrThrow('SMTP_PASSWORD'),
-          },
-        },
-        defaults: {
-          from: `"No Reply" <${config.getOrThrow('SMTP_SENDER')}>`,
-        },
-      }),
     }),
     I18Module,
     HttpModule,

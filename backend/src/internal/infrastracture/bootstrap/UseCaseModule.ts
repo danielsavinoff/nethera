@@ -6,7 +6,6 @@ import type { EventHandlerUseCase } from '../../application/usecases/DispatchInc
 import { LoginWithMagicLinkUseCase } from '../../application/usecases/LoginWithMagicLinkUseCase.js';
 import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAccessTokenUseCase.js';
 import { SendMagicLinkUseCase } from '../../application/usecases/SendMagicLinkUseCase.js';
-import { SendNotificationsUseCase } from '../../application/usecases/SendNotificationsUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
@@ -14,6 +13,7 @@ import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseC
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
 import { NotificationChannel } from '../../application/models/Notification.js';
+import type { NotificationComposer } from '../../application/ports/NotificationComposer.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -29,22 +29,30 @@ import type { TransactionRunner } from '../../application/ports/TransactionRunne
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
+import { NotificationModule } from '../out/notification/NotificationModule.js';
 import { NestConsoleLogger } from '../out/logging/loggers/NestConsoleLogger.js';
 import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUserRepository.js';
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaAuthTokenRepository } from '../out/persistence/repositories/PrismaAuthTokenRepository.js';
-import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLinkTokenService.js';
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
+import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
+import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
+import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
 
 @Module({
-  imports: [PersistenceModule, LoggingWiringModule, AuthModule],
+  imports: [
+    PersistenceModule,
+    LoggingWiringModule,
+    AuthModule,
+    NotificationModule,
+  ],
   providers: [
     // {
     //   provide: DispatchIncomingWebhookUseCase,
@@ -65,33 +73,26 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     //     EnsureTenantAuthValidityUseCase,
     //   ],
     // },
-    {
-      provide: SendNotificationsUseCase,
-      useFactory: (
-        notificationChannels: Record<
-          NotificationChannel,
-          NotificationService
-        >,
-      ) => {
-        return new SendNotificationsUseCase(
-          notificationChannels,
-        );
-      },
-      inject: [NOTIFICATION_CHANNELS],
-    },
+
     {
       provide: SendMagicLinkUseCase,
       useFactory: (
         authTokenRepository: AuthTokenRepository,
+        notificationComposerSelector: NotificationComposerSelector,
+        notificationService: NotificationService,
         magicLinkTokenService: MagicLinkTokenService,
       ) => {
         return new SendMagicLinkUseCase(
           authTokenRepository,
+          notificationComposerSelector,
+          notificationService,
           magicLinkTokenService,
         );
       },
       inject: [
         PrismaAuthTokenRepository,
+        DefaultNotificationComposerSelector,
+        EmailNotificationService,
         CryptoMagicLinkTokenService,
       ],
     },
@@ -240,7 +241,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     SendMagicLinkUseCase,
     LoginWithMagicLinkUseCase,
     RefreshAccessTokenUseCase,
-    SendNotificationsUseCase,
     GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,

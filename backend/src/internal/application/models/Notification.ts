@@ -1,13 +1,12 @@
-import { UserRecord } from '../../domain/user/UserRecord.js';
+import type { NotificationRecipient } from './NotificationRecipient.js';
 
-export enum NotificationChannel {
-  CRM = 'crm',
+export enum NotificationType {
+  Auth = 'AUTH',
+  SubscriptionExpiresSoon = 'SUBSCRIPTION_EXPIRES_SOON',
 }
 
-export interface NotificationRecipient {
-  displayName?: string;
-  userId: UserRecord['id'];
-  email: UserRecord['email'];
+export enum NotificationChannel {
+  Email = 'email',
 }
 
 export type NotificationContent =
@@ -25,7 +24,8 @@ export interface NotificationMarkupContent {
 export interface Notification<
   C extends NotificationContent = NotificationContent,
 > {
-  recipient: NotificationRecipient;
   channel: NotificationChannel;
+  recipient: NotificationRecipient;
+  subject?: string;
   content: C;
 }

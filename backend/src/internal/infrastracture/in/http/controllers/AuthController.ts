@@ -30,6 +30,7 @@ import { AuthCookie } from '../guards/AuthGuard.js';
 @Controller('auth')
 export class AuthController {
   private readonly MAGIC_LINK_TTL_SECONDS: number;
+  private readonly MAGIC_LINK_VERIFICATION_URL_BASE: string;
 
   constructor(
     private readonly sendMagicLinkUseCase: SendMagicLinkUseCase,
@@ -42,6 +43,10 @@ export class AuthController {
         'MAGIC_LINK_TTL_SECONDS',
       ),
     );
+    this.MAGIC_LINK_VERIFICATION_URL_BASE =
+      this.configService.getOrThrow<string>(
+        'MAGIC_LINK_VERIFICATION_URL_BASE',
+      );
   }
 
   @Post('token')
@@ -88,6 +93,8 @@ export class AuthController {
     await this.sendMagicLinkUseCase.execute({
       email: sendMagicLinkRequestDto.email,
       magicLinkTtlSeconds: this.MAGIC_LINK_TTL_SECONDS,
+      magicLinkVerifyUrlBase:
+        this.MAGIC_LINK_VERIFICATION_URL_BASE,
       requestedIp: request.ip,
       requestedUserAgent:
         typeof request.headers['user-agent'] === 'string'
