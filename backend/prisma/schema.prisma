@@ -10,7 +10,7 @@ datasource db {
 model User {
   id          String @id @default(uuid())
 
-  email       String @db.Citext @unique
+  email       String  @unique
   is_active      Boolean @default(true)
   is_deleted  Boolean   @default(false)
   language    String? @db.VarChar(2)
@@ -30,7 +30,7 @@ model User {
 model AuthToken {
   id                   String   @id @default(uuid())
   created_at           DateTime @default(now())
-  email                String   @db.Citext
+  email                String  
   expires_at           DateTime
   requested_ip         String?  @db.Inet
   requested_user_agent String?

@@ -1,16 +1,11 @@
 import { EventProcessorNotFoundException } from '../exceptions/EventProcessorNotFoundException.js';
-import { UserNotBitrixAdminException } from '../exceptions/UserNotBitrixAdminException.js';
 import { UserProvider } from '../ports/UserProvider.js';
-import { TenantCredentials } from '../../domain/tenant/TenantCredentials.js';
-import { EnsureTenantAuthValidityUseCase } from './EnsureTenantAuthValidityUseCase.js';
-import { Tenant } from '../../domain/tenant/Tenant.js';
 import { IncomingWebhookPayload } from '../models/IncomingWebhookPayload.js';
 
 export interface EventHandlerCommand<
   P extends IncomingWebhookPayload = IncomingWebhookPayload,
 > {
   payload: P;
-  tenant: Tenant;
 }
 
 export type EventHandlerResult = void;
@@ -24,8 +19,6 @@ export interface EventHandlerUseCase {
 export interface DispatchIncomingWebhookCommand {
   eventName: string;
   payload: IncomingWebhookPayload;
-  tenantCredentials: TenantCredentials;
-  tenant: Tenant;
 }
 
 export type DispatchIncomingWebhookResult = void;
@@ -37,26 +30,11 @@ export class DispatchIncomingWebhookUseCase {
       EventHandlerUseCase
     >,
     private readonly userProvider: UserProvider,
-    private readonly ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
   ) {}
 
   async execute(
     command: DispatchIncomingWebhookCommand,
   ): Promise<DispatchIncomingWebhookResult> {
-    const user = await this.userProvider.fetchMe(
-      command.tenantCredentials,
-    );
-
-    if (!user.isAdmin) {
-      throw new UserNotBitrixAdminException();
-    }
-
-    const tenantWithValidCredentials =
-      await this.ensureTenantAuthValidityUseCase.execute(
-        command.tenant,
-        command.tenantCredentials,
-      );
-
     const handler = this.handlers[command.eventName];
 
     if (!handler) {
@@ -65,7 +43,6 @@ export class DispatchIncomingWebhookUseCase {
 
     void handler.execute({
       payload: command.payload,
-      tenant: tenantWithValidCredentials,
     });
   }
 }
