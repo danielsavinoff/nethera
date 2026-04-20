@@ -8,37 +8,39 @@ datasource db {
 }
 
 model User {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  email       String  @unique
-  is_active      Boolean @default(true)
-  is_deleted  Boolean   @default(false)
-  language    String? @db.VarChar(2)
+  email      String  @unique
+  is_active  Boolean @default(true)
+  is_deleted Boolean @default(false)
+  language   String? @db.VarChar(2)
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   deleted_at DateTime?
 
-  session                 Session[]
-  userRoles               UserRoleAssignment[]
-
+  session       Session[]
+  userRoles     UserRoleAssignment[]
+  subscriptions Subscription[]
+  invoices      SubscriptionInvoice[]
 
   @@map("users")
 }
 
 model AuthToken {
-  id                   String   @id @default(uuid())
-  created_at           DateTime @default(now())
-  email                String  
+  id                   String    @id @default(uuid())
+  created_at           DateTime  @default(now())
+  email                String
   expires_at           DateTime
-  requested_ip         String?  @db.Inet
+  requested_ip         String?   @db.Inet
   requested_user_agent String?
-  token_hash           String   @unique
+  token_hash           String    @unique
   used_at              DateTime?
 
   @@map("auth_tokens")
 }
+
 model Session {
   id            String   @id @default(uuid())
   refresh_token String   @unique
@@ -50,6 +52,7 @@ model Session {
 
   @@map("sessions")
 }
+
 model Role {
   id   String @id @default(uuid())
   name String @unique @db.VarChar(255)
@@ -92,9 +95,116 @@ model UserRoleAssignment {
   role_id    String
   created_at DateTime @default(now())
 
-  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  role   Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [role_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, role_id])
   @@map("user_roles")
+}
+
+model Plan {
+  id   String @id @default(uuid()) @db.Uuid
+  code String @unique @db.VarChar(64)
+  name String @db.VarChar(120)
+
+  price_amount   Decimal @db.Decimal(12, 2)
+  price_currency String  @db.Char(3)
+
+  billing_interval       String @db.VarChar(16)
+  billing_interval_count Int    @default(1)
+
+  trial_days Int?
+  is_active  Boolean @default(true)
+
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  subscriptions Subscription[]
+
+  @@index([is_active])
+  @@map("plans")
+}
+
+model Subscription {
+  id String @id @default(uuid()) @db.Uuid
+
+  user_id String @db.Uuid
+  plan_id String @db.Uuid
+
+  status String @db.VarChar(32)
+
+  started_at              DateTime  @db.Timestamptz
+  current_period_start_at DateTime? @db.Timestamptz
+  current_period_end_at   DateTime? @db.Timestamptz
+
+  trial_started_at DateTime? @db.Timestamptz
+  trial_ends_at    DateTime? @db.Timestamptz
+
+  cancel_at_period_end Boolean   @default(false)
+  canceled_at          DateTime? @db.Timestamptz
+  ended_at             DateTime? @db.Timestamptz
+
+  auto_renew Boolean @default(true)
+
+  provider                 String? @db.VarChar(32)
+  provider_customer_id     String? @db.VarChar(255)
+  provider_subscription_id String? @db.VarChar(255)
+
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id])
+  plan Plan @relation(fields: [plan_id], references: [id])
+
+  invoices SubscriptionInvoice[]
+
+  @@unique([provider, provider_subscription_id])
+  @@index([user_id])
+  @@index([plan_id])
+  @@index([status])
+  @@index([current_period_end_at])
+  @@map("subscriptions")
+}
+
+model SubscriptionInvoice {
+  id String @id @default(uuid()) @db.Uuid
+
+  subscription_id String @db.Uuid
+  user_id         String @db.Uuid
+
+  status String @db.VarChar(32)
+
+  amount_due  Decimal @db.Decimal(12, 2)
+  amount_paid Decimal @default(0) @db.Decimal(12, 2)
+  currency    String  @db.Char(3)
+
+  period_start_at DateTime? @db.Timestamptz
+  period_end_at   DateTime? @db.Timestamptz
+
+  issued_at DateTime  @default(now()) @db.Timestamptz
+  due_at    DateTime? @db.Timestamptz
+  paid_at   DateTime? @db.Timestamptz
+  failed_at DateTime? @db.Timestamptz
+  voided_at DateTime? @db.Timestamptz
+
+  provider                   String? @db.VarChar(32)
+  provider_invoice_id        String? @db.VarChar(255)
+  provider_payment_intent_id String? @db.VarChar(255)
+
+  failure_code    String? @db.VarChar(64)
+  failure_message String?
+
+  metadata Json?
+
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  subscription Subscription @relation(fields: [subscription_id], references: [id])
+  user         User         @relation(fields: [user_id], references: [id])
+
+  @@unique([provider, provider_invoice_id])
+  @@index([subscription_id])
+  @@index([user_id])
+  @@index([status])
+  @@map("subscription_invoices")
 }
