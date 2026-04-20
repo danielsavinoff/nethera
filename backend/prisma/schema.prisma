@@ -266,3 +266,27 @@ model PlanFeatureTranslation {
   @@index([language])
   @@map("plan_feature_translations")
 }
+
+model SubscriptionCheckout {
+  id      String @id @default(uuid()) @db.Uuid
+  user_id String @db.Uuid
+  plan_id String @db.Uuid
+
+  status              String  @db.VarChar(32)
+  provider            String  @db.VarChar(32)
+  provider_session_id String? @db.VarChar(255)
+
+  checkout_url String?
+  expires_at   DateTime? @db.Timestamptz
+  completed_at DateTime? @db.Timestamptz
+  failed_at    DateTime? @db.Timestamptz
+
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@unique([provider, provider_session_id])
+  @@index([user_id])
+  @@index([plan_id])
+  @@index([status])
+  @@map("subscription_checkouts")
+}
