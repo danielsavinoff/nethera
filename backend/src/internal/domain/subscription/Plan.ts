@@ -1,6 +1,8 @@
 import { BillingInterval } from './BillingInterval.js';
 import { InvalidPlanBillingIntervalException } from './InvalidPlanBillingIntervalException.js';
+import { PlanFeature } from './PlanFeature.js';
 import { PlanRecord } from './PlanRecord.js';
+import { PlanTranslation } from './PlanTranslation.js';
 
 export class Plan {
   static hydrate(record: PlanRecord): Plan {
@@ -10,7 +12,6 @@ export class Plan {
   static create(props: {
     id?: PlanRecord['id'];
     code: PlanRecord['code'];
-    name: PlanRecord['name'];
     priceAmount: PlanRecord['priceAmount'];
     priceCurrency: PlanRecord['priceCurrency'];
     billingInterval: BillingInterval;
@@ -19,23 +20,32 @@ export class Plan {
     active?: PlanRecord['active'];
     createdAt?: PlanRecord['createdAt'];
     updatedAt?: PlanRecord['updatedAt'];
+    translations?: PlanTranslation[];
+    features?: PlanFeature[];
   }): Plan {
-    return new Plan({
-      id: props.id ?? crypto.randomUUID(),
-      code: props.code,
-      name: props.name,
-      priceAmount: props.priceAmount,
-      priceCurrency: props.priceCurrency,
-      billingInterval: props.billingInterval,
-      billingIntervalCount: props.billingIntervalCount ?? 1,
-      trialDays: props.trialDays,
-      active: props.active ?? true,
-      createdAt: props.createdAt ?? new Date(),
-      updatedAt: props.updatedAt ?? new Date(),
-    });
+    return new Plan(
+      {
+        id: props.id ?? crypto.randomUUID(),
+        code: props.code,
+        priceAmount: props.priceAmount,
+        priceCurrency: props.priceCurrency,
+        billingInterval: props.billingInterval,
+        billingIntervalCount: props.billingIntervalCount ?? 1,
+        trialDays: props.trialDays,
+        active: props.active ?? true,
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
+      },
+      props.translations,
+      props.features,
+    );
   }
 
-  private constructor(private readonly props: PlanRecord) {}
+  private constructor(
+    private readonly props: PlanRecord,
+    private readonly translations?: PlanTranslation[],
+    private readonly features?: PlanFeature[],
+  ) {}
 
   get id(): PlanRecord['id'] {
     return this.props.id;
@@ -43,10 +53,6 @@ export class Plan {
 
   get code(): PlanRecord['code'] {
     return this.props.code;
-  }
-
-  get name(): PlanRecord['name'] {
-    return this.props.name;
   }
 
   get priceAmount(): PlanRecord['priceAmount'] {
@@ -89,6 +95,22 @@ export class Plan {
 
   get updatedAt(): PlanRecord['updatedAt'] {
     return this.props.updatedAt;
+  }
+
+  getAllTranslations(): PlanTranslation[] {
+    return this.translations ?? [];
+  }
+
+  getAllFeatures(): PlanFeature[] {
+    return this.features ?? [];
+  }
+
+  withTranslations(translations: PlanTranslation[]): Plan {
+    return new Plan(this.props, translations, this.features);
+  }
+
+  withFeatures(features: PlanFeature[]): Plan {
+    return new Plan(this.props, this.translations, features);
   }
 
   toRecord(): PlanRecord {

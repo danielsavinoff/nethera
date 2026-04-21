@@ -27,9 +27,7 @@ export class AuthToken {
     });
   }
 
-  private constructor(
-    private readonly props: AuthTokenRecord,
-  ) {}
+  private constructor(private readonly props: AuthTokenRecord) {}
 
   get id(): AuthTokenRecord['id'] {
     return this.props.id;

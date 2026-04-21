@@ -32,9 +32,7 @@ export interface UserRepository {
     query: LoadUserQuery,
     transactionContext?: TransactionContext,
   ): Promise<User>;
-  loadPage(
-    query: LoadUsersPageQuery,
-  ): Promise<Page<User>>;
+  loadPage(query: LoadUsersPageQuery): Promise<Page<User>>;
   save(
     user: User,
     transactionContext?: TransactionContext,

@@ -1,7 +1,6 @@
 export interface PlanRecord {
   id: string;
   code: string;
-  name: string;
   priceAmount: string;
   priceCurrency: string;
   billingInterval: string;

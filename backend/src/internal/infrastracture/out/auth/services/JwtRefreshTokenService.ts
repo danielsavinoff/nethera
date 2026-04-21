@@ -6,9 +6,7 @@ import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import type { RefreshTokenService } from '../../../../application/ports/RefreshTokenService.js';
 
 @Injectable()
-export class JwtRefreshTokenService
-  implements RefreshTokenService
-{
+export class JwtRefreshTokenService implements RefreshTokenService {
   private readonly secret: string;
   private readonly expiresIn: number;
 

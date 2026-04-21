@@ -6,9 +6,7 @@ import type { Notification } from '../../../../application/models/Notification.j
 import type { NotificationService } from '../../../../application/ports/NotificationService.js';
 
 @Injectable()
-export class EmailNotificationService
-  implements NotificationService
-{
+export class EmailNotificationService implements NotificationService {
   constructor(private readonly mailerService: MailerService) {}
 
   async send(notification: Notification): Promise<void> {

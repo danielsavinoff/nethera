@@ -6,9 +6,7 @@ import type { MagicLinkToken } from '../../../../application/models/MagicLinkTok
 import type { MagicLinkTokenService } from '../../../../application/ports/MagicLinkTokenService.js';
 
 @Injectable()
-export class CryptoMagicLinkTokenService
-  implements MagicLinkTokenService
-{
+export class CryptoMagicLinkTokenService implements MagicLinkTokenService {
   create(): MagicLinkToken {
     const token = randomBytes(32).toString('hex');
 

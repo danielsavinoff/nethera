@@ -6,9 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { Session } from '../../../../domain/user/Session.js';
 
 @Injectable()
-export class PrismaSessionRepository
-  implements SessionRepository
-{
+export class PrismaSessionRepository implements SessionRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async deleteById(id: SessionRecord['id']): Promise<void> {

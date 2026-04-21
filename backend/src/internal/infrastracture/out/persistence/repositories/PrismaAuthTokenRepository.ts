@@ -8,9 +8,7 @@ import type {
 import { AuthToken } from '../../../../domain/user/AuthToken.js';
 
 @Injectable()
-export class PrismaAuthTokenRepository
-  implements AuthTokenRepository
-{
+export class PrismaAuthTokenRepository implements AuthTokenRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async load(

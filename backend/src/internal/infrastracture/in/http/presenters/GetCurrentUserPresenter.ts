@@ -11,9 +11,9 @@ export class GetCurrentUserPresenter {
     const permissions = [
       ...new Set(
         (result.user.roles ?? []).flatMap((role) =>
-          role.getAllPermissions().map(
-            (permission) => permission.name,
-          ),
+          role
+            .getAllPermissions()
+            .map((permission) => permission.name),
         ),
       ),
     ] as Permission[];

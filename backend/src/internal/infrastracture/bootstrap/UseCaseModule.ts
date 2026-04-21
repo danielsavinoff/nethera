@@ -12,8 +12,8 @@ import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
-import { NotificationChannel } from '../../application/models/Notification.js';
-import type { NotificationComposer } from '../../application/ports/NotificationComposer.js';
+import { CreatePlanUseCase } from '../../application/usecases/CreatePlanUseCase.js';
+import { CreateSubscriptionCheckoutUseCase } from '../../application/usecases/CreateSubscriptionCheckoutUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -26,6 +26,8 @@ import type { RefreshTokenService } from '../../application/ports/RefreshTokenSe
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
 import type { AuthTokenRepository } from '../../application/ports/AuthTokenRepository.js';
 import type { TransactionRunner } from '../../application/ports/TransactionRunner.js';
+import type { PlanRepository } from '../../application/ports/PlanRepository.js';
+import type { SubscriptionCheckoutRepository } from '../../application/ports/SubscriptionCheckoutRepository.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
@@ -35,11 +37,14 @@ import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUser
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaAuthTokenRepository } from '../out/persistence/repositories/PrismaAuthTokenRepository.js';
+import { PrismaPlanRepository } from '../out/persistence/repositories/PrismaPlanRepository.js';
+import { PrismaSubscriptionCheckoutRepository } from '../out/persistence/repositories/PrismaSubscriptionCheckoutRepository.js';
 import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLinkTokenService.js';
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
 import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
+import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 
@@ -221,8 +226,47 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         RolePolicy,
       ],
     },
+    {
+      provide: CreatePlanUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        planRepository: PlanRepository,
+        planPolicy: PlanPolicy,
+      ) => {
+        return new CreatePlanUseCase(
+          userRepository,
+          planRepository,
+          planPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaPlanRepository,
+        PlanPolicy,
+      ],
+    },
+    {
+      provide: CreateSubscriptionCheckoutUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        planRepository: PlanRepository,
+        subscriptionCheckoutRepository: SubscriptionCheckoutRepository,
+      ) => {
+        return new CreateSubscriptionCheckoutUseCase(
+          userRepository,
+          planRepository,
+          subscriptionCheckoutRepository,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaPlanRepository,
+        PrismaSubscriptionCheckoutRepository,
+      ],
+    },
     UserFavoritePolicy,
     RolePolicy,
+    PlanPolicy,
     {
       provide: EVENT_PROCESSORS,
       useFactory: () => ({}),
@@ -247,6 +291,8 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetUserRolesUseCase,
     AddUserRoleUseCase,
     DeleteUserRoleUseCase,
+    CreatePlanUseCase,
+    CreateSubscriptionCheckoutUseCase,
   ],
 })
 export class UseCaseModule {}

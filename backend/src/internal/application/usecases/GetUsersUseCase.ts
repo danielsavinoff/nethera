@@ -21,9 +21,7 @@ export interface GetUsersResult {
 }
 
 export class GetUsersUseCase {
-  constructor(
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async execute(
     command: GetUsersCommand,

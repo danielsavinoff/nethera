@@ -6,9 +6,7 @@ import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import type { AccessTokenService } from '../../../../application/ports/AccessTokenService.js';
 
 @Injectable()
-export class JwtAccessTokenService
-  implements AccessTokenService
-{
+export class JwtAccessTokenService implements AccessTokenService {
   private readonly secret: string;
   private readonly expiresIn: number;
 
@@ -27,13 +25,10 @@ export class JwtAccessTokenService
   }
 
   async issue(claims: AuthClaim) {
-    const accessToken = await this.jwtService.signAsync(
-      claims,
-      {
-        secret: this.secret,
-        expiresIn: this.expiresIn,
-      },
-    );
+    const accessToken = await this.jwtService.signAsync(claims, {
+      secret: this.secret,
+      expiresIn: this.expiresIn,
+    });
 
     return {
       accessToken,

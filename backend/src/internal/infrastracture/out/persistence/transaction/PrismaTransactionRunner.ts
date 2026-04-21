@@ -5,9 +5,7 @@ import { TransactionContext } from '../../../../application/models/TransactionCo
 import { PrismaTransactionContext } from './PrismaTransactionContext.js';
 
 @Injectable()
-export class PrismaTransactionRunner
-  implements TransactionRunner
-{
+export class PrismaTransactionRunner implements TransactionRunner {
   constructor(private readonly prisma: PrismaClient) {}
 
   run<T>(

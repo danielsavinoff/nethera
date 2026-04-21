@@ -8,8 +8,7 @@ export interface RefreshAccessTokenCommand {
   refreshToken: string;
 }
 
-export interface RefreshAccessTokenResult
-  extends IssuedAccessToken {}
+export interface RefreshAccessTokenResult extends IssuedAccessToken {}
 
 export class RefreshAccessTokenUseCase {
   constructor(
@@ -22,10 +21,9 @@ export class RefreshAccessTokenUseCase {
   async execute(
     command: RefreshAccessTokenCommand,
   ): Promise<RefreshAccessTokenResult> {
-    const authClaim =
-      await this.refreshTokenService.verify(
-        command.refreshToken,
-      );
+    const authClaim = await this.refreshTokenService.verify(
+      command.refreshToken,
+    );
 
     const user = await this.userRepository.loadOrThrow({
       filters: {
