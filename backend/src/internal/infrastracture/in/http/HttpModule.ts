@@ -4,6 +4,7 @@ import { UseCaseModule } from '../../bootstrap/UseCaseModule.js';
 import { AuthController } from './controllers/AuthController.js';
 import { RoleController } from './controllers/RoleController.js';
 import { PlanController } from './controllers/PlanController.js';
+import { SubscriptionController } from './controllers/SubscriptionController.js';
 import { SubscriptionCheckoutController } from './controllers/SubscriptionCheckoutController.js';
 import { UserController } from './controllers/UserController.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
@@ -14,6 +15,8 @@ import { AddUserRolePresenter } from './presenters/AddUserRolePresenter.js';
 import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
 import { CreatePlanPresenter } from './presenters/CreatePlanPresenter.js';
+import { GetPlanPresenter } from './presenters/GetPlanPresenter.js';
+import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.js';
 import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscriptionCheckoutPresenter.js';
 
 @Module({
@@ -22,6 +25,7 @@ import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscrip
     AuthController,
     RoleController,
     PlanController,
+    SubscriptionController,
     SubscriptionCheckoutController,
     UserController,
   ],
@@ -33,6 +37,8 @@ import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscrip
     DeleteUserRolePresenter,
     GetRolesPresenter,
     CreatePlanPresenter,
+    GetPlanPresenter,
+    GetSubscriptionPresenter,
     CreateSubscriptionCheckoutPresenter,
   ],
   imports: [UseCaseModule, PersistenceModule],

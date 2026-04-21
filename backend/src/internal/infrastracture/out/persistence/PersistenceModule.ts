@@ -5,6 +5,7 @@ import { PrismaSessionRepository } from './repositories/PrismaSessionRepository.
 import { PrismaAuthTokenRepository } from './repositories/PrismaAuthTokenRepository.js';
 import { PrismaRoleRepository } from './repositories/PrismaRoleRepository.js';
 import { PrismaPlanRepository } from './repositories/PrismaPlanRepository.js';
+import { PrismaSubscriptionRepository } from './repositories/PrismaSubscriptionRepository.js';
 import { PrismaSubscriptionCheckoutRepository } from './repositories/PrismaSubscriptionCheckoutRepository.js';
 import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.js';
 
@@ -15,6 +16,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaAuthTokenRepository,
     PrismaRoleRepository,
     PrismaPlanRepository,
+    PrismaSubscriptionRepository,
     PrismaSubscriptionCheckoutRepository,
     PrismaTransactionRunner,
   ],
@@ -24,6 +26,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaAuthTokenRepository,
     PrismaRoleRepository,
     PrismaPlanRepository,
+    PrismaSubscriptionRepository,
     PrismaSubscriptionCheckoutRepository,
     PrismaTransactionRunner,
   ],

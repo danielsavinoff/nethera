@@ -26,6 +26,8 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const permissionNames = [
+    Permission.SubscriptionViewOwn,
+    Permission.SubscriptionViewAny,
     Permission.UserRoleViewOwn,
     Permission.UserRoleViewAny,
     Permission.UserRoleUpdateAny,
@@ -98,6 +100,18 @@ async function main() {
   );
 
   const rolePermissions = [
+    {
+      roleId: userRole.id,
+      permissionId: permissionsByName.get(
+        Permission.SubscriptionViewOwn,
+      )?.id,
+    },
+    {
+      roleId: adminRole.id,
+      permissionId: permissionsByName.get(
+        Permission.SubscriptionViewAny,
+      )?.id,
+    },
     {
       roleId: userRole.id,
       permissionId: permissionsByName.get(
