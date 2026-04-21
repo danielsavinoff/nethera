@@ -8,11 +8,21 @@ export interface LoadPlanQuery {
     | { code: PlanRecord['code'] };
 }
 
+export interface LoadPlansQuery {
+  filters?: {
+    active?: PlanRecord['active'];
+  };
+}
+
 export interface PlanRepository {
   load(
     query: LoadPlanQuery,
     transactionContext?: TransactionContext,
   ): Promise<Plan | null>;
+  loadMany(
+    query: LoadPlansQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Plan[]>;
   loadOrThrow(
     query: LoadPlanQuery,
     transactionContext?: TransactionContext,

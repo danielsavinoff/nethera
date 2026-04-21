@@ -16,7 +16,9 @@ import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
 import { CreatePlanPresenter } from './presenters/CreatePlanPresenter.js';
 import { GetPlanPresenter } from './presenters/GetPlanPresenter.js';
+import { GetPlansPresenter } from './presenters/GetPlansPresenter.js';
 import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.js';
+import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresenter.js';
 import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscriptionCheckoutPresenter.js';
 
 @Module({
@@ -38,7 +40,9 @@ import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscrip
     GetRolesPresenter,
     CreatePlanPresenter,
     GetPlanPresenter,
+    GetPlansPresenter,
     GetSubscriptionPresenter,
+    GetSubscriptionsPresenter,
     CreateSubscriptionCheckoutPresenter,
   ],
   imports: [UseCaseModule, PersistenceModule],

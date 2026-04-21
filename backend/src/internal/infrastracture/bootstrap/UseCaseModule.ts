@@ -14,8 +14,10 @@ import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCas
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
 import { CreatePlanUseCase } from '../../application/usecases/CreatePlanUseCase.js';
 import { GetPlanUseCase } from '../../application/usecases/GetPlanUseCase.js';
+import { GetPlansUseCase } from '../../application/usecases/GetPlansUseCase.js';
 import { CreateSubscriptionCheckoutUseCase } from '../../application/usecases/CreateSubscriptionCheckoutUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
+import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -232,6 +234,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: GetPlansUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        planRepository: PlanRepository,
+        planPolicy: PlanPolicy,
+      ) => {
+        return new GetPlansUseCase(
+          userRepository,
+          planRepository,
+          planPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaPlanRepository,
+        PlanPolicy,
+      ],
+    },
+    {
       provide: GetPlanUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -289,6 +310,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: GetSubscriptionsUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        subscriptionRepository: SubscriptionRepository,
+        subscriptionPolicy: SubscriptionPolicy,
+      ) => {
+        return new GetSubscriptionsUseCase(
+          userRepository,
+          subscriptionRepository,
+          subscriptionPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaSubscriptionRepository,
+        SubscriptionPolicy,
+      ],
+    },
+    {
       provide: GetSubscriptionUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -335,9 +375,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetUserRolesUseCase,
     AddUserRoleUseCase,
     DeleteUserRoleUseCase,
+    GetPlansUseCase,
     GetPlanUseCase,
     CreatePlanUseCase,
     CreateSubscriptionCheckoutUseCase,
+    GetSubscriptionsUseCase,
     GetSubscriptionUseCase,
   ],
 })

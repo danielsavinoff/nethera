@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { PlanNotFoundException } from '../../../../application/exceptions/PlanNotFoundException.js';
 import type {
   LoadPlanQuery,
+  LoadPlansQuery,
   PlanRepository,
 } from '../../../../application/ports/PlanRepository.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
@@ -109,6 +110,104 @@ export class PrismaPlanRepository implements PlanRepository {
           ),
         ),
       );
+  }
+
+  async loadMany(
+    query: LoadPlansQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Plan[]> {
+    const client = this.getClient(transactionContext);
+
+    const rows = await client.plan.findMany({
+      where: {
+        ...(typeof query.filters?.active === 'boolean'
+          ? {
+              is_active: query.filters.active,
+            }
+          : {}),
+      },
+      orderBy: [{ code: 'asc' }, { id: 'asc' }],
+      include: {
+        translations: {
+          orderBy: {
+            language: 'asc',
+          },
+        },
+        features: {
+          orderBy: [
+            {
+              sort_order: 'asc',
+            },
+            {
+              code: 'asc',
+            },
+          ],
+          include: {
+            translations: {
+              orderBy: {
+                language: 'asc',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return rows.map((row) =>
+      Plan.hydrate({
+        id: row.id,
+        code: row.code,
+        priceAmount: row.price_amount.toString(),
+        priceCurrency: row.price_currency,
+        billingInterval: row.billing_interval,
+        billingIntervalCount: row.billing_interval_count,
+        trialDays: row.trial_days ?? undefined,
+        active: row.is_active,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      })
+        .withTranslations(
+          row.translations.map((translation) =>
+            PlanTranslation.hydrate({
+              id: translation.id,
+              planId: translation.plan_id,
+              language: translation.language,
+              name: translation.name,
+              description:
+                translation.description ?? undefined,
+              createdAt: translation.created_at,
+              updatedAt: translation.updated_at,
+            }),
+          ),
+        )
+        .withFeatures(
+          row.features.map((feature) =>
+            PlanFeature.hydrate({
+              id: feature.id,
+              planId: feature.plan_id,
+              code: feature.code,
+              value: feature.value ?? undefined,
+              sortOrder: feature.sort_order,
+              active: feature.is_active,
+              createdAt: feature.created_at,
+              updatedAt: feature.updated_at,
+            }).withTranslations(
+              feature.translations.map((translation) =>
+                PlanFeatureTranslation.hydrate({
+                  id: translation.id,
+                  planFeatureId: translation.plan_feature_id,
+                  language: translation.language,
+                  title: translation.title,
+                  description:
+                    translation.description ?? undefined,
+                  createdAt: translation.created_at,
+                  updatedAt: translation.updated_at,
+                }),
+              ),
+            ),
+          ),
+        ),
+    );
   }
 
   async loadOrThrow(

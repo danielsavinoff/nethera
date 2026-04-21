@@ -6,11 +6,21 @@ export interface LoadSubscriptionQuery {
   filters: { id: SubscriptionRecord['id'] };
 }
 
+export interface LoadSubscriptionsQuery {
+  filters?: {
+    userId?: SubscriptionRecord['userId'];
+  };
+}
+
 export interface SubscriptionRepository {
   load(
     query: LoadSubscriptionQuery,
     transactionContext?: TransactionContext,
   ): Promise<Subscription | null>;
+  loadMany(
+    query: LoadSubscriptionsQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Subscription[]>;
   loadOrThrow(
     query: LoadSubscriptionQuery,
     transactionContext?: TransactionContext,

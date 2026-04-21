@@ -4,6 +4,7 @@ import { SubscriptionNotFoundException } from '../../../../application/exception
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import type {
   LoadSubscriptionQuery,
+  LoadSubscriptionsQuery,
   SubscriptionRepository,
 } from '../../../../application/ports/SubscriptionRepository.js';
 import { Subscription } from '../../../../domain/subscription/Subscription.js';
@@ -67,6 +68,51 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
     }
 
     return subscription;
+  }
+
+  async loadMany(
+    query: LoadSubscriptionsQuery,
+    transactionContext?: TransactionContext,
+  ): Promise<Subscription[]> {
+    const client = this.getClient(transactionContext);
+
+    const rows = await client.subscription.findMany({
+      where: {
+        ...(query.filters?.userId
+          ? {
+              user_id: query.filters.userId,
+            }
+          : {}),
+      },
+      orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
+    });
+
+    return rows.map((row) =>
+      Subscription.hydrate({
+        id: row.id,
+        userId: row.user_id,
+        planId: row.plan_id,
+        status: row.status,
+        startedAt: row.started_at,
+        currentPeriodStartAt:
+          row.current_period_start_at ?? undefined,
+        currentPeriodEndAt:
+          row.current_period_end_at ?? undefined,
+        trialStartedAt: row.trial_started_at ?? undefined,
+        trialEndsAt: row.trial_ends_at ?? undefined,
+        cancelAtPeriodEnd: row.cancel_at_period_end,
+        canceledAt: row.canceled_at ?? undefined,
+        endedAt: row.ended_at ?? undefined,
+        autoRenew: row.auto_renew,
+        provider: row.provider ?? undefined,
+        providerCustomerId:
+          row.provider_customer_id ?? undefined,
+        providerSubscriptionId:
+          row.provider_subscription_id ?? undefined,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      }),
+    );
   }
 
   async save(
