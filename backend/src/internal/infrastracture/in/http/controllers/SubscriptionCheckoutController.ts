@@ -1,9 +1,13 @@
 import {
+  BadGatewayException,
+  BadRequestException,
   Body,
   Controller,
   NotFoundException,
   Post,
 } from '@nestjs/common';
+import { PaymentCreationFailedException } from '../../../../application/exceptions/PaymentCreationFailedException.js';
+import { PaymentProviderNotSupportedException } from '../../../../application/exceptions/PaymentProviderNotSupportedException.js';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { PlanNotFoundException } from '../../../../application/exceptions/PlanNotFoundException.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
@@ -47,6 +51,18 @@ export class SubscriptionCheckoutController {
 
       if (error instanceof PlanNotFoundException) {
         throw new NotFoundException('Plan does not exist.');
+      }
+
+      if (
+        error instanceof PaymentProviderNotSupportedException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof PaymentCreationFailedException) {
+        throw new BadGatewayException(
+          'Payment provider request failed.',
+        );
       }
 
       throw error;

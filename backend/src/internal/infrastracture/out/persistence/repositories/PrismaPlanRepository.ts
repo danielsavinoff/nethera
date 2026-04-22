@@ -173,8 +173,7 @@ export class PrismaPlanRepository implements PlanRepository {
               planId: translation.plan_id,
               language: translation.language,
               name: translation.name,
-              description:
-                translation.description ?? undefined,
+              description: translation.description ?? undefined,
               createdAt: translation.created_at,
               updatedAt: translation.updated_at,
             }),

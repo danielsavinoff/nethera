@@ -22,7 +22,9 @@ export class GetPlanUseCase {
     private readonly planPolicy: PlanPolicy,
   ) {}
 
-  async execute(command: GetPlanCommand): Promise<GetPlanResult> {
+  async execute(
+    command: GetPlanCommand,
+  ): Promise<GetPlanResult> {
     const initiator = await this.userRepository.loadOrThrow({
       filters: {
         id: command.initiatorUserId,

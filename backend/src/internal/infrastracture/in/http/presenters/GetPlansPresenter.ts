@@ -40,20 +40,15 @@ export class GetPlansPresenter {
                   value: feature.value,
                   sortOrder: feature.sortOrder,
                   active: feature.active,
-                  translations: feature
-                    .getAllTranslations()
-                    .map(
-                      (translation) =>
-                        new GetPlanFeatureTranslationResponseDto(
-                          {
-                            id: translation.id,
-                            language: translation.language,
-                            title: translation.title,
-                            description:
-                              translation.description,
-                          },
-                        ),
-                    ),
+                  translations: feature.getAllTranslations().map(
+                    (translation) =>
+                      new GetPlanFeatureTranslationResponseDto({
+                        id: translation.id,
+                        language: translation.language,
+                        title: translation.title,
+                        description: translation.description,
+                      }),
+                  ),
                 }),
             ),
           }),

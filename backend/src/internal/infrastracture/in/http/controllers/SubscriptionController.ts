@@ -31,10 +31,9 @@ export class SubscriptionController {
   @Get()
   async handleGetSubscriptions(@Claims() claims: AuthClaim) {
     try {
-      const result =
-        await this.getSubscriptionsUseCase.execute({
-          initiatorUserId: claims.sub,
-        });
+      const result = await this.getSubscriptionsUseCase.execute({
+        initiatorUserId: claims.sub,
+      });
 
       return this.getSubscriptionsPresenter.present(result);
     } catch (error) {
@@ -42,7 +41,9 @@ export class SubscriptionController {
         throw new NotFoundException('User does not exist.');
       }
 
-      if (error instanceof SubscriptionActionForbiddenException) {
+      if (
+        error instanceof SubscriptionActionForbiddenException
+      ) {
         throw new ForbiddenException(error.message);
       }
 
@@ -69,10 +70,14 @@ export class SubscriptionController {
       }
 
       if (error instanceof SubscriptionNotFoundException) {
-        throw new NotFoundException('Subscription does not exist.');
+        throw new NotFoundException(
+          'Subscription does not exist.',
+        );
       }
 
-      if (error instanceof SubscriptionActionForbiddenException) {
+      if (
+        error instanceof SubscriptionActionForbiddenException
+      ) {
         throw new ForbiddenException(error.message);
       }
 

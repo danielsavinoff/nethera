@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
 
 export class CreateSubscriptionCheckoutResponseDto {
   @ApiProperty()
@@ -13,8 +14,8 @@ export class CreateSubscriptionCheckoutResponseDto {
   @ApiProperty()
   status!: string;
 
-  @ApiProperty()
-  provider!: string;
+  @ApiProperty({ enum: PaymentProvider })
+  provider!: PaymentProvider;
 
   @ApiProperty({ required: false })
   providerSessionId?: string;

@@ -101,6 +101,18 @@ export class Plan {
     return this.translations ?? [];
   }
 
+  getTranslation(language?: string): PlanTranslation | null {
+    if (!language) {
+      return null;
+    }
+
+    return (
+      this.translations?.find(
+        (translation) => translation.language === language,
+      ) ?? null
+    );
+  }
+
   getAllFeatures(): PlanFeature[] {
     return this.features ?? [];
   }

@@ -33,10 +33,13 @@ import type { TransactionRunner } from '../../application/ports/TransactionRunne
 import type { PlanRepository } from '../../application/ports/PlanRepository.js';
 import type { SubscriptionRepository } from '../../application/ports/SubscriptionRepository.js';
 import type { SubscriptionCheckoutRepository } from '../../application/ports/SubscriptionCheckoutRepository.js';
+import type { PaymentProviderResolver } from '../../application/ports/PaymentProviderResolver.js';
+import type { SubscriptionCheckoutStatusMapper } from '../../application/ports/SubscriptionCheckoutStatusMapper.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
 import { NotificationModule } from '../out/notification/NotificationModule.js';
+import { PaymentModule } from '../out/payment/PaymentModule.js';
 import { NestConsoleLogger } from '../out/logging/loggers/NestConsoleLogger.js';
 import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUserRepository.js';
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
@@ -49,6 +52,10 @@ import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLin
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
 import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
+import { CryptoIdGenerator } from '../out/identity/generators/CryptoIdGenerator.js';
+import { DefaultSubscriptionCheckoutStatusMapper } from '../out/payment/mappers/DefaultSubscriptionCheckoutStatusMapper.js';
+import { NowPaymentsPaymentProvider } from '../out/payment/providers/NowPaymentsPaymentProvider.js';
+import { DefaultPaymentProviderResolver } from '../out/payment/resolvers/DefaultPaymentProviderResolver.js';
 import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
 import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
@@ -64,8 +71,11 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     LoggingWiringModule,
     AuthModule,
     NotificationModule,
+    PaymentModule,
   ],
   providers: [
+    CryptoIdGenerator,
+    DefaultSubscriptionCheckoutStatusMapper,
     // {
     //   provide: DispatchIncomingWebhookUseCase,
     //   useFactory: (
@@ -296,17 +306,26 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         userRepository: UserRepository,
         planRepository: PlanRepository,
         subscriptionCheckoutRepository: SubscriptionCheckoutRepository,
+        paymentProviderResolver: PaymentProviderResolver,
+        subscriptionCheckoutStatusMapper: SubscriptionCheckoutStatusMapper,
+        idGenerator: CryptoIdGenerator,
       ) => {
         return new CreateSubscriptionCheckoutUseCase(
           userRepository,
           planRepository,
           subscriptionCheckoutRepository,
+          paymentProviderResolver,
+          subscriptionCheckoutStatusMapper,
+          idGenerator,
         );
       },
       inject: [
         PrismaUserRepository,
         PrismaPlanRepository,
         PrismaSubscriptionCheckoutRepository,
+        DefaultPaymentProviderResolver,
+        DefaultSubscriptionCheckoutStatusMapper,
+        CryptoIdGenerator,
       ],
     },
     {

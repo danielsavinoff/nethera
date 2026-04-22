@@ -19,18 +19,15 @@ export class GetSubscriptionsPresenter {
             startedAt: subscription.startedAt,
             currentPeriodStartAt:
               subscription.currentPeriodStartAt,
-            currentPeriodEndAt:
-              subscription.currentPeriodEndAt,
+            currentPeriodEndAt: subscription.currentPeriodEndAt,
             trialStartedAt: subscription.trialStartedAt,
             trialEndsAt: subscription.trialEndsAt,
-            cancelAtPeriodEnd:
-              subscription.cancelAtPeriodEnd,
+            cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
             canceledAt: subscription.canceledAt,
             endedAt: subscription.endedAt,
             autoRenew: subscription.autoRenew,
             provider: subscription.provider,
-            providerCustomerId:
-              subscription.providerCustomerId,
+            providerCustomerId: subscription.providerCustomerId,
             providerSubscriptionId:
               subscription.providerSubscriptionId,
             createdAt: subscription.createdAt,

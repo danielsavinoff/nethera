@@ -1,3 +1,5 @@
+import { InvalidPaymentProviderException } from './InvalidPaymentProviderException.js';
+import { PaymentProvider } from './PaymentProvider.js';
 import { InvalidSubscriptionCheckoutStatusException } from './InvalidSubscriptionCheckoutStatusException.js';
 import { SubscriptionCheckoutRecord } from './SubscriptionCheckoutRecord.js';
 import { SubscriptionCheckoutStatus } from './SubscriptionCheckoutStatus.js';
@@ -69,8 +71,18 @@ export class SubscriptionCheckout {
     return this.props.status as SubscriptionCheckoutStatus;
   }
 
-  get provider(): SubscriptionCheckoutRecord['provider'] {
-    return this.props.provider;
+  get provider(): PaymentProvider {
+    if (
+      !Object.values(PaymentProvider).includes(
+        this.props.provider as PaymentProvider,
+      )
+    ) {
+      throw new InvalidPaymentProviderException(
+        this.props.provider,
+      );
+    }
+
+    return this.props.provider as PaymentProvider;
   }
 
   get providerSessionId(): SubscriptionCheckoutRecord['providerSessionId'] {
