@@ -56,7 +56,6 @@ import { CryptoIdGenerator } from '../out/identity/generators/CryptoIdGenerator.
 import { DefaultSubscriptionCheckoutStatusMapper } from '../out/payment/mappers/DefaultSubscriptionCheckoutStatusMapper.js';
 import { NowPaymentsPaymentProvider } from '../out/payment/providers/NowPaymentsPaymentProvider.js';
 import { DefaultPaymentProviderResolver } from '../out/payment/resolvers/DefaultPaymentProviderResolver.js';
-import { UserFavoritePolicy } from '../../domain/user/UserFavoritePolicy.js';
 import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
@@ -372,7 +371,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         SubscriptionPolicy,
       ],
     },
-    UserFavoritePolicy,
     RolePolicy,
     PlanPolicy,
     SubscriptionPolicy,
