@@ -43,9 +43,11 @@ export class DeleteUserRoleUseCase {
 
     this.rolePolicy.assertCanRemove(initiator);
 
-    const role = await this.roleRepository.loadOrThrow(
-      command.roleId,
-    );
+    const role = await this.roleRepository.loadOrThrow({
+      filters: {
+        id: command.roleId,
+      },
+    });
 
     const nextRoles = (targetUser.roles ?? []).filter(
       (userRole) => userRole.id !== role.id,

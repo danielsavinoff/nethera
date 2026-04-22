@@ -44,9 +44,11 @@ export class AddUserRoleUseCase {
 
     this.rolePolicy.assertCanAssign(initiator);
 
-    const role = await this.roleRepository.loadOrThrow(
-      command.roleId,
-    );
+    const role = await this.roleRepository.loadOrThrow({
+      filters: {
+        id: command.roleId,
+      },
+    });
 
     const rolesById = new Map(
       [...(targetUser.roles ?? []), role].map((role) => [

@@ -9,7 +9,7 @@ export class GetRolesUseCase {
   constructor(private readonly roleRepository: RoleRepository) {}
 
   async execute(): Promise<GetRolesResult> {
-    const roles = await this.roleRepository.loadAll();
+    const roles = await this.roleRepository.loadMany({});
 
     return {
       roles: roles,

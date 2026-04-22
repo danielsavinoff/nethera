@@ -123,16 +123,20 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       useFactory: (
         authTokenRepository: AuthTokenRepository,
         userRepository: UserRepository,
+        roleRepository: RoleRepository,
         accessTokenService: AccessTokenService,
         magicLinkTokenService: MagicLinkTokenService,
+        idGenerator: CryptoIdGenerator,
         refreshTokenService: RefreshTokenService,
         sessionRepository: SessionRepository,
       ) => {
         return new LoginWithMagicLinkUseCase(
           authTokenRepository,
           userRepository,
+          roleRepository,
           accessTokenService,
           magicLinkTokenService,
+          idGenerator,
           refreshTokenService,
           sessionRepository,
         );
@@ -140,8 +144,10 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       inject: [
         PrismaAuthTokenRepository,
         PrismaUserRepository,
+        PrismaRoleRepository,
         JwtAccessTokenService,
         CryptoMagicLinkTokenService,
+        CryptoIdGenerator,
         JwtRefreshTokenService,
         PrismaSessionRepository,
       ],
