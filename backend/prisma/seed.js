@@ -25,19 +25,21 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const permissionNames = [
+  const permissionNames = Object.values(Permission);
+
+  const userPermissionNames = [
     Permission.SubscriptionViewOwn,
-    Permission.SubscriptionViewAny,
     Permission.UserRoleViewOwn,
+    Permission.UserViewOwn,
+  ];
+
+  const adminPermissionNames = [
+    Permission.PlanViewAny,
+    Permission.PlanAddAny,
+    Permission.SubscriptionViewAny,
     Permission.UserRoleViewAny,
     Permission.UserRoleUpdateAny,
     Permission.UserRoleDeleteAny,
-    Permission.UserViewOwn,
-    Permission.UserFavoriteViewOwn,
-    Permission.UserFavoriteAddOwn,
-    Permission.UserFavoriteDeleteOwn,
-    Permission.TimeAllocationViewAny,
-    Permission.TimeAllocationAddAny,
   ];
 
   await prisma.role.upsert({
@@ -100,102 +102,14 @@ async function main() {
   );
 
   const rolePermissions = [
-    {
+    ...userPermissionNames.map((permissionName) => ({
       roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.SubscriptionViewOwn,
-      )?.id,
-    },
-    {
+      permissionId: permissionsByName.get(permissionName)?.id,
+    })),
+    ...adminPermissionNames.map((permissionName) => ({
       roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.SubscriptionViewAny,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserRoleViewOwn,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserRoleViewAny,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserRoleUpdateAny,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserRoleDeleteAny,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserViewOwn,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteViewOwn,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteAddOwn,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteDeleteOwn,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteViewOwn,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteAddOwn,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.UserFavoriteDeleteOwn,
-      )?.id,
-    },
-    {
-      roleId: userRole.id,
-      permissionId: permissionsByName.get(
-        Permission.TimeAllocationViewAny,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.TimeAllocationViewAny,
-      )?.id,
-    },
-    {
-      roleId: adminRole.id,
-      permissionId: permissionsByName.get(
-        Permission.TimeAllocationAddAny,
-      )?.id,
-    },
+      permissionId: permissionsByName.get(permissionName)?.id,
+    })),
   ];
 
   for (const rolePermission of rolePermissions) {
