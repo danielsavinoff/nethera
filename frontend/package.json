@@ -9,7 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.9.12"
+    "@kobalte/core": "^0.13.11",
+    "@solidjs/router": "^0.16.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-solid": "^1.11.0",
+    "solid-js": "^1.9.12",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.4",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^24.12.2",
