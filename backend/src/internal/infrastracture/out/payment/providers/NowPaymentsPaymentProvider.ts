@@ -14,9 +14,8 @@ import type { ExternalPayment } from '../../../../application/models/ExternalPay
 import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
 
 interface NowPaymentsCreatePaymentResponse {
-  payment_id: string | number;
-  payment_status: string;
-  pay_address?: string;
+  id: string | number;
+  invoice_url?: string;
   order_id?: string;
   order_description?: string;
   price_amount?: string;
@@ -62,7 +61,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
     try {
       const response = await firstValueFrom(
         this.httpService.post<NowPaymentsCreatePaymentResponse>(
-          `${this.baseUrl}/payment`,
+          `${this.baseUrl}/invoice`,
           {
             price_amount: input.priceAmount,
             price_currency: input.priceCurrency.toLowerCase(),
@@ -79,7 +78,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
       );
 
       return {
-        externalId: String(response.data.payment_id),
+        externalId: String(response.data.id),
         checkoutId: response.data.order_id ?? input.checkoutId,
         description:
           response.data.order_description ?? input.description,
@@ -88,8 +87,8 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
         priceCurrency:
           response.data.price_currency ??
           input.priceCurrency.toLowerCase(),
-        checkoutUrl: response.data.pay_address,
-        status: this.mapStatus(response.data.payment_status),
+        checkoutUrl: response.data.invoice_url,
+        status: ExternalPaymentStatus.Pending,
       };
     } catch {
       throw new PaymentCreationFailedException();
