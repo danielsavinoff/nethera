@@ -1,19 +1,10 @@
-import { createSignal } from "solid-js";
-import { Button } from "~/components/ui/Button";
+import { Header } from "~/components/Header";
 
 function App() {
-  const [count, setCount] = createSignal(0);
-
   return (
-    <>
-      <Button
-        variant="outline"
-        class="m-10"
-        onClick={() => setCount((count) => count + 1)}
-      >
-        Count is {count()}
-      </Button>
-    </>
+    <div class="min-h-svh bg-background">
+      <Header class="px-6 md:px-10" />
+    </div>
   );
 }
 
