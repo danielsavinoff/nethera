@@ -4,15 +4,18 @@ import { cn } from "~/lib/utils";
 import { Flex } from "./ui/Flex";
 import { Col, Grid } from "./ui/Grid";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/Select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/DropdownMenu";
 import { Separator } from "./ui/Separator";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
+import { Button } from "./ui/Button";
+import { ChevronsUpDown } from "lucide-solid";
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
 export function Header(props: HeaderProps) {
@@ -33,22 +36,20 @@ export function Header(props: HeaderProps) {
               <span class="text-sm font-semibold">N</span>
             </div>
             <Separator orientation="vertical" class="h-10" />
-            <Select
-              value={tenant()}
-              onChange={setTenant}
-              options={["Apple", "Banana", "Blueberry", "Grapes", "Pineapple"]}
-              placeholder="Select a fruit…"
-              itemComponent={(props) => (
-                <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
-              )}
-            >
-              <SelectTrigger aria-label="Fruit" class="w-[180px]">
-                <SelectValue<string>>
-                  {(state) => state.selectedOption()}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent />
-            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger as={Button<"button">} variant={"ghost"}>
+                My space
+                <ChevronsUpDown class="stroke-muted-foreground" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Billing</DropdownMenuItem>
+                <DropdownMenuItem>Team</DropdownMenuItem>
+                <DropdownMenuItem>Subscription</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Flex>
         </Col>
 
@@ -61,15 +62,14 @@ export function Header(props: HeaderProps) {
               Billing
             </NavigationMenuTrigger>
             <NavigationMenuTrigger as="a" href="#" target="_blank">
-              Settings
+              Spaces
             </NavigationMenuTrigger>
           </NavigationMenu>
         </Col>
 
         <Col class="flex justify-end">
           <Avatar>
-            <AvatarImage src="https://github.com/stefan-karger.png" />
-            <AvatarFallback>EK</AvatarFallback>
+            <AvatarFallback>FP</AvatarFallback>
           </Avatar>
         </Col>
       </Grid>
