@@ -8,12 +8,14 @@ const root = document.getElementById("root");
 
 const Login = lazy(() => import("./pages/Login"));
 const App = lazy(() => import("./pages/App"));
+const Plans = lazy(() => import("./pages/Plans"));
 
 render(
   () => (
     <Router>
       <Route path={"/"} component={App} />
       <Route path={"/login"} component={Login} />
+      <Route path={"/plans"} component={Plans} />
     </Router>
   ),
   root!,
