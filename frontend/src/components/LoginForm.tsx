@@ -50,13 +50,11 @@ export function LoginForm(props: LoginFormProps) {
               class="h-13"
             />
           </TextField>
-          <Button class="w-full" size={"lg"} type="submit">
-            Continue
-          </Button>
+          <Button type="submit">Continue</Button>
         </div>
       </form>
       <div class="px-6 text-center">
-        <p class="text-sm text-muted-foreground whitespace-pre-wrap [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary [&>a]:transition-colors">
+        <p class="text-xs  text-muted-foreground whitespace-pre-wrap [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary [&>a]:transition-colors [&>a]:decoration-1">
           By clicking continue, you agree to&nbsp;
           <A href="/terms">Terms of Service</A>
           &nbsp;and&nbsp;
