@@ -1,5 +1,4 @@
 import {
-  createEffect,
   createSignal,
   mergeProps,
   onCleanup,
@@ -68,7 +67,7 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
             <h1 class="text-xl font-bold">Check your email</h1>
           </div>
           <div class="text-center">
-            <p class="text-sm text-muted-foreground">
+            <p class="text-sm font-medium text-muted-foreground">
               We emailed you the magic link to sign in to your account. You can
               close this window and check your inbox.
             </p>
@@ -76,25 +75,16 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
           <div class="space-y-2">
             <Button
               class="w-full"
-              size={"lg"}
               type="submit"
               onClick={handleResend}
               disabled={Boolean(cooldown())}
             >
-              <Show when={!cooldown()} fallback={`(${cooldown()})`}>
-                Send again
+              <Show when={!cooldown()} fallback={`${cooldown()}`}>
+                Send an email again
               </Show>
             </Button>
-            <Button
-              class="w-full"
-              size={"lg"}
-              variant={"outline"}
-              onClick={handleBack}
-            >
-              <span>
-                <ArrowLeft />
-              </span>
-              <span>Back</span>
+            <Button class="w-full" variant={"outline"} onClick={handleBack}>
+              Back
             </Button>
           </div>
         </div>
