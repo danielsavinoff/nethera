@@ -61,8 +61,6 @@ const BaseChart: Component<ChartProps> = (rawProps) => {
 
   const props = mergeProps(
     {
-      width: 512,
-      height: 512,
       options: { responsive: true } as ChartOptions,
       plugins: [] as ChartPlugin[]
     },
@@ -109,7 +107,9 @@ const BaseChart: Component<ChartProps> = (rawProps) => {
     on(
       [() => props.width, () => props.height],
       () => {
-        chart()!.resize(props.width, props.height)
+        if (props.width || props.height) {
+          chart()!.resize(props.width, props.height)
+        }
       },
       { defer: true }
     )
@@ -135,11 +135,14 @@ const BaseChart: Component<ChartProps> = (rawProps) => {
 
   Chart.register(Colors, Filler, Legend, Tooltip)
   return (
-    <canvas
-      ref={mergeRefs(props.ref, (el) => setCanvasRef(el))}
-      height={props.height}
-      width={props.width}
-    />
+    <div class="relative h-full w-full overflow-hidden">
+      <canvas
+        class="block h-full w-full"
+        ref={mergeRefs(props.ref, (el) => setCanvasRef(el))}
+        height={props.height}
+        width={props.width}
+      />
+    </div>
   )
 }
 
