@@ -10,6 +10,8 @@ const root = document.getElementById("root");
 const Login = lazy(() => import("./pages/Login"));
 const App = lazy(() => import("./pages/App"));
 const Plans = lazy(() => import("./pages/Plans"));
+const Settings = lazy(() => import("./pages/Settings"));
+
 const Default = lazy(() => import("./layouts/Default"));
 
 render(
@@ -20,7 +22,10 @@ render(
           path={"/"}
           component={() => <Navigate href="/app/subscription" />}
         />
-        <Route path={"/plans"} component={() => <Navigate href="/app/plans" />} />
+        <Route
+          path={"/plans"}
+          component={() => <Navigate href="/app/plans" />}
+        />
         <Route path={"/login"} component={Login} />
         <Route path={"/app"} component={Default}>
           <Route
@@ -29,6 +34,7 @@ render(
           />
           <Route path={"/subscription"} component={App} />
           <Route path={"/plans"} component={Plans} />
+          <Route path={"/settings"} component={Settings} />
         </Route>
       </Router>
     </LocaleProvider>

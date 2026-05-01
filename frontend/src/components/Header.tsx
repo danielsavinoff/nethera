@@ -22,6 +22,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
 } from "./ui/DropdownMenu";
+import { A } from "@solidjs/router";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
@@ -82,7 +83,7 @@ export function Header(props: HeaderProps) {
                   {t("header.account.label")}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem as={A} href="/app/settings">
                   <Cog class="size-4" />
                   {t("header.account.settings")}
                 </DropdownMenuItem>
