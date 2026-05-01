@@ -1,3 +1,4 @@
+import { useColorMode, type ConfigColorMode } from "@kobalte/core";
 import { createSignal } from "solid-js";
 import { Button } from "~/components/ui/Button";
 import {
@@ -39,7 +40,11 @@ function Settings() {
     },
   ];
 
-  const [theme, setTheme] = createSignal<ThemeOption>(themeOptions[0]);
+  const { setColorMode, colorMode } = useColorMode();
+
+  const [theme, setTheme] = createSignal<ThemeOption>(
+    themeOptions.find((theme) => theme.key === colorMode())!,
+  );
 
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
@@ -103,7 +108,11 @@ function Settings() {
               </Select>
             </CardContent>
             <CardFooter class="justify-end border-t p-6 bg-muted">
-              <Button>Save</Button>
+              <Button
+                on:click={() => setColorMode(theme().key as ConfigColorMode)}
+              >
+                Save
+              </Button>
             </CardFooter>
           </Card>
 

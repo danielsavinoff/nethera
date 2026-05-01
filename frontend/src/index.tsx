@@ -4,6 +4,11 @@ import { render } from "solid-js/web";
 import { Navigate, Route, Router } from "@solidjs/router";
 import { lazy } from "solid-js";
 import { LocaleProvider } from "./context/Locale";
+import {
+  ColorModeProvider,
+  ColorModeScript,
+  localStorageManager,
+} from "@kobalte/core";
 
 const root = document.getElementById("root");
 
@@ -17,30 +22,35 @@ const Scrollable = lazy(() => import("./layouts/Scrollable"));
 
 render(
   () => (
-    <LocaleProvider>
-      <Router>
-        <Route
-          path={"/"}
-          component={() => <Navigate href="/app/subscription" />}
-        />
-        <Route
-          path={"/plans"}
-          component={() => <Navigate href="/app/plans" />}
-        />
-        <Route path={"/login"} component={Login} />
-        <Route path={"/app"} component={Default}>
-          <Route
-            path={"/"}
-            component={() => <Navigate href="/app/subscription" />}
-          />
-          <Route path={"/subscription"} component={App} />
-          <Route path={"/plans"} component={Plans} />
-        </Route>
-        <Route path={"/app"} component={Scrollable}>
-          <Route path={"/settings"} component={Settings} />
-        </Route>
-      </Router>
-    </LocaleProvider>
+    <>
+      <ColorModeScript storageType={localStorageManager.type} />
+      <ColorModeProvider storageManager={localStorageManager}>
+        <LocaleProvider>
+          <Router>
+            <Route
+              path={"/"}
+              component={() => <Navigate href="/app/subscription" />}
+            />
+            <Route
+              path={"/plans"}
+              component={() => <Navigate href="/app/plans" />}
+            />
+            <Route path={"/login"} component={Login} />
+            <Route path={"/app"} component={Default}>
+              <Route
+                path={"/"}
+                component={() => <Navigate href="/app/subscription" />}
+              />
+              <Route path={"/subscription"} component={App} />
+              <Route path={"/plans"} component={Plans} />
+            </Route>
+            <Route path={"/app"} component={Scrollable}>
+              <Route path={"/settings"} component={Settings} />
+            </Route>
+          </Router>
+        </LocaleProvider>
+      </ColorModeProvider>
+    </>
   ),
   root!,
 );
