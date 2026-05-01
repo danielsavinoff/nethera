@@ -1,6 +1,7 @@
 import type { JSX } from "solid-js";
-import { createSignal, splitProps } from "solid-js";
+import { splitProps } from "solid-js";
 import { cn } from "~/lib/utils";
+import { useLocale } from "~/context/Locale";
 import { Flex } from "./ui/Flex";
 import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
@@ -27,7 +28,7 @@ type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 export function Header(props: HeaderProps) {
   const [local, others] = splitProps(props, ["class"]);
 
-  const [language, setLanguage] = createSignal("en");
+  const { locale, setLocale, t } = useLocale();
 
   return (
     <header
@@ -49,13 +50,13 @@ export function Header(props: HeaderProps) {
             </div>
             <NavigationMenu class="flex-none">
               <NavigationMenuTrigger as="a" href="/app/subscription">
-                Subscription
+                {t("header.nav.subscription")}
               </NavigationMenuTrigger>
               <NavigationMenuTrigger as="a" href="/billing">
-                Billing
+                {t("header.nav.billing")}
               </NavigationMenuTrigger>
               <NavigationMenuTrigger as="a" href="/app/plans">
-                Plans
+                {t("header.nav.plans")}
               </NavigationMenuTrigger>
             </NavigationMenu>
           </Flex>
@@ -67,7 +68,7 @@ export function Header(props: HeaderProps) {
           <Flex class="justify-end gap-4">
             <Button variant={"outline"}>
               <Download />
-              Download
+              {t("header.actions.download")}
             </Button>
 
             <DropdownMenu>
@@ -77,37 +78,43 @@ export function Header(props: HeaderProps) {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent class="min-w-3xs">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {t("header.account.label")}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Cog class="size-4" />
-                  Settings
+                  {t("header.account.settings")}
                 </DropdownMenuItem>
                 <DropdownMenuSub overlap>
                   <DropdownMenuSubTrigger class="gap-2">
                     <Globe class="size-4" />
-                    Interface language
+                    {t("header.language.label")}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent class="min-w-48">
-                      <DropdownMenuLabel>Select a language</DropdownMenuLabel>
+                      <DropdownMenuLabel>
+                        {t("header.language.select")}
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuRadioGroup
-                        value={language()}
-                        onChange={setLanguage}
+                        value={locale()}
+                        onChange={setLocale}
                       >
                         <DropdownMenuRadioItem value="en">
-                          🇺🇸 English
+                          {t("header.language.options.en")}
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem value="ru">
-                          🇷🇺 Russian
+                          {t("header.language.options.ru")}
                         </DropdownMenuRadioItem>
                       </DropdownMenuRadioGroup>
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem>
+                  {t("header.actions.logout")}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </Flex>

@@ -1,0 +1,25 @@
+{
+  "header": {
+    "nav": {
+      "subscription": "Subscription",
+      "billing": "Billing",
+      "plans": "Plans"
+    },
+    "actions": {
+      "download": "Download",
+      "logout": "Log out"
+    },
+    "account": {
+      "label": "My Account",
+      "settings": "Settings"
+    },
+    "language": {
+      "label": "Interface language",
+      "select": "Select a language",
+      "options": {
+        "en": "🇺🇸 English",
+        "ru": "🇷🇺 Russian"
+      }
+    }
+  }
+}

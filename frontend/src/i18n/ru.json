@@ -1,0 +1,25 @@
+{
+  "header": {
+    "nav": {
+      "subscription": "Подписка",
+      "billing": "Биллинг",
+      "plans": "Тарифы"
+    },
+    "actions": {
+      "download": "Скачать",
+      "logout": "Выйти"
+    },
+    "account": {
+      "label": "Мой аккаунт",
+      "settings": "Настройки"
+    },
+    "language": {
+      "label": "Язык интерфейса",
+      "select": "Выберите язык",
+      "options": {
+        "en": "🇺🇸 Английский",
+        "ru": "🇷🇺 Русский"
+      }
+    }
+  }
+}

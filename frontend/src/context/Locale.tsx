@@ -1,5 +1,7 @@
 import * as i18n from "@solid-primitives/i18n";
 import {
+  type Accessor,
+  type Setter,
   createContext,
   createEffect,
   createResource,
@@ -14,13 +16,19 @@ export type Locale = "en" | "ru";
 const DEFAULT_LOCALE: Locale = "en";
 const SUPPORTED_LOCALE: Locale[] = ["en", "ru"];
 
+type LocaleContextValue = {
+  locale: Accessor<Locale>;
+  setLocale: Setter<Locale>;
+  t: (path: string) => string;
+};
+
 async function fetchDictionary(locale: Locale) {
   const dict = await import(`../i18n/${locale}.json`);
 
-  return dict.flatten(dict);
+  return i18n.flatten(dict.default);
 }
 
-export const LocaleContext = createContext();
+export const LocaleContext = createContext<LocaleContextValue>();
 
 export function LocaleProvider(props: ParentProps) {
   const [locale, setLocale] = createSignal<Locale>(DEFAULT_LOCALE);
@@ -29,7 +37,10 @@ export function LocaleProvider(props: ParentProps) {
 
   dict();
 
-  const t = i18n.translator(dict);
+  const translate = i18n.translator(dict);
+
+  const t: LocaleContextValue["t"] = (path) =>
+    (translate(path as never) as string | undefined) ?? path;
 
   onMount(() => {
     const storedLocale = localStorage.getItem("locale");
