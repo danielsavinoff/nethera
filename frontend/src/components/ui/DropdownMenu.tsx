@@ -119,7 +119,7 @@ const DropdownMenuSubTrigger = <T extends ValidComponent = "div">(
   return (
     <DropdownMenuPrimitive.SubTrigger
       class={cn(
-        "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent",
+        "h-13 flex cursor-default select-none items-center rounded-sm px-2  text-sm outline-none focus:bg-accent data-[state=open]:bg-accent",
         props.class,
       )}
       {...rest}
