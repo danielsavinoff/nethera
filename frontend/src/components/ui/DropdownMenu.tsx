@@ -236,7 +236,7 @@ const DropdownMenuRadioItem = <T extends ValidComponent = "div">(
   return (
     <DropdownMenuPrimitive.RadioItem
       class={cn(
-        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "h-13 relative flex cursor-default select-none items-center rounded-sm pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         props.class,
       )}
       {...rest}
