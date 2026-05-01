@@ -6,7 +6,7 @@ import {
   splitProps,
 } from "solid-js";
 import { cn } from "~/lib/utils";
-import { ArrowLeft, GalleryVerticalEnd } from "lucide-solid";
+import { GalleryVerticalEnd } from "lucide-solid";
 
 import type { JSX } from "solid-js";
 import { Button } from "./ui/Button";
