@@ -13,6 +13,7 @@ const Plans = lazy(() => import("./pages/Plans"));
 const Settings = lazy(() => import("./pages/Settings"));
 
 const Default = lazy(() => import("./layouts/Default"));
+const Scrollable = lazy(() => import("./layouts/Scrollable"));
 
 render(
   () => (
@@ -34,6 +35,8 @@ render(
           />
           <Route path={"/subscription"} component={App} />
           <Route path={"/plans"} component={Plans} />
+        </Route>
+        <Route path={"/app"} component={Scrollable}>
           <Route path={"/settings"} component={Settings} />
         </Route>
       </Router>
