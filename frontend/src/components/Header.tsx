@@ -1,5 +1,5 @@
 import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import { createSignal, splitProps } from "solid-js";
 import { cn } from "~/lib/utils";
 import { Flex } from "./ui/Flex";
 import { Col, Grid } from "./ui/Grid";
@@ -12,13 +12,22 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSubContent,
+  DropdownMenuSub,
   DropdownMenuTrigger,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
 } from "./ui/DropdownMenu";
+
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
 export function Header(props: HeaderProps) {
   const [local, others] = splitProps(props, ["class"]);
+
+  const [language, setLanguage] = createSignal("en");
 
   return (
     <header
@@ -74,10 +83,29 @@ export function Header(props: HeaderProps) {
                   <Cog class="size-4" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Globe class="size-4" />
-                  Interface language
-                </DropdownMenuItem>
+                <DropdownMenuSub overlap>
+                  <DropdownMenuSubTrigger class="gap-2">
+                    <Globe class="size-4" />
+                    Interface language
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent class="min-w-48">
+                      <DropdownMenuLabel>Select a language</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={language()}
+                        onChange={setLanguage}
+                      >
+                        <DropdownMenuRadioItem value="en">
+                          🇺🇸 English
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="ru">
+                          🇷🇺 Russian
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Log out</DropdownMenuItem>
               </DropdownMenuContent>
