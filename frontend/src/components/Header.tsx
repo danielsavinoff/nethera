@@ -34,7 +34,7 @@ export function Header(props: HeaderProps) {
   return (
     <header
       class={cn(
-        "h-16 w-full flex justify-center border-b bg-background",
+        "h-16 w-full flex justify-center border-b bg-card",
         local.class,
       )}
       {...others}

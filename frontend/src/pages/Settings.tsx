@@ -71,7 +71,7 @@ function Settings() {
                 />
               </TextField>
             </CardContent>
-            <CardFooter class="justify-between border-t p-6 bg-muted">
+            <CardFooter class="justify-between border-t p-6 bg-muted/50">
               <p class="text-sm text-muted-foreground">
                 However, you can create a new account with the desired email.
               </p>
@@ -107,7 +107,7 @@ function Settings() {
                 <SelectContent />
               </Select>
             </CardContent>
-            <CardFooter class="justify-end border-t p-6 bg-muted">
+            <CardFooter class="justify-end border-t p-6 bg-muted/50">
               <Button
                 on:click={() => setColorMode(theme().key as ConfigColorMode)}
               >
