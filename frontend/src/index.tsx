@@ -16,6 +16,7 @@ const Login = lazy(() => import("./pages/Login"));
 const App = lazy(() => import("./pages/App"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Billing = lazy(() => import("./pages/Billing"));
 
 const Default = lazy(() => import("./layouts/Default"));
 const Scrollable = lazy(() => import("./layouts/Scrollable"));
@@ -43,6 +44,7 @@ render(
               />
               <Route path={"/subscription"} component={App} />
               <Route path={"/plans"} component={Plans} />
+              <Route path={"/billing"} component={Billing} />
             </Route>
             <Route path={"/app"} component={Scrollable}>
               <Route path={"/settings"} component={Settings} />
