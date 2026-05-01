@@ -53,5 +53,30 @@
   "plansPage": {
     "title": "Plans",
     "annualBilling": "Annual billing"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "actions": {
+      "save": "Save"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Your email cannot be changed since it is linked to your account.",
+      "footer": "However, you can create a new account with the desired email."
+    },
+    "theme": {
+      "title": "Theme",
+      "description": "Choose a preferred theme",
+      "options": {
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "deleteAccount": {
+      "title": "Delete account",
+      "description": "Permanently remove your Personal Account and all of its contents from the platform. This action is not reversible, so please continue with caution.",
+      "action": "Delete Personal Account"
+    }
   }
 }

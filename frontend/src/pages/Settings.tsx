@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/Select";
+import { useLocale } from "~/context/Locale";
 import { TextField, TextFieldInput } from "~/components/ui/TextField";
 
 type ThemeOption = {
@@ -25,17 +26,19 @@ type ThemeOption = {
 };
 
 function Settings() {
+  const { t } = useLocale();
+
   const themeOptions: ThemeOption[] = [
     {
-      label: "System",
+      label: t("settingsPage.theme.options.system"),
       key: "system",
     },
     {
-      label: "Light",
+      label: t("settingsPage.theme.options.light"),
       key: "light",
     },
     {
-      label: "Dark",
+      label: t("settingsPage.theme.options.dark"),
       key: "dark",
     },
   ];
@@ -49,15 +52,15 @@ function Settings() {
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
-        <h1 class="text-3xl font-semibold">Settings</h1>
+        <h1 class="text-3xl font-semibold">{t("settingsPage.title")}</h1>
       </Grid>
       <div class="flex-1">
         <Grid class="gap-8">
           <Card>
             <CardHeader>
-              <CardTitle>Email</CardTitle>
+              <CardTitle>{t("settingsPage.email.title")}</CardTitle>
               <CardDescription class="text-card-foreground">
-                Your email cannot be changed since it is linked to your account.
+                {t("settingsPage.email.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -73,17 +76,17 @@ function Settings() {
             </CardContent>
             <CardFooter class="justify-between border-t p-6 bg-muted/50">
               <p class="text-sm text-muted-foreground">
-                However, you can create a new account with the desired email.
+                {t("settingsPage.email.footer")}
               </p>
-              <Button disabled>Save</Button>
+              <Button disabled>{t("settingsPage.actions.save")}</Button>
             </CardFooter>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Theme</CardTitle>
+              <CardTitle>{t("settingsPage.theme.title")}</CardTitle>
               <CardDescription class="text-card-foreground">
-                Choose a prefered theme
+                {t("settingsPage.theme.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -99,7 +102,10 @@ function Settings() {
                   </SelectItem>
                 )}
               >
-                <SelectTrigger aria-label="Theme" class="w-45">
+                <SelectTrigger
+                  aria-label={t("settingsPage.theme.title")}
+                  class="w-45"
+                >
                   <SelectValue<ThemeOption>>
                     {(state) => state.selectedOption().label}
                   </SelectValue>
@@ -111,23 +117,23 @@ function Settings() {
               <Button
                 on:click={() => setColorMode(theme().key as ConfigColorMode)}
               >
-                Save
+                {t("settingsPage.actions.save")}
               </Button>
             </CardFooter>
           </Card>
 
           <Card class="border-destructive/20">
             <CardHeader>
-              <CardTitle>Delete account</CardTitle>
+              <CardTitle>{t("settingsPage.deleteAccount.title")}</CardTitle>
               <CardDescription class="text-card-foreground">
-                Permanently remove your Personal Account and all of its contents
-                from the platform. This action is not reversible, so please
-                continue with caution.
+                {t("settingsPage.deleteAccount.description")}
               </CardDescription>
             </CardHeader>
 
             <CardFooter class="justify-end border-t border-destructive/20 p-6  bg-destructive/10">
-              <Button variant={"destructive"}>Delete Personal Account</Button>
+              <Button variant={"destructive"}>
+                {t("settingsPage.deleteAccount.action")}
+              </Button>
             </CardFooter>
           </Card>
         </Grid>
