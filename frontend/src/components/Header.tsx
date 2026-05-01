@@ -6,7 +6,15 @@ import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
 import { Button } from "./ui/Button";
-import { Download } from "lucide-solid";
+import { Cog, Download, Globe } from "lucide-solid";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/DropdownMenu";
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
 export function Header(props: HeaderProps) {
@@ -52,9 +60,28 @@ export function Header(props: HeaderProps) {
               <Download />
               Download
             </Button>
-            <Avatar>
-              <AvatarFallback>FP</AvatarFallback>
-            </Avatar>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarFallback>FP</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="min-w-3xs">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Cog class="size-4" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Globe class="size-4" />
+                  Interface language
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Log out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Flex>
         </Col>
       </Grid>
