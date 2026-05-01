@@ -21,5 +21,37 @@
         "ru": "🇷🇺 Русский"
       }
     }
+  },
+  "subscriptionPage": {
+    "title": "Подписка",
+    "emptyState": {
+      "title": "У вас пока нет тарифа",
+      "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+      "action": "Перейти к тарифам"
+    },
+    "linkCard": {
+      "title": "Ссылка",
+      "tooltip": "Подсказка",
+      "addSubscription": "Добавить подписку",
+      "copyUrl": "Скопировать URL"
+    },
+    "planCard": {
+      "title": "Тариф",
+      "value": "Эксклюзив",
+      "action": "Отменить"
+    },
+    "validCard": {
+      "title": "Действует",
+      "value": "До 15 марта",
+      "action": "Продлить"
+    },
+    "trafficCard": {
+      "title": "Использование трафика",
+      "description": "Показан суммарный трафик за последние 3 месяца"
+    }
+  },
+  "plansPage": {
+    "title": "Тарифы",
+    "annualBilling": "Годовая оплата"
   }
 }

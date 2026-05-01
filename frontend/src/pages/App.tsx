@@ -1,6 +1,7 @@
 import { A } from "@solidjs/router";
 import { CircleQuestionMark, PlusIcon } from "lucide-solid";
 import { Show } from "solid-js";
+import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -21,6 +22,8 @@ import {
 
 function App() {
   const hasSubscription = true;
+
+  const { t } = useLocale();
 
   const chartData = {
     labels: [
@@ -45,7 +48,7 @@ function App() {
   return (
     <>
       <Grid class="w-full gap-4">
-        <h1 class="text-3xl font-semibold">Subscription</h1>
+        <h1 class="text-3xl font-semibold">{t("subscriptionPage.title")}</h1>
       </Grid>
       <Show
         when={hasSubscription}
@@ -54,13 +57,15 @@ function App() {
             <CardContent>
               <div class="gap-7 flex flex-col">
                 <div class="gap-1 flex flex-col">
-                  <h2 class="text-xl font-bold">You don't have a plan yet</h2>
+                  <h2 class="text-xl font-bold">
+                    {t("subscriptionPage.emptyState.title")}
+                  </h2>
                   <p class="text-sm font-medium text-muted-foreground">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    {t("subscriptionPage.emptyState.description")}
                   </p>
                 </div>
                 <A href="/app/plans">
-                  <Button>Go to plans</Button>
+                  <Button>{t("subscriptionPage.emptyState.action")}</Button>
                 </A>
               </div>
             </CardContent>
@@ -74,13 +79,13 @@ function App() {
           <Col span={2}>
             <Card class="h-full flex flex-col">
               <CardHeader class="flex-row justify-between items-center space-y-0">
-                <CardTitle>Link</CardTitle>
+                <CardTitle>{t("subscriptionPage.linkCard.title")}</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <CircleQuestionMark class="text-muted-foreground size-4" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Tooltip content</p>
+                    <p>{t("subscriptionPage.linkCard.tooltip")}</p>
                   </TooltipContent>
                 </Tooltip>
               </CardHeader>
@@ -97,10 +102,10 @@ function App() {
               <CardFooter class="gap-4">
                 <Button variant="default" class="w-full">
                   <PlusIcon />
-                  Add subscription
+                  {t("subscriptionPage.linkCard.addSubscription")}
                 </Button>
                 <Button variant="secondary" class="w-full">
-                  Copy URL
+                  {t("subscriptionPage.linkCard.copyUrl")}
                 </Button>
               </CardFooter>
             </Card>
@@ -109,14 +114,16 @@ function App() {
           <Col>
             <Card class="h-full flex flex-col">
               <CardHeader>
-                <CardTitle>Plan</CardTitle>
+                <CardTitle>{t("subscriptionPage.planCard.title")}</CardTitle>
               </CardHeader>
               <CardContent class="flex-1 flex items-center">
-                <p class="text-2xl font-semibold tracking-tight">Exclusive</p>
+                <p class="text-2xl font-semibold tracking-tight">
+                  {t("subscriptionPage.planCard.value")}
+                </p>
               </CardContent>
               <CardFooter class="gap-4">
                 <Button variant="outline" class="w-full">
-                  Cancel
+                  {t("subscriptionPage.planCard.action")}
                 </Button>
               </CardFooter>
             </Card>
@@ -124,16 +131,16 @@ function App() {
           <Col>
             <Card class="h-full flex flex-col">
               <CardHeader>
-                <CardTitle>Valid</CardTitle>
+                <CardTitle>{t("subscriptionPage.validCard.title")}</CardTitle>
               </CardHeader>
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
-                  Until 15th March
+                  {t("subscriptionPage.validCard.value")}
                 </p>
               </CardContent>
               <CardFooter class="gap-4">
                 <Button variant="outline" class="w-full">
-                  Extend
+                  {t("subscriptionPage.validCard.action")}
                 </Button>
               </CardFooter>
             </Card>
@@ -142,9 +149,9 @@ function App() {
           <Col span={4} class="h-full min-h-0">
             <Card class="h-full min-h-0 flex flex-col">
               <CardHeader>
-                <CardTitle>Traffic usage</CardTitle>
+                <CardTitle>{t("subscriptionPage.trafficCard.title")}</CardTitle>
                 <CardDescription>
-                  Showing total traffic for the last 3 months
+                  {t("subscriptionPage.trafficCard.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent class="flex flex-1 min-h-0 overflow-hidden">

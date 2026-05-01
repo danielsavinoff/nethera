@@ -21,5 +21,37 @@
         "ru": "🇷🇺 Russian"
       }
     }
+  },
+  "subscriptionPage": {
+    "title": "Subscription",
+    "emptyState": {
+      "title": "You don't have a plan yet",
+      "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+      "action": "Go to plans"
+    },
+    "linkCard": {
+      "title": "Link",
+      "tooltip": "Tooltip content",
+      "addSubscription": "Add subscription",
+      "copyUrl": "Copy URL"
+    },
+    "planCard": {
+      "title": "Plan",
+      "value": "Exclusive",
+      "action": "Cancel"
+    },
+    "validCard": {
+      "title": "Valid",
+      "value": "Until 15th March",
+      "action": "Extend"
+    },
+    "trafficCard": {
+      "title": "Traffic usage",
+      "description": "Showing total traffic for the last 3 months"
+    }
+  },
+  "plansPage": {
+    "title": "Plans",
+    "annualBilling": "Annual billing"
   }
 }

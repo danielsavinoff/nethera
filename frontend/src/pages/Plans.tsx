@@ -1,12 +1,8 @@
 import { LucideBadgeCheck } from "lucide-solid";
 import { For } from "solid-js";
+import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Flex } from "~/components/ui/Flex";
 import { Grid } from "~/components/ui/Grid";
 import { Separator } from "~/components/ui/Separator";
@@ -20,15 +16,17 @@ import {
 function Plans() {
   const plans = ["Free", "Pro", "Enterprise"];
 
+  const { t } = useLocale();
+
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
-        <h1 class="text-3xl font-semibold">Plans</h1>
+        <h1 class="text-3xl font-semibold">{t("plansPage.title")}</h1>
         <Switch class="flex items-center space-x-2">
           <SwitchControl>
             <SwitchThumb />
           </SwitchControl>
-          <SwitchLabel>Annual billing</SwitchLabel>
+          <SwitchLabel>{t("plansPage.annualBilling")}</SwitchLabel>
         </Switch>
       </Grid>
       <div class="flex-1">
