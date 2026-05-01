@@ -31,13 +31,13 @@ export function Header(props: HeaderProps) {
               <span class="text-sm font-semibold">N</span>
             </div>
             <NavigationMenu class="flex-none">
-              <NavigationMenuTrigger as="a" href="/">
+              <NavigationMenuTrigger as="a" href="/app/subscription">
                 Subscription
               </NavigationMenuTrigger>
               <NavigationMenuTrigger as="a" href="/billing">
                 Billing
               </NavigationMenuTrigger>
-              <NavigationMenuTrigger as="a" href="/plans">
+              <NavigationMenuTrigger as="a" href="/app/plans">
                 Plans
               </NavigationMenuTrigger>
             </NavigationMenu>
