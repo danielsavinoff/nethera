@@ -1,18 +1,32 @@
 import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import { Show, splitProps } from "solid-js";
 import { cn } from "~/lib/utils";
-import { GalleryVerticalEnd } from "lucide-solid";
+import { GalleryVerticalEnd, Loader } from "lucide-solid";
 
-import { TextField, TextFieldInput, TextFieldLabel } from "./ui/TextField";
+import {
+  TextField,
+  TextFieldErrorMessage,
+  TextFieldInput,
+  TextFieldLabel,
+} from "./ui/TextField";
 import { Button } from "./ui/Button";
 import { A } from "@solidjs/router";
 
 type LoginFormProps = JSX.HTMLAttributes<HTMLDivElement> & {
+  defaultEmail?: string;
   onContinue?: (email: string) => unknown;
+  isSubmitting?: boolean;
+  error?: string | null;
 };
 
 export function LoginForm(props: LoginFormProps) {
-  const [local, others] = splitProps(props, ["class", "onContinue"]);
+  const [local, others] = splitProps(props, [
+    "class",
+    "onContinue",
+    "error",
+    "isSubmitting",
+    "defaultEmail",
+  ]);
 
   const handleContinue = (e: SubmitEvent) => {
     e.preventDefault();
@@ -25,7 +39,7 @@ export function LoginForm(props: LoginFormProps) {
 
     const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
 
-    local.onContinue(email);
+    local.onContinue(email.trim());
   };
 
   return (
@@ -46,11 +60,28 @@ export function LoginForm(props: LoginFormProps) {
             <TextFieldInput
               type="email"
               id="email"
+              name="email"
               placeholder="johndoe@example.com"
+              value={local.defaultEmail}
               class="h-13"
+              required
+              disabled={local.isSubmitting}
+              aria-invalid={Boolean(local.error)}
             />
+            <Show when={local.error}>
+              {(error) => (
+                <TextFieldErrorMessage>{error()}</TextFieldErrorMessage>
+              )}
+            </Show>
           </TextField>
-          <Button type="submit">Continue</Button>
+          <Button type="submit" disabled={local.isSubmitting}>
+            <Show
+              when={!local.isSubmitting}
+              fallback={<Loader class="animate-spin" />}
+            >
+              Continue
+            </Show>
+          </Button>
         </div>
       </form>
       <div class="px-6 text-center">

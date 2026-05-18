@@ -6,7 +6,7 @@ import {
   splitProps,
 } from "solid-js";
 import { cn } from "~/lib/utils";
-import { GalleryVerticalEnd } from "lucide-solid";
+import { GalleryVerticalEnd, Loader } from "lucide-solid";
 
 import type { JSX } from "solid-js";
 import { Button } from "./ui/Button";
@@ -14,12 +14,22 @@ import { Button } from "./ui/Button";
 type CheckYourEmailProps = JSX.HTMLAttributes<HTMLDivElement> & {
   resendCooldown?: number;
   onBack?: () => unknown;
+  onResend?: () => unknown;
+  isResending?: boolean;
+  error?: string | null;
 };
 
 export function CheckYourEmail(props: CheckYourEmailProps) {
   const finalProps = mergeProps({ resendCooldown: 0 }, props);
 
-  const [local, others] = splitProps(finalProps, ["class", "resendCooldown"]);
+  const [local, others] = splitProps(finalProps, [
+    "class",
+    "resendCooldown",
+    "onBack",
+    "onResend",
+    "isResending",
+    "error",
+  ]);
 
   const [cooldown, setCooldown] = createSignal<number>(local.resendCooldown);
 
@@ -37,20 +47,24 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
     clearInterval(timer);
   });
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (cooldown()) {
       return;
     }
 
-    setCooldown(local.resendCooldown);
+    const result = await local.onResend?.();
+
+    if (result !== false) {
+      setCooldown(local.resendCooldown);
+    }
   };
 
   const handleBack = () => {
-    if (!props.onBack) {
+    if (!local.onBack) {
       return;
     }
 
-    props.onBack();
+    local.onBack();
   };
 
   return (
@@ -75,17 +89,37 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
           <div class="space-y-2">
             <Button
               class="w-full"
-              type="submit"
+              type="button"
               onClick={handleResend}
-              disabled={Boolean(cooldown())}
+              disabled={Boolean(cooldown()) || local.isResending}
             >
-              <Show when={!cooldown()} fallback={`${cooldown()}`}>
-                Send an email again
+              <Show
+                when={!local.isResending}
+                fallback={<Loader class="animate-spin" />}
+              >
+                <Show when={!cooldown()} fallback={`${cooldown()}`}>
+                  Send an email again
+                </Show>
               </Show>
             </Button>
-            <Button class="w-full" variant={"outline"} onClick={handleBack}>
+            <Button
+              class="w-full"
+              variant={"outline"}
+              type="button"
+              onClick={handleBack}
+            >
               Back
             </Button>
+            <Show when={local.error}>
+              {(error) => (
+                <p
+                  class="text-center text-sm font-medium text-destructive"
+                  role="alert"
+                >
+                  {error()}
+                </p>
+              )}
+            </Show>
           </div>
         </div>
       </form>
