@@ -6,12 +6,16 @@ import {
   HttpStatus,
   Post,
   Query,
+  Redirect,
   Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiNoContentResponse } from '@nestjs/swagger';
+import {
+  ApiFoundResponse,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import type { Request } from 'express';
 import type { Response } from 'express';
 
@@ -29,8 +33,12 @@ import { AuthCookie } from '../guards/AuthGuard.js';
 @Public()
 @Controller('auth')
 export class AuthController {
-  private readonly MAGIC_LINK_TTL_SECONDS: number;
-  private readonly MAGIC_LINK_VERIFICATION_URL_BASE: string;
+  private readonly isProduction: boolean;
+
+  private readonly magicLinkTtlSeconds: number;
+  private readonly magicLinkVerificationBaseUrl: string;
+
+  private readonly magicLinkSuccessRedirectUrl: string;
 
   constructor(
     private readonly sendMagicLinkUseCase: SendMagicLinkUseCase,
@@ -38,14 +46,22 @@ export class AuthController {
     private readonly refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private readonly configService: ConfigService,
   ) {
-    this.MAGIC_LINK_TTL_SECONDS = Number(
+    this.isProduction =
+      this.configService.getOrThrow<string>('NODE_ENV') ===
+      'production';
+
+    this.magicLinkTtlSeconds = Number(
       this.configService.getOrThrow<string>(
         'MAGIC_LINK_TTL_SECONDS',
       ),
     );
-    this.MAGIC_LINK_VERIFICATION_URL_BASE =
+    this.magicLinkVerificationBaseUrl =
       this.configService.getOrThrow<string>(
-        'MAGIC_LINK_VERIFICATION_URL_BASE',
+        'MAGIC_LINK_VERIFICATION_BASE_URL',
+      );
+    this.magicLinkSuccessRedirectUrl =
+      this.configService.getOrThrow<string>(
+        'MAGIC_LINK_SUCCESS_REDIRECT_URL',
       );
   }
 
@@ -73,7 +89,7 @@ export class AuthController {
         {
           httpOnly: true,
           maxAge: result.accessTokenExpiresIn * 1000,
-          secure: true,
+          secure: this.isProduction,
           sameSite: 'lax',
         },
       );
@@ -92,9 +108,8 @@ export class AuthController {
   ) {
     await this.sendMagicLinkUseCase.execute({
       email: sendMagicLinkRequestDto.email,
-      magicLinkTtlSeconds: this.MAGIC_LINK_TTL_SECONDS,
-      magicLinkVerifyUrlBase:
-        this.MAGIC_LINK_VERIFICATION_URL_BASE,
+      magicLinkTtlSeconds: this.magicLinkTtlSeconds,
+      magicLinkVerifyUrlBase: this.magicLinkVerificationBaseUrl,
       requestedIp: request.ip,
       requestedUserAgent:
         typeof request.headers['user-agent'] === 'string'
@@ -104,12 +119,12 @@ export class AuthController {
   }
 
   @Get('magic/verify')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse()
+  @ApiFoundResponse()
+  @Redirect()
   async handleVerifyMagicLink(
     @Query()
     loginWithMagicLinkQueryDto: LoginWithMagicLinkQueryDto,
-    @Res({ passthrough: true }) response: Response,
+    @Res() response: Response,
   ) {
     try {
       const result =
@@ -125,7 +140,7 @@ export class AuthController {
         {
           httpOnly: true,
           maxAge: data.tokens.refreshTokenExpiresIn * 1000,
-          secure: true,
+          secure: this.isProduction,
           sameSite: 'lax',
         },
       );
@@ -135,10 +150,15 @@ export class AuthController {
         {
           httpOnly: true,
           maxAge: data.tokens.accessTokenExpiresIn * 1000,
-          secure: true,
+          secure: this.isProduction,
           sameSite: 'lax',
         },
       );
+
+      return {
+        url: this.magicLinkSuccessRedirectUrl,
+        statusCode: 302,
+      };
     } catch (error) {
       if (
         error instanceof MagicLinkInvalidException ||
