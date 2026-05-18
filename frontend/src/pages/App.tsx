@@ -64,7 +64,7 @@ function App() {
                     {t("subscriptionPage.emptyState.description")}
                   </p>
                 </div>
-                <A href="/app/plans">
+                <A href="/plans">
                   <Button>{t("subscriptionPage.emptyState.action")}</Button>
                 </A>
               </div>

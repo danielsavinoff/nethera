@@ -1,21 +1,42 @@
 import 'dotenv/config';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig, env } from 'prisma/config';
 import { expand } from 'dotenv-expand';
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
 expand(
-  dotenv.config({ path: path.resolve(__dirname, '../.env') }),
+  dotenv.config({ path: path.resolve(dirname, '../.env') }),
 );
 
-const server = env('DATABASE_SERVER');
-const user = env('DATABASE_USER');
-const pass = env('DATABASE_PASS');
-const host = env('DATABASE_HOST');
-const port = env('DATABASE_PORT');
-const db = env('DATABASE');
+function getOptionalEnv(name: string) {
+  if (process.env[name]) {
+    return process.env[name];
+  }
 
-const connectionString = `${server}://${user}:${pass}@${host}:${port}/${db}`;
+  try {
+    return env(name);
+  } catch {
+    return;
+  }
+}
+
+function getConnectionString() {
+  const server = getOptionalEnv('DATABASE_SERVER');
+  const user = getOptionalEnv('DATABASE_USER');
+  const pass = getOptionalEnv('DATABASE_PASS');
+  const host = getOptionalEnv('DATABASE_HOST');
+  const port = getOptionalEnv('DATABASE_PORT');
+  const db = getOptionalEnv('DATABASE');
+
+  if (!server || !user || !pass || !host || !port || !db) {
+    return;
+  }
+
+  return `${server}://${user}:${pass}@${host}:${port}/${db}`;
+}
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -24,6 +45,6 @@ export default defineConfig({
     seed: 'node prisma/seed.js',
   },
   datasource: {
-    url: connectionString,
+    url: getConnectionString(),
   },
 });

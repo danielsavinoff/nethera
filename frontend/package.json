@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:api": "orval"
   },
   "dependencies": {
     "@corvu/drawer": "^0.2.4",
@@ -16,9 +17,11 @@
     "@solidjs/router": "^0.16.1",
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/solid-table": "^8.21.3",
+    "axios": "^1.16.1",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "http-proxy-middleware": "^3.0.5",
     "lucide-solid": "^1.11.0",
     "solid-js": "^1.9.12",
     "tailwind-merge": "^3.5.0",
@@ -27,6 +30,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.12.2",
+    "dotenv": "^17.4.2",
+    "orval": "^8.10.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.10",
     "vite-plugin-solid": "^2.11.12"

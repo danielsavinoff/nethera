@@ -50,13 +50,13 @@ export function Header(props: HeaderProps) {
               <span class="text-sm font-semibold">N</span>
             </div>
             <NavigationMenu class="flex-none">
-              <NavigationMenuTrigger as="a" href="/app/subscription">
+              <NavigationMenuTrigger as="a" href="/subscription">
                 {t("header.nav.subscription")}
               </NavigationMenuTrigger>
-              <NavigationMenuTrigger as="a" href="/app/billing">
+              <NavigationMenuTrigger as="a" href="/billing">
                 {t("header.nav.billing")}
               </NavigationMenuTrigger>
-              <NavigationMenuTrigger as="a" href="/app/plans">
+              <NavigationMenuTrigger as="a" href="/plans">
                 {t("header.nav.plans")}
               </NavigationMenuTrigger>
             </NavigationMenu>
@@ -83,7 +83,7 @@ export function Header(props: HeaderProps) {
                   {t("header.account.label")}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem as={A} href="/app/settings">
+                <DropdownMenuItem as={A} href="/settings">
                   <Cog class="size-4" />
                   {t("header.account.settings")}
                 </DropdownMenuItem>

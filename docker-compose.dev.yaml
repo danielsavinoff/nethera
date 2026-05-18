@@ -18,8 +18,8 @@ services:
   backend:
     image: gamefication-backend:latest
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
       target: dev
     container_name: backend
     depends_on:
@@ -41,48 +41,24 @@ services:
     networks:
       - internal-net
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #     target: dev
-  #   container_name: ${NITRO_HOST}
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - ${NITRO_PORT}:${NITRO_PORT}
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:4200/health"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 10
-  #   env_file:
-  #     - .env
-  #   command: sh -c "npm run dev"
-  #   environment:
-  #     - NUXT_PUBLIC_APP_URL=https://${VIRTUAL_HOST}
-  #     - NUXT_PUBLIC_API_URL=https://${VIRTUAL_HOST}
-  #   volumes:
-  #     - ./frontend:/usr/src/app
-  #     - /usr/src/app/node_modules
-  #   networks:
-  #     - internal-net
-
-  # cloudpub:
-  #   container_name: cloudpub
-  #   image: cloudpub/cloudpub:latest-arm64
-  #   restart: unless-stopped
-  #   env_file: .env
-  #   environment:
-  #     TOKEN: ${CLOUDPUB_API_KEY}
-  #     HTTP: ${NITRO_HOST}:${NITRO_PORT}
-  #   command: run
-  #   depends_on:
-  #     - frontend
-  #   volumes:
-  #     - cloudpub_config:/home/cloudpub
-  #   networks:
-  #     - internal-net
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: ${FRONTEND_HOST}
+    depends_on:
+      - backend
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    env_file:
+      - .env
+    command: npm run dev
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - internal-net
 
   redis:
     image: redis:7
@@ -99,7 +75,6 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  cloudpub_config:
 
 networks:
   internal-net:

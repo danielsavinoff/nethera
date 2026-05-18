@@ -18,6 +18,7 @@ const Plans = lazy(() => import("./pages/Plans"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Billing = lazy(() => import("./pages/Billing"));
 
+const Protected = lazy(() => import("./layouts/Protected"));
 const Default = lazy(() => import("./layouts/Default"));
 const Scrollable = lazy(() => import("./layouts/Scrollable"));
 
@@ -28,26 +29,20 @@ render(
       <ColorModeProvider storageManager={localStorageManager}>
         <LocaleProvider>
           <Router>
-            <Route
-              path={"/"}
-              component={() => <Navigate href="/app/subscription" />}
-            />
-            <Route
-              path={"/plans"}
-              component={() => <Navigate href="/app/plans" />}
-            />
             <Route path={"/login"} component={Login} />
-            <Route path={"/app"} component={Default}>
-              <Route
-                path={"/"}
-                component={() => <Navigate href="/app/subscription" />}
-              />
-              <Route path={"/subscription"} component={App} />
-              <Route path={"/plans"} component={Plans} />
-              <Route path={"/billing"} component={Billing} />
-            </Route>
-            <Route path={"/app"} component={Scrollable}>
-              <Route path={"/settings"} component={Settings} />
+            <Route component={Protected}>
+              <Route component={Default}>
+                <Route
+                  path={"/"}
+                  component={() => <Navigate href="/subscription" />}
+                />
+                <Route path={"/subscription"} component={App} />
+                <Route path={"/plans"} component={Plans} />
+                <Route path={"/billing"} component={Billing} />
+              </Route>
+              <Route component={Scrollable}>
+                <Route path={"/settings"} component={Settings} />
+              </Route>
             </Route>
           </Router>
         </LocaleProvider>
