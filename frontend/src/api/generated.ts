@@ -5,12 +5,7 @@
  * The gamefication API description
  * OpenAPI spec version: 1.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
+import { api } from './api';
 export interface SendMagicLinkRequestDto {
   email: string;
 }
@@ -277,158 +272,178 @@ page?: number;
 limit?: number;
 };
 
-export const appControllerHealth = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.default.get(
-      `/api/health`,options
-    );
-  }
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+  export const appControllerHealth = (
+
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/health`, method: 'GET'
+    },
+      options);
+    }
 
 export const authControllerHandleTokenRenewal = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.default.post(
-      `/api/auth/token`,
-      undefined,options
-    );
-  }
+
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/auth/token`, method: 'POST'
+    },
+      options);
+    }
 
 export const authControllerHandleRequestMagicLink = (
-    sendMagicLinkRequestDto: SendMagicLinkRequestDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.default.post(
-      `/api/auth/magic/request`,
-      sendMagicLinkRequestDto,options
-    );
-  }
+    sendMagicLinkRequestDto: SendMagicLinkRequestDto,
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/auth/magic/request`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendMagicLinkRequestDto
+    },
+      options);
+    }
 
 export const authControllerHandleVerifyMagicLink = (
-    params: AuthControllerHandleVerifyMagicLinkParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.default.get(
-      `/api/auth/magic/verify`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
+    params: AuthControllerHandleVerifyMagicLinkParams,
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/auth/magic/verify`, method: 'GET',
+        params
+    },
+      options);
+    }
 
 export const roleControllerHandleGetRoles = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetRolesResponseDto>> => {
-    return axios.default.get(
-      `/api/roles`,options
-    );
-  }
+
+ options?: SecondParameter<typeof api<GetRolesResponseDto>>,) => {
+      return api<GetRolesResponseDto>(
+      {url: `/roles`, method: 'GET'
+    },
+      options);
+    }
 
 export const planControllerHandleGetPlans = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetPlansResponseDto>> => {
-    return axios.default.get(
-      `/api/plans`,options
-    );
-  }
+
+ options?: SecondParameter<typeof api<GetPlansResponseDto>>,) => {
+      return api<GetPlansResponseDto>(
+      {url: `/plans`, method: 'GET'
+    },
+      options);
+    }
 
 export const planControllerHandleCreatePlan = (
-    createPlanRequestDto: CreatePlanRequestDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreatePlanResponseDto>> => {
-    return axios.default.post(
-      `/api/plans`,
-      createPlanRequestDto,options
-    );
-  }
+    createPlanRequestDto: CreatePlanRequestDto,
+ options?: SecondParameter<typeof api<CreatePlanResponseDto>>,) => {
+      return api<CreatePlanResponseDto>(
+      {url: `/plans`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPlanRequestDto
+    },
+      options);
+    }
 
 export const planControllerHandleGetPlan = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetPlanResponseDto>> => {
-    return axios.default.get(
-      `/api/plans/${id}`,options
-    );
-  }
+    id: string,
+ options?: SecondParameter<typeof api<GetPlanResponseDto>>,) => {
+      return api<GetPlanResponseDto>(
+      {url: `/plans/${id}`, method: 'GET'
+    },
+      options);
+    }
 
 export const subscriptionControllerHandleGetSubscriptions = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetSubscriptionsResponseDto>> => {
-    return axios.default.get(
-      `/api/subscriptions`,options
-    );
-  }
+
+ options?: SecondParameter<typeof api<GetSubscriptionsResponseDto>>,) => {
+      return api<GetSubscriptionsResponseDto>(
+      {url: `/subscriptions`, method: 'GET'
+    },
+      options);
+    }
 
 export const subscriptionControllerHandleGetSubscription = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetSubscriptionResponseDto>> => {
-    return axios.default.get(
-      `/api/subscriptions/${id}`,options
-    );
-  }
+    id: string,
+ options?: SecondParameter<typeof api<GetSubscriptionResponseDto>>,) => {
+      return api<GetSubscriptionResponseDto>(
+      {url: `/subscriptions/${id}`, method: 'GET'
+    },
+      options);
+    }
 
 export const subscriptionCheckoutControllerHandleCreateSubscriptionCheckout = (
-    createSubscriptionCheckoutRequestDto: CreateSubscriptionCheckoutRequestDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateSubscriptionCheckoutResponseDto>> => {
-    return axios.default.post(
-      `/api/checkouts`,
-      createSubscriptionCheckoutRequestDto,options
-    );
-  }
+    createSubscriptionCheckoutRequestDto: CreateSubscriptionCheckoutRequestDto,
+ options?: SecondParameter<typeof api<CreateSubscriptionCheckoutResponseDto>>,) => {
+      return api<CreateSubscriptionCheckoutResponseDto>(
+      {url: `/checkouts`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSubscriptionCheckoutRequestDto
+    },
+      options);
+    }
 
 export const userControllerHandleGetUsers = (
-    params?: UserControllerHandleGetUsersParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetUsersResponseDto>> => {
-    return axios.default.get(
-      `/api/users`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
+    params?: UserControllerHandleGetUsersParams,
+ options?: SecondParameter<typeof api<GetUsersResponseDto>>,) => {
+      return api<GetUsersResponseDto>(
+      {url: `/users`, method: 'GET',
+        params
+    },
+      options);
+    }
 
 export const userControllerHandleGetMe = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetCurrentUserResponseDto>> => {
-    return axios.default.get(
-      `/api/users/me`,options
-    );
-  }
+
+ options?: SecondParameter<typeof api<GetCurrentUserResponseDto>>,) => {
+      return api<GetCurrentUserResponseDto>(
+      {url: `/users/me`, method: 'GET'
+    },
+      options);
+    }
 
 export const userControllerHandleGetRoles = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetUserRolesResponseDto>> => {
-    return axios.default.get(
-      `/api/users/${id}/roles`,options
-    );
-  }
+    id: string,
+ options?: SecondParameter<typeof api<GetUserRolesResponseDto>>,) => {
+      return api<GetUserRolesResponseDto>(
+      {url: `/users/${id}/roles`, method: 'GET'
+    },
+      options);
+    }
 
 export const userControllerHandleAddRole = (
     id: string,
-    addUserRoleRequestDto: AddUserRoleRequestDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<AddUserRoleResponseDto>> => {
-    return axios.default.post(
-      `/api/users/${id}/roles`,
-      addUserRoleRequestDto,options
-    );
-  }
+    addUserRoleRequestDto: AddUserRoleRequestDto,
+ options?: SecondParameter<typeof api<AddUserRoleResponseDto>>,) => {
+      return api<AddUserRoleResponseDto>(
+      {url: `/users/${id}/roles`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addUserRoleRequestDto
+    },
+      options);
+    }
 
 export const userControllerHandleDeleteRole = (
     id: string,
-    roleId: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<DeleteUserRoleResponseDto>> => {
-    return axios.default.delete(
-      `/api/users/${id}/roles/${roleId}`,options
-    );
-  }
+    roleId: string,
+ options?: SecondParameter<typeof api<DeleteUserRoleResponseDto>>,) => {
+      return api<DeleteUserRoleResponseDto>(
+      {url: `/users/${id}/roles/${roleId}`, method: 'DELETE'
+    },
+      options);
+    }
 
-export type AppControllerHealthResult = AxiosResponse<void>
-export type AuthControllerHandleTokenRenewalResult = AxiosResponse<void>
-export type AuthControllerHandleRequestMagicLinkResult = AxiosResponse<void>
-export type AuthControllerHandleVerifyMagicLinkResult = AxiosResponse<void>
-export type RoleControllerHandleGetRolesResult = AxiosResponse<GetRolesResponseDto>
-export type PlanControllerHandleGetPlansResult = AxiosResponse<GetPlansResponseDto>
-export type PlanControllerHandleCreatePlanResult = AxiosResponse<CreatePlanResponseDto>
-export type PlanControllerHandleGetPlanResult = AxiosResponse<GetPlanResponseDto>
-export type SubscriptionControllerHandleGetSubscriptionsResult = AxiosResponse<GetSubscriptionsResponseDto>
-export type SubscriptionControllerHandleGetSubscriptionResult = AxiosResponse<GetSubscriptionResponseDto>
-export type SubscriptionCheckoutControllerHandleCreateSubscriptionCheckoutResult = AxiosResponse<CreateSubscriptionCheckoutResponseDto>
-export type UserControllerHandleGetUsersResult = AxiosResponse<GetUsersResponseDto>
-export type UserControllerHandleGetMeResult = AxiosResponse<GetCurrentUserResponseDto>
-export type UserControllerHandleGetRolesResult = AxiosResponse<GetUserRolesResponseDto>
-export type UserControllerHandleAddRoleResult = AxiosResponse<AddUserRoleResponseDto>
-export type UserControllerHandleDeleteRoleResult = AxiosResponse<DeleteUserRoleResponseDto>
+export type AppControllerHealthResult = NonNullable<Awaited<ReturnType<typeof appControllerHealth>>>
+export type AuthControllerHandleTokenRenewalResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleTokenRenewal>>>
+export type AuthControllerHandleRequestMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleRequestMagicLink>>>
+export type AuthControllerHandleVerifyMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleVerifyMagicLink>>>
+export type RoleControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof roleControllerHandleGetRoles>>>
+export type PlanControllerHandleGetPlansResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlans>>>
+export type PlanControllerHandleCreatePlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleCreatePlan>>>
+export type PlanControllerHandleGetPlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlan>>>
+export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
+export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
+export type SubscriptionCheckoutControllerHandleCreateSubscriptionCheckoutResult = NonNullable<Awaited<ReturnType<typeof subscriptionCheckoutControllerHandleCreateSubscriptionCheckout>>>
+export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
+export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
+export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>
+export type UserControllerHandleAddRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleAddRole>>>
+export type UserControllerHandleDeleteRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleDeleteRole>>>

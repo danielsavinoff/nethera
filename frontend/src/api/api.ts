@@ -9,11 +9,14 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
-const tokenRenewalUrl = `${import.meta.env.VITE_API_URL}/api/auth/token`;
+const API_URL = import.meta.env.VITE_API_URL;
+
+const tokenRenewalUrl = `${API_URL}/auth/token`;
 
 let tokenRenewalRequest: Promise<void> | null = null;
 
 const client = axios.create({
+  baseURL: API_URL,
   withCredentials: true,
 });
 
@@ -41,7 +44,7 @@ client.interceptors.response.use(
           });
 
           if (!response.ok) {
-            throw new Error("Access token renewal failed");
+            window.location.href = "/login";
           }
         } finally {
           tokenRenewalRequest = null;
