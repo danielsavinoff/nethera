@@ -77,7 +77,22 @@
   },
   "plansPage": {
     "title": "Plans",
-    "annualBilling": "Annual billing"
+    "annualBilling": "Annual billing",
+    "action": "Get started",
+    "descriptionFallback": "Plan details are coming soon.",
+    "features": "FEATURES",
+    "billingInterval": {
+      "day": "per day",
+      "week": "per week",
+      "month": "per month",
+      "year": "per year",
+      "every": {
+        "day": "every {count} days",
+        "week": "every {count} weeks",
+        "month": "every {count} months",
+        "year": "every {count} years"
+      }
+    }
   },
   "billingPage": {
     "title": "Billing",

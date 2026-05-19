@@ -77,7 +77,22 @@
   },
   "plansPage": {
     "title": "Тарифы",
-    "annualBilling": "Годовая оплата"
+    "annualBilling": "Годовая оплата",
+    "action": "Подключить",
+    "descriptionFallback": "Описание тарифа скоро появится.",
+    "features": "ВОЗМОЖНОСТИ",
+    "billingInterval": {
+      "day": "в день",
+      "week": "в неделю",
+      "month": "в месяц",
+      "year": "в год",
+      "every": {
+        "day": "каждые {count} дн.",
+        "week": "каждые {count} нед.",
+        "month": "каждые {count} мес.",
+        "year": "каждые {count} г."
+      }
+    }
   },
   "billingPage": {
     "title": "Биллинг",

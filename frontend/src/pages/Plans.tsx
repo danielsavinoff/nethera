@@ -1,5 +1,10 @@
 import { LucideBadgeCheck } from "lucide-solid";
-import { For, Show } from "solid-js";
+import { createMemo, createResource, For, Show } from "solid-js";
+import {
+  type GetPlanFeatureResponseDto,
+  type GetPlanResponseDto,
+  planControllerHandleGetPlans,
+} from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
@@ -13,10 +18,52 @@ import {
   SwitchThumb,
 } from "~/components/ui/Switch";
 
-function Plans() {
-  const plans = ["Free"];
+type Plan = GetPlanResponseDto;
+type PlanFeature = GetPlanFeatureResponseDto;
 
-  const { t } = useLocale();
+function Plans() {
+  const { locale, t } = useLocale();
+
+  const [plans] = createResource(async () => {
+    const response = await planControllerHandleGetPlans();
+
+    return response.data.plans;
+  });
+
+  const getPlanTranslation = (plan: Plan) =>
+    plan.translations.find(
+      (translation) => translation.language === locale(),
+    ) ?? plan.translations[0];
+
+  const getFeatureTranslation = (feature: PlanFeature) =>
+    feature.translations.find(
+      (translation) => translation.language === locale(),
+    ) ?? feature.translations[0];
+
+  const formatMoney = (amount: string, currency: string) => {
+    try {
+      return new Intl.NumberFormat(locale(), {
+        style: "currency",
+        currency,
+        maximumFractionDigits: Number(amount) % 1 === 0 ? 0 : 2,
+      }).format(Number(amount));
+    } catch {
+      return `${amount} ${currency.toUpperCase()}`;
+    }
+  };
+
+  const formatBillingInterval = (plan: Plan) => {
+    const interval = plan.billingInterval.toLowerCase();
+
+    if (plan.billingIntervalCount === 1) {
+      return t(`plansPage.billingInterval.${interval}`);
+    }
+
+    return t(`plansPage.billingInterval.every.${interval}`).replace(
+      "{count}",
+      String(plan.billingIntervalCount),
+    );
+  };
 
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
@@ -31,48 +78,58 @@ function Plans() {
       </Grid>
       <div class="flex-1">
         <Grid cols={1} colsMd={2} colsLg={3} class="gap-4">
-          <For each={plans}>
-            {(plan, i) => (
+          <For each={plans()}>
+            {(plan) => (
               <Card class="w-full flex-1">
                 <CardHeader>
-                  <CardTitle>{plan}</CardTitle>
+                  <CardTitle>
+                    {getPlanTranslation(plan)?.name ?? plan.code}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Grid class="gap-12">
                     <Grid>
                       <p class="text-5xl font-semibold tracking-tight">
-                        ${20 * (i() + 1)}
+                        {formatMoney(plan.priceAmount, plan.priceCurrency)}
                       </p>
-                      <p class="text-xs text-muted-foreground">per month</p>
+                      <p class="text-xs text-muted-foreground">
+                        {formatBillingInterval(plan)}
+                      </p>
                     </Grid>
                     <Grid class="gap-4">
                       <p class="text-sm text-muted-foreground">
-                        Ideal for individuals getting started. No credit card
-                        required.
+                        {getPlanTranslation(plan)?.description ??
+                          t("plansPage.descriptionFallback")}
                       </p>
-                      <Button size="sm">Get started</Button>
+                      <Button size="sm">{t("plansPage.action")}</Button>
                     </Grid>
                     <Grid class="gap-6">
                       <Flex class="gap-3">
                         <Separator class="flex-1" />
                         <span class=" text-xs text-muted-foreground opacity-50">
-                          FEATURES
+                          {t("plansPage.features")}
                         </span>
                         <Separator class="flex-1" />
                       </Flex>
                       <ul class="space-y-4">
-                        <li class="flex items-center gap-3">
-                          <LucideBadgeCheck class="size-5 shrink-0 text-muted-foreground" />
-                          <span class="text-sm text-muted-foreground">
-                            Up to 5 components
-                          </span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                          <LucideBadgeCheck class="size-5 shrink-0 text-muted-foreground" />
-                          <span class="text-sm text-muted-foreground">
-                            Up to 5 components
-                          </span>
-                        </li>
+                        <For
+                          each={plan.features
+                            .filter((feature) => feature.active)
+                            .sort(
+                              (first, second) =>
+                                first.sortOrder - second.sortOrder,
+                            )}
+                        >
+                          {(feature) => (
+                            <li class="flex items-center gap-3">
+                              <LucideBadgeCheck class="size-5 shrink-0 text-muted-foreground" />
+                              <span class="text-sm text-muted-foreground">
+                                {getFeatureTranslation(feature)?.description ??
+                                  feature.code}
+                              </span>
+                            </li>
+                          )}
+                        </For>
                       </ul>
                     </Grid>
                   </Grid>
