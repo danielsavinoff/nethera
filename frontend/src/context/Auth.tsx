@@ -32,10 +32,11 @@ export interface User {
 export interface Auth {
   user: User | null;
   isLoading: boolean;
+  isInitialized: boolean;
 }
 
 type AuthContextValue = {
-  refetchAuth: () => unknown;
+  refetchAuth: () => Promise<unknown> | unknown;
   auth: Auth;
 };
 
@@ -56,6 +57,7 @@ export function AuthProvider(props: ParentProps) {
   const [store, setStore] = createStore<Auth>({
     user: null,
     isLoading: true,
+    isInitialized: false,
   });
 
   const [currentUser, { refetch }] = createResource(fetchMe);
@@ -63,14 +65,10 @@ export function AuthProvider(props: ParentProps) {
   createEffect(() => {
     const user = currentUser();
 
-    if (user) {
-      setStore({
-        user: user,
-      });
-    }
-
     setStore({
+      user: user ?? null,
       isLoading: false,
+      isInitialized: true,
     });
   });
 

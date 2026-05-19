@@ -9,6 +9,7 @@ import {
   ColorModeScript,
   localStorageManager,
 } from "@kobalte/core";
+import { AuthProvider } from "./context/Auth";
 
 const root = document.getElementById("root");
 
@@ -21,6 +22,7 @@ const Billing = lazy(() => import("./pages/Billing"));
 const Protected = lazy(() => import("./layouts/Protected"));
 const Default = lazy(() => import("./layouts/Default"));
 const Scrollable = lazy(() => import("./layouts/Scrollable"));
+const GuestOnly = lazy(() => import("./layouts/GuestOnly"));
 
 render(
   () => (
@@ -28,23 +30,27 @@ render(
       <ColorModeScript storageType={localStorageManager.type} />
       <ColorModeProvider storageManager={localStorageManager}>
         <LocaleProvider>
-          <Router>
-            <Route path={"/login"} component={Login} />
-            <Route component={Protected}>
-              <Route component={Default}>
-                <Route
-                  path={"/"}
-                  component={() => <Navigate href="/subscription" />}
-                />
-                <Route path={"/subscription"} component={App} />
-                <Route path={"/plans"} component={Plans} />
-                <Route path={"/billing"} component={Billing} />
+          <AuthProvider>
+            <Router>
+              <Route component={GuestOnly}>
+                <Route path={"/login"} component={Login} />
               </Route>
-              <Route component={Scrollable}>
-                <Route path={"/settings"} component={Settings} />
+              <Route component={Protected}>
+                <Route component={Default}>
+                  <Route
+                    path={"/"}
+                    component={() => <Navigate href="/subscription" />}
+                  />
+                  <Route path={"/subscription"} component={App} />
+                  <Route path={"/plans"} component={Plans} />
+                  <Route path={"/billing"} component={Billing} />
+                </Route>
+                <Route component={Scrollable}>
+                  <Route path={"/settings"} component={Settings} />
+                </Route>
               </Route>
-            </Route>
-          </Router>
+            </Router>
+          </AuthProvider>
         </LocaleProvider>
       </ColorModeProvider>
     </>
