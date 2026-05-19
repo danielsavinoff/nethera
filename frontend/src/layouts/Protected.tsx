@@ -1,5 +1,5 @@
 import { createEffect } from "solid-js";
-import { redirect, useNavigate, type RouteSectionProps } from "@solidjs/router";
+import { useNavigate, type RouteSectionProps } from "@solidjs/router";
 
 import { useAuth } from "~/context/Auth";
 
