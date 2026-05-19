@@ -34,7 +34,7 @@ export interface Auth {
 }
 
 type AuthContextValue = {
-  user: Auth["user"];
+  user: () => Auth["user"];
   refetch: () => Promise<unknown> | unknown;
   isInitialized: () => boolean;
   isLoading: () => boolean;
@@ -77,7 +77,7 @@ export function AuthProvider(props: ParentProps) {
   return (
     <AuthContext.Provider
       value={{
-        user: store.user,
+        user: () => store.user,
         refetch: refetch,
         isInitialized: isInitialized,
         isLoading: isLoading,

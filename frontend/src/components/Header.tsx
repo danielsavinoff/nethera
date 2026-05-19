@@ -22,14 +22,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
 } from "./ui/DropdownMenu";
-import { A, useNavigate } from "@solidjs/router";
+import { A } from "@solidjs/router";
 import { authControllerHandleLogout } from "~/api/generated";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
 export function Header(props: HeaderProps) {
-  const navigate = useNavigate();
-
   const [local, others] = splitProps(props, ["class"]);
 
   const { locale, setLocale, t } = useLocale();
@@ -38,7 +36,7 @@ export function Header(props: HeaderProps) {
     try {
       await authControllerHandleLogout();
     } finally {
-      navigate("/login");
+      window.location.href = "/login";
     }
   };
 
@@ -124,7 +122,7 @@ export function Header(props: HeaderProps) {
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem onSelect={handleLogout}>
                   {t("header.actions.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
