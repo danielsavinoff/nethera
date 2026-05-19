@@ -74,7 +74,7 @@ function Settings() {
                 />
               </TextField>
             </CardContent>
-            <CardFooter class="justify-between border-t p-6 bg-muted/50">
+            <CardFooter class="justify-between border-t p-6 bg-muted/20">
               <p class="text-sm text-muted-foreground">
                 {t("settingsPage.email.footer")}
               </p>
@@ -113,7 +113,7 @@ function Settings() {
                 <SelectContent />
               </Select>
             </CardContent>
-            <CardFooter class="justify-end border-t p-6 bg-muted/50">
+            <CardFooter class="justify-end border-t p-6 bg-muted/20">
               <Button
                 on:click={() => setColorMode(theme().key as ConfigColorMode)}
               >

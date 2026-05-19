@@ -32,7 +32,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
   });
 
   return (
-    <div class="rounded-lg border bg-card">
+    <div class="rounded-lg border bg-card shadow-sm">
       <Table>
         <TableHeader>
           <For each={table.getHeaderGroups()}>
