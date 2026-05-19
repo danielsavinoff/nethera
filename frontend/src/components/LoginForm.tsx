@@ -11,6 +11,7 @@ import {
 } from "./ui/TextField";
 import { Button } from "./ui/Button";
 import { A } from "@solidjs/router";
+import { useLocale } from "~/context/Locale";
 
 type LoginFormProps = JSX.HTMLAttributes<HTMLDivElement> & {
   defaultEmail?: string;
@@ -20,6 +21,8 @@ type LoginFormProps = JSX.HTMLAttributes<HTMLDivElement> & {
 };
 
 export function LoginForm(props: LoginFormProps) {
+  const { t } = useLocale();
+
   const [local, others] = splitProps(props, [
     "class",
     "onContinue",
@@ -51,17 +54,19 @@ export function LoginForm(props: LoginFormProps) {
               <div class="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd class="size-6" />
               </div>
-              <span class="sr-only">Acme Inc.</span>
+              <span class="sr-only">{t("authPage.brand")}</span>
             </a>
-            <h1 class="text-xl font-bold">Welcome to Acme Inc.</h1>
+            <h1 class="text-xl font-bold">{t("authPage.login.title")}</h1>
           </div>
           <TextField class="grid w-full items-center gap-1.5">
-            <TextFieldLabel for="email">Email</TextFieldLabel>
+            <TextFieldLabel for="email">
+              {t("authPage.login.emailLabel")}
+            </TextFieldLabel>
             <TextFieldInput
               type="email"
               id="email"
               name="email"
-              placeholder="johndoe@example.com"
+              placeholder={t("authPage.login.emailPlaceholder")}
               value={local.defaultEmail}
               class="h-13"
               required
@@ -79,17 +84,19 @@ export function LoginForm(props: LoginFormProps) {
               when={!local.isSubmitting}
               fallback={<Loader class="animate-spin" />}
             >
-              Continue
+              {t("authPage.login.continue")}
             </Show>
           </Button>
         </div>
       </form>
       <div class="px-6 text-center">
         <p class="text-xs  text-muted-foreground whitespace-pre-wrap [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary [&>a]:transition-colors [&>a]:decoration-1">
-          By clicking continue, you agree to&nbsp;
-          <A href="/terms">Terms of Service</A>
-          &nbsp;and&nbsp;
-          <A href="/privacy">Privacy Policy</A>.
+          {t("authPage.login.terms.prefix")}{" "}
+          <A href="/terms">{t("authPage.login.terms.termsOfService")}</A>
+          {" "}
+          {t("authPage.login.terms.connector")}{" "}
+          <A href="/privacy">{t("authPage.login.terms.privacyPolicy")}</A>
+          {t("authPage.login.terms.suffix")}
         </p>
       </div>
     </div>

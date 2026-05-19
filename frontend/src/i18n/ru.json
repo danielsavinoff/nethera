@@ -22,6 +22,31 @@
       }
     }
   },
+  "authPage": {
+    "brand": "Nethera",
+    "errors": {
+      "magicLinkRequestFailed": "Не удалось отправить ссылку для входа. Попробуйте ещё раз."
+    },
+    "login": {
+      "title": "Добро пожаловать в Nethera",
+      "emailLabel": "Электронная почта",
+      "emailPlaceholder": "johndoe@example.com",
+      "continue": "Продолжить",
+      "terms": {
+        "prefix": "Нажимая «Продолжить», вы соглашаетесь с",
+        "termsOfService": "Условиями использования",
+        "connector": "и",
+        "privacyPolicy": "Политикой конфиденциальности",
+        "suffix": "."
+      }
+    },
+    "checkEmail": {
+      "title": "Проверьте почту",
+      "description": "Мы отправили вам ссылку для входа в аккаунт. Вы можете закрыть это окно и проверить входящие.",
+      "resend": "Отправить письмо ещё раз",
+      "back": "Назад"
+    }
+  },
   "subscriptionPage": {
     "title": "Подписка",
     "emptyState": {

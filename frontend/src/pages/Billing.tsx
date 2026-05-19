@@ -1,5 +1,3 @@
-import { useLocale } from "~/context/Locale";
-
 import { Grid } from "~/components/ui/Grid";
 import type { ColumnDef } from "@tanstack/solid-table";
 import { DataTable } from "~/components/DataTable";
@@ -45,8 +43,6 @@ function Billing() {
       date: new Date().toUTCString(),
     },
   ];
-
-  const { t } = useLocale();
 
   return (
     <div class="w-full flex-1 flex flex-col gap-8">

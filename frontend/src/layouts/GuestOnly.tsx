@@ -9,8 +9,16 @@ export default function GuestOnly(props: RouteSectionProps) {
   const { user, isInitialized, isLoading, refetch } = useAuth();
 
   createEffect(async () => {
-    if (!isInitialized() && !isLoading()) {
+    if (isLoading()) {
+      return;
+    }
+
+    if (!isInitialized()) {
       await refetch();
+    }
+
+    if (import.meta.env.DEV) {
+      return;
     }
 
     if (user()) {

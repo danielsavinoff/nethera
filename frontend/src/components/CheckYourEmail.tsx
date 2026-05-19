@@ -10,6 +10,7 @@ import { GalleryVerticalEnd, Loader } from "lucide-solid";
 
 import type { JSX } from "solid-js";
 import { Button } from "./ui/Button";
+import { useLocale } from "~/context/Locale";
 
 type CheckYourEmailProps = JSX.HTMLAttributes<HTMLDivElement> & {
   resendCooldown?: number;
@@ -20,6 +21,8 @@ type CheckYourEmailProps = JSX.HTMLAttributes<HTMLDivElement> & {
 };
 
 export function CheckYourEmail(props: CheckYourEmailProps) {
+  const { t } = useLocale();
+
   const finalProps = mergeProps({ resendCooldown: 0 }, props);
 
   const [local, others] = splitProps(finalProps, [
@@ -76,14 +79,15 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
               <div class="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd class="size-6" />
               </div>
-              <span class="sr-only">Acme Inc.</span>
+              <span class="sr-only">{t("authPage.brand")}</span>
             </a>
-            <h1 class="text-xl font-bold">Check your email</h1>
+            <h1 class="text-xl font-bold">
+              {t("authPage.checkEmail.title")}
+            </h1>
           </div>
           <div class="text-center">
             <p class="text-sm font-medium text-muted-foreground">
-              We emailed you the magic link to sign in to your account. You can
-              close this window and check your inbox.
+              {t("authPage.checkEmail.description")}
             </p>
           </div>
           <div class="space-y-2">
@@ -98,7 +102,7 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
                 fallback={<Loader class="animate-spin" />}
               >
                 <Show when={!cooldown()} fallback={`${cooldown()}`}>
-                  Send an email again
+                  {t("authPage.checkEmail.resend")}
                 </Show>
               </Show>
             </Button>
@@ -108,7 +112,7 @@ export function CheckYourEmail(props: CheckYourEmailProps) {
               type="button"
               onClick={handleBack}
             >
-              Back
+              {t("authPage.checkEmail.back")}
             </Button>
             <Show when={local.error}>
               {(error) => (

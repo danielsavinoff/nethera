@@ -9,7 +9,11 @@ export default function Protected(props: RouteSectionProps) {
   const { user, refetch, isInitialized, isLoading } = useAuth();
 
   createEffect(async () => {
-    if (!isInitialized() && !isLoading()) {
+    if (isLoading()) {
+      return;
+    }
+
+    if (!isInitialized()) {
       await refetch();
     }
 

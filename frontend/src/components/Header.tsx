@@ -7,7 +7,7 @@ import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
 import { Button } from "./ui/Button";
-import { Cog, Download, Globe, LogOut } from "lucide-solid";
+import { Cog, Download, Globe } from "lucide-solid";
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -2,8 +2,11 @@ import { createSignal, Show } from "solid-js";
 import { authControllerHandleRequestMagicLink } from "~/api/generated";
 import { CheckYourEmail } from "~/components/CheckYourEmail";
 import { LoginForm } from "~/components/LoginForm";
+import { useLocale } from "~/context/Locale";
 
 export default function Login() {
+  const { t } = useLocale();
+
   const [isEmailSent, setIsEmailSent] = createSignal(false);
   const [isSubmitting, setIsSubmitting] = createSignal(false);
 
@@ -22,7 +25,7 @@ export default function Login() {
 
       return true;
     } catch {
-      setError("Could not send the sign-in link. Please try again.");
+      setError(t("authPage.errors.magicLinkRequestFailed"));
 
       return false;
     } finally {
