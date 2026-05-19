@@ -1,5 +1,5 @@
 import type { PlanRecord } from '../../domain/subscription/PlanRecord.js';
-import type { SubscriptionCheckoutRecord } from '../../domain/subscription/SubscriptionCheckoutRecord.js';
+import type { SubscriptionInvoiceRecord } from '../../domain/subscription/SubscriptionInvoiceRecord.js';
 
 export enum ExternalPaymentStatus {
   Pending = 'PENDING',
@@ -10,7 +10,7 @@ export enum ExternalPaymentStatus {
 
 export interface ExternalPayment {
   externalId: string;
-  checkoutId: SubscriptionCheckoutRecord['id'];
+  invoiceId: SubscriptionInvoiceRecord['id'];
   description: string;
   priceAmount: PlanRecord['priceAmount'];
   priceCurrency: PlanRecord['priceCurrency'];

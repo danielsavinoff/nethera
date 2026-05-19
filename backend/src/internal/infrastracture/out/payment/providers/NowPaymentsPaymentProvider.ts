@@ -66,7 +66,8 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
             price_amount: input.priceAmount,
             price_currency: input.priceCurrency.toLowerCase(),
             ipn_callback_url: this.ipnCallbackUrl,
-            order_id: input.checkoutId,
+            //success cancel url
+            order_id: input.invoiceId,
             order_description: input.description,
           },
           {
@@ -79,7 +80,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
 
       return {
         externalId: String(response.data.id),
-        checkoutId: response.data.order_id ?? input.checkoutId,
+        invoiceId: response.data.order_id ?? input.invoiceId,
         description:
           response.data.order_description ?? input.description,
         priceAmount:
@@ -115,7 +116,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
 
     return {
       externalId: String(response.data.payment_id),
-      checkoutId: response.data.order_id ?? '',
+      invoiceId: response.data.order_id ?? '',
       description: response.data.order_description ?? '',
       priceAmount: response.data.price_amount ?? '',
       priceCurrency: response.data.price_currency ?? '',

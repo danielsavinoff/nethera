@@ -3,7 +3,7 @@ import { IsEnum, IsString } from 'class-validator';
 
 import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
 
-export class CreateSubscriptionCheckoutRequestDto {
+export class CreateSubscriptionInvoiceRequestDto {
   @ApiProperty()
   @IsString()
   planId!: string;

@@ -6,7 +6,7 @@ import { PrismaAuthTokenRepository } from './repositories/PrismaAuthTokenReposit
 import { PrismaRoleRepository } from './repositories/PrismaRoleRepository.js';
 import { PrismaPlanRepository } from './repositories/PrismaPlanRepository.js';
 import { PrismaSubscriptionRepository } from './repositories/PrismaSubscriptionRepository.js';
-import { PrismaSubscriptionCheckoutRepository } from './repositories/PrismaSubscriptionCheckoutRepository.js';
+import { PrismaSubscriptionInvoiceRepository } from './repositories/PrismaSubscriptionInvoiceRepository.js';
 import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.js';
 
 @Module({
@@ -17,7 +17,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaRoleRepository,
     PrismaPlanRepository,
     PrismaSubscriptionRepository,
-    PrismaSubscriptionCheckoutRepository,
+    PrismaSubscriptionInvoiceRepository,
     PrismaTransactionRunner,
   ],
   exports: [
@@ -27,7 +27,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaRoleRepository,
     PrismaPlanRepository,
     PrismaSubscriptionRepository,
-    PrismaSubscriptionCheckoutRepository,
+    PrismaSubscriptionInvoiceRepository,
     PrismaTransactionRunner,
   ],
   imports: [LoggingWiringModule],

@@ -79,6 +79,32 @@
     "title": "Plans",
     "annualBilling": "Annual billing"
   },
+  "billingPage": {
+    "title": "Billing",
+    "emptyState": "No invoices yet.",
+    "columns": {
+      "status": "Status",
+      "issuedAt": "Issued at",
+      "dueAt": "Due at",
+      "amountDue": "Amount due",
+      "checkout": "Checkout"
+    },
+    "actions": {
+      "openCheckout": "Open",
+      "openMenu": "Open invoice actions",
+      "label": "Actions",
+      "payInvoice": "Pay the invoice",
+      "copyPaymentId": "Copy payment ID"
+    },
+    "status": {
+      "draft": "Draft",
+      "open": "Open",
+      "paid": "Paid",
+      "failed": "Failed",
+      "void": "Void",
+      "refunded": "Refunded"
+    }
+  },
   "settingsPage": {
     "title": "Settings",
     "actions": {

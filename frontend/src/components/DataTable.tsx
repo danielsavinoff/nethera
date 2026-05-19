@@ -17,6 +17,7 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  emptyMessage?: string;
 }
 
 export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
@@ -62,7 +63,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                   colSpan={props.columns.length}
                   class="h-24 text-center"
                 >
-                  No results.
+                  {props.emptyMessage ?? "No results."}
                 </TableCell>
               </TableRow>
             }

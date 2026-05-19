@@ -27,6 +27,7 @@ export class SubscriptionInvoice {
     provider?: SubscriptionInvoiceRecord['provider'];
     providerInvoiceId?: SubscriptionInvoiceRecord['providerInvoiceId'];
     providerPaymentIntentId?: SubscriptionInvoiceRecord['providerPaymentIntentId'];
+    checkoutUrl?: SubscriptionInvoiceRecord['checkoutUrl'];
     failureCode?: SubscriptionInvoiceRecord['failureCode'];
     failureMessage?: SubscriptionInvoiceRecord['failureMessage'];
     metadata?: SubscriptionInvoiceRecord['metadata'];
@@ -51,6 +52,7 @@ export class SubscriptionInvoice {
       provider: props.provider,
       providerInvoiceId: props.providerInvoiceId,
       providerPaymentIntentId: props.providerPaymentIntentId,
+      checkoutUrl: props.checkoutUrl,
       failureCode: props.failureCode,
       failureMessage: props.failureMessage,
       metadata: props.metadata,
@@ -137,6 +139,10 @@ export class SubscriptionInvoice {
 
   get providerPaymentIntentId(): SubscriptionInvoiceRecord['providerPaymentIntentId'] {
     return this.props.providerPaymentIntentId;
+  }
+
+  get checkoutUrl(): SubscriptionInvoiceRecord['checkoutUrl'] {
+    return this.props.checkoutUrl;
   }
 
   get failureCode(): SubscriptionInvoiceRecord['failureCode'] {

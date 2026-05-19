@@ -16,6 +16,7 @@ export interface SubscriptionInvoiceRecord {
   provider?: string;
   providerInvoiceId?: string;
   providerPaymentIntentId?: string;
+  checkoutUrl?: string;
   failureCode?: string;
   failureMessage?: string;
   metadata?: string;

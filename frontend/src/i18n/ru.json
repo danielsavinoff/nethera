@@ -79,6 +79,32 @@
     "title": "Тарифы",
     "annualBilling": "Годовая оплата"
   },
+  "billingPage": {
+    "title": "Биллинг",
+    "emptyState": "Счетов пока нет.",
+    "columns": {
+      "status": "Статус",
+      "issuedAt": "Дата выставления",
+      "dueAt": "Срок оплаты",
+      "amountDue": "Сумма к оплате",
+      "checkout": "Оплата"
+    },
+    "actions": {
+      "openCheckout": "Открыть",
+      "openMenu": "Открыть действия со счётом",
+      "label": "Действия",
+      "payInvoice": "Оплатить счёт",
+      "copyPaymentId": "Скопировать ID платежа"
+    },
+    "status": {
+      "draft": "Черновик",
+      "open": "Открыт",
+      "paid": "Оплачен",
+      "failed": "Ошибка",
+      "void": "Аннулирован",
+      "refunded": "Возвращён"
+    }
+  },
   "settingsPage": {
     "title": "Настройки",
     "actions": {

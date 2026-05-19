@@ -16,9 +16,10 @@ import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRole
 import { CreatePlanUseCase } from '../../application/usecases/CreatePlanUseCase.js';
 import { GetPlanUseCase } from '../../application/usecases/GetPlanUseCase.js';
 import { GetPlansUseCase } from '../../application/usecases/GetPlansUseCase.js';
-import { CreateSubscriptionCheckoutUseCase } from '../../application/usecases/CreateSubscriptionCheckoutUseCase.js';
+import { CreateSubscriptionInvoiceUseCase } from '../../application/usecases/CreateSubscriptionInvoiceUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
+import { GetSubscriptionInvoicesUseCase } from '../../application/usecases/GetSubscriptionInvoicesUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -33,9 +34,9 @@ import type { AuthTokenRepository } from '../../application/ports/AuthTokenRepos
 import type { TransactionRunner } from '../../application/ports/TransactionRunner.js';
 import type { PlanRepository } from '../../application/ports/PlanRepository.js';
 import type { SubscriptionRepository } from '../../application/ports/SubscriptionRepository.js';
-import type { SubscriptionCheckoutRepository } from '../../application/ports/SubscriptionCheckoutRepository.js';
+import type { SubscriptionInvoiceRepository } from '../../application/ports/SubscriptionInvoiceRepository.js';
 import type { PaymentProviderResolver } from '../../application/ports/PaymentProviderResolver.js';
-import type { SubscriptionCheckoutStatusMapper } from '../../application/ports/SubscriptionCheckoutStatusMapper.js';
+import type { SubscriptionInvoiceStatusMapper } from '../../application/ports/SubscriptionInvoiceStatusMapper.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
@@ -48,17 +49,19 @@ import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaS
 import { PrismaAuthTokenRepository } from '../out/persistence/repositories/PrismaAuthTokenRepository.js';
 import { PrismaPlanRepository } from '../out/persistence/repositories/PrismaPlanRepository.js';
 import { PrismaSubscriptionRepository } from '../out/persistence/repositories/PrismaSubscriptionRepository.js';
-import { PrismaSubscriptionCheckoutRepository } from '../out/persistence/repositories/PrismaSubscriptionCheckoutRepository.js';
+import { PrismaSubscriptionInvoiceRepository } from '../out/persistence/repositories/PrismaSubscriptionInvoiceRepository.js';
+import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLinkTokenService.js';
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
 import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
 import { CryptoIdGenerator } from '../out/identity/generators/CryptoIdGenerator.js';
-import { DefaultSubscriptionCheckoutStatusMapper } from '../out/payment/mappers/DefaultSubscriptionCheckoutStatusMapper.js';
+import { DefaultSubscriptionInvoiceStatusMapper } from '../out/payment/mappers/DefaultSubscriptionInvoiceStatusMapper.js';
 import { NowPaymentsPaymentProvider } from '../out/payment/providers/NowPaymentsPaymentProvider.js';
 import { DefaultPaymentProviderResolver } from '../out/payment/resolvers/DefaultPaymentProviderResolver.js';
 import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
+import { SubscriptionInvoicePolicy } from '../../domain/subscription/SubscriptionInvoicePolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 
@@ -75,7 +78,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
   ],
   providers: [
     CryptoIdGenerator,
-    DefaultSubscriptionCheckoutStatusMapper,
+    DefaultSubscriptionInvoiceStatusMapper,
     // {
     //   provide: DispatchIncomingWebhookUseCase,
     //   useFactory: (
@@ -320,31 +323,37 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: CreateSubscriptionCheckoutUseCase,
+      provide: CreateSubscriptionInvoiceUseCase,
       useFactory: (
         userRepository: UserRepository,
         planRepository: PlanRepository,
-        subscriptionCheckoutRepository: SubscriptionCheckoutRepository,
+        subscriptionRepository: SubscriptionRepository,
+        subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
         paymentProviderResolver: PaymentProviderResolver,
-        subscriptionCheckoutStatusMapper: SubscriptionCheckoutStatusMapper,
+        subscriptionInvoiceStatusMapper: SubscriptionInvoiceStatusMapper,
         idGenerator: CryptoIdGenerator,
+        transactionRunner: TransactionRunner,
       ) => {
-        return new CreateSubscriptionCheckoutUseCase(
+        return new CreateSubscriptionInvoiceUseCase(
           userRepository,
           planRepository,
-          subscriptionCheckoutRepository,
+          subscriptionRepository,
+          subscriptionInvoiceRepository,
           paymentProviderResolver,
-          subscriptionCheckoutStatusMapper,
+          subscriptionInvoiceStatusMapper,
           idGenerator,
+          transactionRunner,
         );
       },
       inject: [
         PrismaUserRepository,
         PrismaPlanRepository,
-        PrismaSubscriptionCheckoutRepository,
+        PrismaSubscriptionRepository,
+        PrismaSubscriptionInvoiceRepository,
         DefaultPaymentProviderResolver,
-        DefaultSubscriptionCheckoutStatusMapper,
+        DefaultSubscriptionInvoiceStatusMapper,
         CryptoIdGenerator,
+        PrismaTransactionRunner,
       ],
     },
     {
@@ -385,9 +394,29 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         SubscriptionPolicy,
       ],
     },
+    {
+      provide: GetSubscriptionInvoicesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
+        subscriptionInvoicePolicy: SubscriptionInvoicePolicy,
+      ) => {
+        return new GetSubscriptionInvoicesUseCase(
+          userRepository,
+          subscriptionInvoiceRepository,
+          subscriptionInvoicePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaSubscriptionInvoiceRepository,
+        SubscriptionInvoicePolicy,
+      ],
+    },
     RolePolicy,
     PlanPolicy,
     SubscriptionPolicy,
+    SubscriptionInvoicePolicy,
     {
       provide: EVENT_PROCESSORS,
       useFactory: () => ({}),
@@ -416,9 +445,10 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetPlansUseCase,
     GetPlanUseCase,
     CreatePlanUseCase,
-    CreateSubscriptionCheckoutUseCase,
+    CreateSubscriptionInvoiceUseCase,
     GetSubscriptionsUseCase,
     GetSubscriptionUseCase,
+    GetSubscriptionInvoicesUseCase,
   ],
 })
 export class UseCaseModule {}

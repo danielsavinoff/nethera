@@ -5,7 +5,7 @@ import { AuthController } from './controllers/AuthController.js';
 import { RoleController } from './controllers/RoleController.js';
 import { PlanController } from './controllers/PlanController.js';
 import { SubscriptionController } from './controllers/SubscriptionController.js';
-import { SubscriptionCheckoutController } from './controllers/SubscriptionCheckoutController.js';
+import { SubscriptionInvoiceController } from './controllers/SubscriptionInvoiceController.js';
 import { UserController } from './controllers/UserController.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
@@ -19,7 +19,8 @@ import { GetPlanPresenter } from './presenters/GetPlanPresenter.js';
 import { GetPlansPresenter } from './presenters/GetPlansPresenter.js';
 import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.js';
 import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresenter.js';
-import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscriptionCheckoutPresenter.js';
+import { GetSubscriptionInvoicesPresenter } from './presenters/GetSubscriptionInvoicesPresenter.js';
+import { CreateSubscriptionInvoicePresenter } from './presenters/CreateSubscriptionInvoicePresenter.js';
 
 @Module({
   controllers: [
@@ -28,7 +29,7 @@ import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscrip
     RoleController,
     PlanController,
     SubscriptionController,
-    SubscriptionCheckoutController,
+    SubscriptionInvoiceController,
     UserController,
   ],
   providers: [
@@ -43,7 +44,8 @@ import { CreateSubscriptionCheckoutPresenter } from './presenters/CreateSubscrip
     GetPlansPresenter,
     GetSubscriptionPresenter,
     GetSubscriptionsPresenter,
-    CreateSubscriptionCheckoutPresenter,
+    GetSubscriptionInvoicesPresenter,
+    CreateSubscriptionInvoicePresenter,
   ],
   imports: [UseCaseModule, PersistenceModule],
 })

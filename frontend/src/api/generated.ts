@@ -164,36 +164,46 @@ export interface GetSubscriptionsResponseDto {
   subscriptions: GetSubscriptionResponseDto[];
 }
 
-export type CreateSubscriptionCheckoutRequestDtoProvider = typeof CreateSubscriptionCheckoutRequestDtoProvider[keyof typeof CreateSubscriptionCheckoutRequestDtoProvider];
-
-
-export const CreateSubscriptionCheckoutRequestDtoProvider = {
-  NOWPAYMENTS: 'NOWPAYMENTS',
-} as const;
-
-export interface CreateSubscriptionCheckoutRequestDto {
-  planId: string;
-  provider: CreateSubscriptionCheckoutRequestDtoProvider;
+export interface GetSubscriptionInvoiceResponseDto {
+  id: string;
+  subscriptionId: string;
+  userId: string;
+  status: string;
+  amountDue: string;
+  amountPaid: string;
+  currency: string;
+  periodStartAt?: string;
+  periodEndAt?: string;
+  issuedAt: string;
+  dueAt?: string;
+  paidAt?: string;
+  failedAt?: string;
+  voidedAt?: string;
+  provider?: string;
+  providerInvoiceId?: string;
+  providerPaymentIntentId?: string;
+  checkoutUrl?: string;
+  failureCode?: string;
+  failureMessage?: string;
+  metadata?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type CreateSubscriptionCheckoutResponseDtoProvider = typeof CreateSubscriptionCheckoutResponseDtoProvider[keyof typeof CreateSubscriptionCheckoutResponseDtoProvider];
+export interface GetSubscriptionInvoicesResponseDto {
+  invoices: GetSubscriptionInvoiceResponseDto[];
+}
+
+export type CreateSubscriptionInvoiceRequestDtoProvider = typeof CreateSubscriptionInvoiceRequestDtoProvider[keyof typeof CreateSubscriptionInvoiceRequestDtoProvider];
 
 
-export const CreateSubscriptionCheckoutResponseDtoProvider = {
+export const CreateSubscriptionInvoiceRequestDtoProvider = {
   NOWPAYMENTS: 'NOWPAYMENTS',
 } as const;
 
-export interface CreateSubscriptionCheckoutResponseDto {
-  id: string;
-  userId: string;
+export interface CreateSubscriptionInvoiceRequestDto {
   planId: string;
-  status: string;
-  provider: CreateSubscriptionCheckoutResponseDtoProvider;
-  providerSessionId?: string;
-  checkoutUrl?: string;
-  expiresAt?: string;
-  completedAt?: string;
-  failedAt?: string;
+  provider: CreateSubscriptionInvoiceRequestDtoProvider;
 }
 
 export interface GetUserResponseDto {
@@ -217,6 +227,8 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   planaddany: 'plan.add.any',
   subscriptionviewown: 'subscription.view.own',
   subscriptionviewany: 'subscription.view.any',
+  'subscription-invoiceviewown': 'subscription-invoice.view.own',
+  'subscription-invoiceviewany': 'subscription-invoice.view.any',
   'user-roleviewown': 'user-role.view.own',
   'user-roleviewany': 'user-role.view.any',
   'user-roleupdateany': 'user-role.update.any',
@@ -379,13 +391,22 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
-export const subscriptionCheckoutControllerHandleCreateSubscriptionCheckout = (
-    createSubscriptionCheckoutRequestDto: CreateSubscriptionCheckoutRequestDto,
- options?: SecondParameter<typeof api<CreateSubscriptionCheckoutResponseDto>>,) => {
-      return api<CreateSubscriptionCheckoutResponseDto>(
-      {url: `/checkouts`, method: 'POST',
+export const subscriptionInvoiceControllerHandleGetSubscriptionInvoices = (
+
+ options?: SecondParameter<typeof api<GetSubscriptionInvoicesResponseDto>>,) => {
+      return api<GetSubscriptionInvoicesResponseDto>(
+      {url: `/subscription-invoices`, method: 'GET'
+    },
+      options);
+    }
+
+export const subscriptionInvoiceControllerHandleCreateSubscriptionInvoice = (
+    createSubscriptionInvoiceRequestDto: CreateSubscriptionInvoiceRequestDto,
+ options?: SecondParameter<typeof api<GetSubscriptionInvoiceResponseDto>>,) => {
+      return api<GetSubscriptionInvoiceResponseDto>(
+      {url: `/subscription-invoices`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createSubscriptionCheckoutRequestDto
+      data: createSubscriptionInvoiceRequestDto
     },
       options);
     }
@@ -451,7 +472,8 @@ export type PlanControllerHandleCreatePlanResult = NonNullable<Awaited<ReturnTyp
 export type PlanControllerHandleGetPlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlan>>>
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
-export type SubscriptionCheckoutControllerHandleCreateSubscriptionCheckoutResult = NonNullable<Awaited<ReturnType<typeof subscriptionCheckoutControllerHandleCreateSubscriptionCheckout>>>
+export type SubscriptionInvoiceControllerHandleGetSubscriptionInvoicesResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleGetSubscriptionInvoices>>>
+export type SubscriptionInvoiceControllerHandleCreateSubscriptionInvoiceResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleCreateSubscriptionInvoice>>>
 export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
 export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
 export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>
