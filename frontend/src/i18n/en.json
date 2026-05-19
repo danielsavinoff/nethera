@@ -51,7 +51,7 @@
     "title": "Subscription",
     "emptyState": {
       "title": "You don't have a plan yet",
-      "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+      "description": "Choose a plan to activate your subscription and start using the service.",
       "action": "Go to plans"
     },
     "linkCard": {

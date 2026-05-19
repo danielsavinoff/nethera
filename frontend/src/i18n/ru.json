@@ -51,7 +51,7 @@
     "title": "Подписка",
     "emptyState": {
       "title": "У вас пока нет тарифа",
-      "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+      "description": "Выберите тариф, чтобы активировать подписку и начать пользоваться сервисом.",
       "action": "Перейти к тарифам"
     },
     "linkCard": {
