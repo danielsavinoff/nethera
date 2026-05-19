@@ -17,6 +17,7 @@ import { CreatePlanUseCase } from '../../application/usecases/CreatePlanUseCase.
 import { GetPlanUseCase } from '../../application/usecases/GetPlanUseCase.js';
 import { GetPlansUseCase } from '../../application/usecases/GetPlansUseCase.js';
 import { CreateSubscriptionInvoiceUseCase } from '../../application/usecases/CreateSubscriptionInvoiceUseCase.js';
+import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCurrentSubscriptionUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
 import { GetSubscriptionInvoicesUseCase } from '../../application/usecases/GetSubscriptionInvoicesUseCase.js';
@@ -376,6 +377,25 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
+      provide: GetCurrentSubscriptionUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        subscriptionRepository: SubscriptionRepository,
+        subscriptionPolicy: SubscriptionPolicy,
+      ) => {
+        return new GetCurrentSubscriptionUseCase(
+          userRepository,
+          subscriptionRepository,
+          subscriptionPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaSubscriptionRepository,
+        SubscriptionPolicy,
+      ],
+    },
+    {
       provide: GetSubscriptionUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -447,6 +467,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     CreatePlanUseCase,
     CreateSubscriptionInvoiceUseCase,
     GetSubscriptionsUseCase,
+    GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,
     GetSubscriptionInvoicesUseCase,
   ],

@@ -20,10 +20,25 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   ): Promise<Subscription | null> {
     const client = this.getClient(transactionContext);
 
-    const row = await client.subscription.findUnique({
+    const row = await client.subscription.findFirst({
       where: {
-        id: query.filters.id,
+        ...(query.filters.id
+          ? {
+              id: query.filters.id,
+            }
+          : {}),
+        ...(query.filters.userId
+          ? {
+              user_id: query.filters.userId,
+            }
+          : {}),
+        ...(query.filters.status
+          ? {
+              status: query.filters.status,
+            }
+          : {}),
       },
+      orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
     });
 
     if (!row) {
@@ -81,6 +96,11 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         ...(query.filters?.userId
           ? {
               user_id: query.filters.userId,
+            }
+          : {}),
+        ...(query.filters?.status
+          ? {
+              status: query.filters.status,
             }
           : {}),
       },

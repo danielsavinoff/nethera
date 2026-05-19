@@ -1,6 +1,8 @@
 import { A } from "@solidjs/router";
+import axios from "axios";
 import { CircleQuestionMark, PlusIcon } from "lucide-solid";
-import { Show } from "solid-js";
+import { createResource, Show } from "solid-js";
+import { subscriptionControllerHandleGetCurrentSubscription } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import {
@@ -21,9 +23,24 @@ import {
 } from "~/components/ui/Tooltip";
 
 function App() {
-  const hasSubscription = true;
-
   const { t } = useLocale();
+
+  const [currentSubscription] = createResource(async () => {
+    try {
+      const response =
+        await subscriptionControllerHandleGetCurrentSubscription();
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
+      }
+
+      throw error;
+    }
+  });
+
+  const hasSubscription = () => Boolean(currentSubscription());
 
   const chartData = {
     labels: [
@@ -51,11 +68,11 @@ function App() {
         <h1 class="text-3xl font-semibold">{t("subscriptionPage.title")}</h1>
       </Grid>
       <Show
-        when={hasSubscription}
+        when={hasSubscription()}
         fallback={
           <Card class="w-full flex-1 flex justify-center items-center">
             <CardContent>
-              <div class="gap-7 flex flex-col">
+              <div class="gap-7 flex flex-col items-center text-center">
                 <div class="gap-1 flex flex-col">
                   <h2 class="text-xl font-bold">
                     {t("subscriptionPage.emptyState.title")}

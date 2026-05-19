@@ -9,6 +9,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import { SubscriptionNotFoundException } from '../../../../application/exceptions/SubscriptionNotFoundException.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
+import { GetCurrentSubscriptionUseCase } from '../../../../application/usecases/GetCurrentSubscriptionUseCase.js';
 import { GetSubscriptionUseCase } from '../../../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../../../application/usecases/GetSubscriptionsUseCase.js';
 import { SubscriptionActionForbiddenException } from '../../../../domain/subscription/SubscriptionActionForbiddenException.js';
@@ -23,6 +24,7 @@ export class SubscriptionController {
   constructor(
     private readonly getSubscriptionsUseCase: GetSubscriptionsUseCase,
     private readonly getSubscriptionsPresenter: GetSubscriptionsPresenter,
+    private readonly getCurrentSubscriptionUseCase: GetCurrentSubscriptionUseCase,
     private readonly getSubscriptionUseCase: GetSubscriptionUseCase,
     private readonly getSubscriptionPresenter: GetSubscriptionPresenter,
   ) {}
@@ -39,6 +41,37 @@ export class SubscriptionController {
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new NotFoundException('User does not exist.');
+      }
+
+      if (
+        error instanceof SubscriptionActionForbiddenException
+      ) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  @ApiOkResponse({ type: GetSubscriptionResponseDto })
+  @Get('current')
+  async handleGetCurrentSubscription(@Claims() claims: AuthClaim) {
+    try {
+      const result =
+        await this.getCurrentSubscriptionUseCase.execute({
+          initiatorUserId: claims.sub,
+        });
+
+      return this.getSubscriptionPresenter.present(result);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof SubscriptionNotFoundException) {
+        throw new NotFoundException(
+          'Subscription does not exist.',
+        );
       }
 
       if (

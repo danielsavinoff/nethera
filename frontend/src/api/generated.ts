@@ -382,6 +382,15 @@ export const subscriptionControllerHandleGetSubscriptions = (
       options);
     }
 
+export const subscriptionControllerHandleGetCurrentSubscription = (
+
+ options?: SecondParameter<typeof api<GetSubscriptionResponseDto>>,) => {
+      return api<GetSubscriptionResponseDto>(
+      {url: `/subscriptions/current`, method: 'GET'
+    },
+      options);
+    }
+
 export const subscriptionControllerHandleGetSubscription = (
     id: string,
  options?: SecondParameter<typeof api<GetSubscriptionResponseDto>>,) => {
@@ -471,6 +480,7 @@ export type PlanControllerHandleGetPlansResult = NonNullable<Awaited<ReturnType<
 export type PlanControllerHandleCreatePlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleCreatePlan>>>
 export type PlanControllerHandleGetPlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlan>>>
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
+export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
 export type SubscriptionInvoiceControllerHandleGetSubscriptionInvoicesResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleGetSubscriptionInvoices>>>
 export type SubscriptionInvoiceControllerHandleCreateSubscriptionInvoiceResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleCreateSubscriptionInvoice>>>
