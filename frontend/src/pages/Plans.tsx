@@ -1,5 +1,5 @@
 import { LucideBadgeCheck } from "lucide-solid";
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/Switch";
 
 function Plans() {
-  const plans = ["Free", "Pro", "Enterprise"];
+  const plans = ["Free"];
 
   const { t } = useLocale();
 
@@ -30,7 +30,7 @@ function Plans() {
         </Switch>
       </Grid>
       <div class="flex-1">
-        <Flex class="flex-col md:flex-row gap-4">
+        <Grid cols={1} colsMd={2} colsLg={3} class="gap-4">
           <For each={plans}>
             {(plan, i) => (
               <Card class="w-full flex-1">
@@ -80,7 +80,11 @@ function Plans() {
               </Card>
             )}
           </For>
-        </Flex>
+          <Show when={plans.length < 3}>
+            <Card class="hidden md:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
+            <Card class="hidden lg:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
+          </Show>
+        </Grid>
       </div>
     </div>
   );
