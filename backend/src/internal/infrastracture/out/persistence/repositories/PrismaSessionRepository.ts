@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import type { SessionRepository } from '../../../../application/ports/SessionRepository.js';
+import type {
+  DeleteSessionQuery,
+  LoadSessionQuery,
+  SessionRepository,
+} from '../../../../application/ports/SessionRepository.js';
 import { SessionNotFoundException } from '../../../../application/exceptions/SessionNotFoundException.js';
-import type { SessionRecord } from '../../../../domain/user/SessionRecord.js';
 import { Injectable } from '@nestjs/common';
 import { Session } from '../../../../domain/user/Session.js';
 
@@ -9,17 +12,15 @@ import { Session } from '../../../../domain/user/Session.js';
 export class PrismaSessionRepository implements SessionRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async deleteById(id: SessionRecord['id']): Promise<void> {
-    await this.prisma.session.delete({
-      where: { id },
+  async delete(query: DeleteSessionQuery): Promise<void> {
+    await this.prisma.session.deleteMany({
+      where: { id: query.filters.id },
     });
   }
 
-  async loadByIdOrThrow(
-    id: SessionRecord['id'],
-  ): Promise<Session> {
+  async loadOrThrow(query: LoadSessionQuery): Promise<Session> {
     const row = await this.prisma.session.findUnique({
-      where: { id },
+      where: { id: query.filters.id },
     });
 
     if (!row) {

@@ -6,14 +6,14 @@ import { useAuth } from "~/context/Auth";
 export default function Protected(props: RouteSectionProps) {
   const navigate = useNavigate();
 
-  const { auth, refetchAuth } = useAuth();
+  const { user, refetch, isInitialized } = useAuth();
 
   createEffect(async () => {
-    if (!auth.isInitialized) {
-      await refetchAuth();
+    if (!isInitialized()) {
+      await refetch();
     }
 
-    if (!auth.user) {
+    if (!user) {
       navigate("/login");
     }
   });

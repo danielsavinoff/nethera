@@ -4,6 +4,7 @@ import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
 import { DispatchIncomingWebhookUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
 import type { EventHandlerUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
 import { LoginWithMagicLinkUseCase } from '../../application/usecases/LoginWithMagicLinkUseCase.js';
+import { LogoutUseCase } from '../../application/usecases/LogoutUseCase.js';
 import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAccessTokenUseCase.js';
 import { SendMagicLinkUseCase } from '../../application/usecases/SendMagicLinkUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
@@ -172,6 +173,19 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         JwtAccessTokenService,
         JwtRefreshTokenService,
       ],
+    },
+    {
+      provide: LogoutUseCase,
+      useFactory: (
+        sessionRepository: SessionRepository,
+        refreshTokenService: RefreshTokenService,
+      ) => {
+        return new LogoutUseCase(
+          sessionRepository,
+          refreshTokenService,
+        );
+      },
+      inject: [PrismaSessionRepository, JwtRefreshTokenService],
     },
 
     {
@@ -392,6 +406,7 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     SendMagicLinkUseCase,
     LoginWithMagicLinkUseCase,
     RefreshAccessTokenUseCase,
+    LogoutUseCase,
     GetUsersUseCase,
     GetCurrentUserUseCase,
     GetRolesUseCase,

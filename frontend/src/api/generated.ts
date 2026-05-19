@@ -293,6 +293,15 @@ export const authControllerHandleTokenRenewal = (
       options);
     }
 
+export const authControllerHandleLogout = (
+
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/auth/logout`, method: 'POST'
+    },
+      options);
+    }
+
 export const authControllerHandleRequestMagicLink = (
     sendMagicLinkRequestDto: SendMagicLinkRequestDto,
  options?: SecondParameter<typeof api<void>>,) => {
@@ -306,8 +315,8 @@ export const authControllerHandleRequestMagicLink = (
 
 export const authControllerHandleVerifyMagicLink = (
     params: AuthControllerHandleVerifyMagicLinkParams,
- options?: SecondParameter<typeof api<void>>,) => {
-      return api<void>(
+ options?: SecondParameter<typeof api<unknown>>,) => {
+      return api<unknown>(
       {url: `/auth/magic/verify`, method: 'GET',
         params
     },
@@ -433,6 +442,7 @@ export const userControllerHandleDeleteRole = (
 
 export type AppControllerHealthResult = NonNullable<Awaited<ReturnType<typeof appControllerHealth>>>
 export type AuthControllerHandleTokenRenewalResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleTokenRenewal>>>
+export type AuthControllerHandleLogoutResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleLogout>>>
 export type AuthControllerHandleRequestMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleRequestMagicLink>>>
 export type AuthControllerHandleVerifyMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleVerifyMagicLink>>>
 export type RoleControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof roleControllerHandleGetRoles>>>

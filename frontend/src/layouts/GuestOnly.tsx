@@ -6,14 +6,14 @@ import { useAuth } from "~/context/Auth";
 export default function GuestOnly(props: RouteSectionProps) {
   const navigate = useNavigate();
 
-  const { auth, refetchAuth } = useAuth();
+  const { user, isInitialized, refetch } = useAuth();
 
   createEffect(async () => {
-    if (!auth.isInitialized) {
-      await refetchAuth();
+    if (!isInitialized()) {
+      await refetch();
     }
 
-    if (auth.user) {
+    if (user) {
       navigate("/");
     }
   });

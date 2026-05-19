@@ -23,6 +23,7 @@ import { MagicLinkAlreadyUsedException } from '../../../../application/exception
 import { MagicLinkExpiredException } from '../../../../application/exceptions/MagicLinkExpiredException.js';
 import { MagicLinkInvalidException } from '../../../../application/exceptions/MagicLinkInvalidException.js';
 import { LoginWithMagicLinkUseCase } from '../../../../application/usecases/LoginWithMagicLinkUseCase.js';
+import { LogoutUseCase } from '../../../../application/usecases/LogoutUseCase.js';
 import { RefreshAccessTokenUseCase } from '../../../../application/usecases/RefreshAccessTokenUseCase.js';
 import { SendMagicLinkUseCase } from '../../../../application/usecases/SendMagicLinkUseCase.js';
 import { Public } from '../decorators/Public.js';
@@ -44,6 +45,7 @@ export class AuthController {
     private readonly sendMagicLinkUseCase: SendMagicLinkUseCase,
     private readonly loginWithMagicLinkUseCase: LoginWithMagicLinkUseCase,
     private readonly refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
+    private readonly logoutUseCase: LogoutUseCase,
     private readonly configService: ConfigService,
   ) {
     this.isProduction =
@@ -96,6 +98,39 @@ export class AuthController {
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException();
+    }
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  async handleLogout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      const refreshToken =
+        request.cookies?.[AuthCookie.RefreshToken];
+
+      if (typeof refreshToken === 'string') {
+        await this.logoutUseCase.execute({
+          refreshToken,
+        });
+      }
+    } catch {
+      // Logout should still clear local auth cookies when the
+      // refresh token is missing, expired, or already invalid.
+    } finally {
+      response.clearCookie(AuthCookie.AccessToken, {
+        httpOnly: true,
+        secure: this.isProduction,
+        sameSite: 'lax',
+      });
+      response.clearCookie(AuthCookie.RefreshToken, {
+        httpOnly: true,
+        secure: this.isProduction,
+        sameSite: 'lax',
+      });
     }
   }
 

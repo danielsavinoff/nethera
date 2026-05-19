@@ -34,9 +34,11 @@ export class RefreshAccessTokenUseCase {
       },
     });
 
-    const session = await this.sessionRepository.loadByIdOrThrow(
-      authClaim.sid,
-    );
+    const session = await this.sessionRepository.loadOrThrow({
+      filters: {
+        id: authClaim.sid,
+      },
+    });
 
     const token = await this.accessTokenService.issue({
       sub: user.id,

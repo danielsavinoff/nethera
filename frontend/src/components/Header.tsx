@@ -7,7 +7,7 @@ import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
 import { Button } from "./ui/Button";
-import { Cog, Download, Globe } from "lucide-solid";
+import { Cog, Download, Globe, LogOut } from "lucide-solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,14 +22,25 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
 } from "./ui/DropdownMenu";
-import { A } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
+import { authControllerHandleLogout } from "~/api/generated";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
 export function Header(props: HeaderProps) {
+  const navigate = useNavigate();
+
   const [local, others] = splitProps(props, ["class"]);
 
   const { locale, setLocale, t } = useLocale();
+
+  const handleLogout = async () => {
+    try {
+      await authControllerHandleLogout();
+    } finally {
+      navigate("/login");
+    }
+  };
 
   return (
     <header
@@ -113,7 +124,7 @@ export function Header(props: HeaderProps) {
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   {t("header.actions.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>

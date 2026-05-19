@@ -15,6 +15,8 @@ const tokenRenewalUrl = `${API_URL}/auth/token`;
 
 let tokenRenewalRequest: Promise<void> | null = null;
 
+const loginPath = "/login";
+
 const client = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -44,7 +46,9 @@ client.interceptors.response.use(
           });
 
           if (!response.ok) {
-            window.location.href = "/login";
+            if (!window.location.href.includes(loginPath)) {
+              window.location.href = loginPath;
+            }
           }
         } finally {
           tokenRenewalRequest = null;

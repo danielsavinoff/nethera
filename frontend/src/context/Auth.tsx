@@ -31,13 +31,13 @@ export interface User {
 
 export interface Auth {
   user: User | null;
-  isLoading: boolean;
-  isInitialized: boolean;
 }
 
 type AuthContextValue = {
-  refetchAuth: () => Promise<unknown> | unknown;
-  auth: Auth;
+  user: Auth["user"];
+  refetch: () => Promise<unknown> | unknown;
+  isInitialized: () => boolean;
+  isLoading: () => boolean;
 };
 
 async function fetchMe(): Promise<User> {
@@ -56,27 +56,31 @@ export const AuthContext = createContext<AuthContextValue>();
 export function AuthProvider(props: ParentProps) {
   const [store, setStore] = createStore<Auth>({
     user: null,
-    isLoading: true,
-    isInitialized: false,
   });
 
   const [currentUser, { refetch }] = createResource(fetchMe);
 
+  const isLoading = () => currentUser.loading;
+
+  const isInitialized = () => currentUser.state !== "pending";
+
   createEffect(() => {
     const user = currentUser();
 
-    setStore({
-      user: user ?? null,
-      isLoading: false,
-      isInitialized: true,
-    });
+    if (!isLoading() && user) {
+      setStore({
+        user: user,
+      });
+    }
   });
 
   return (
     <AuthContext.Provider
       value={{
-        refetchAuth: refetch,
-        auth: store,
+        user: store.user,
+        refetch: refetch,
+        isInitialized: isInitialized,
+        isLoading: isLoading,
       }}
     >
       {props.children}
