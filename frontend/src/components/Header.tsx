@@ -113,7 +113,7 @@ export function Header(props: HeaderProps) {
               <DropdownMenuTrigger>
                 <Avatar>
                   <AvatarFallback>
-                    {user()!.displayName.slice(0, 2)}
+                    {user()!.displayName.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
