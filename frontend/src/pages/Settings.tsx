@@ -71,7 +71,7 @@ function Settings() {
                 <TextFieldInput
                   type="email"
                   id="email"
-                  value={user()?.email ?? ""}
+                  value={user()!.email}
                   class="max-w-xs"
                   readonly
                 />

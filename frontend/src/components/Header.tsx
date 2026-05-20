@@ -34,6 +34,7 @@ import {
   IconBrandWindows,
   IconDeviceTv,
 } from "@tabler/icons-solidjs";
+import { useAuth } from "~/context/Auth";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
@@ -41,6 +42,8 @@ export function Header(props: HeaderProps) {
   const [local, others] = splitProps(props, ["class"]);
 
   const { locale, setLocale, t } = useLocale();
+
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -109,7 +112,9 @@ export function Header(props: HeaderProps) {
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar>
-                  <AvatarFallback>FP</AvatarFallback>
+                  <AvatarFallback>
+                    {user()!.displayName.slice(0, 2)}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent class="min-w-3xs">
