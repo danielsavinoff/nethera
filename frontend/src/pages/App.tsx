@@ -23,12 +23,16 @@ import {
 } from "~/components/ui/Tooltip";
 
 function App() {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
 
-  const [currentSubscription] = createResource(async () => {
+  const [currentSubscription] = createResource(locale, async (language) => {
     try {
       const response =
-        await subscriptionControllerHandleGetCurrentSubscription();
+        await subscriptionControllerHandleGetCurrentSubscription({
+          headers: {
+            "Accept-Language": language,
+          },
+        });
 
       return response.data;
     } catch (error) {

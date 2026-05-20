@@ -76,7 +76,6 @@ export class CreateSubscriptionInvoiceUseCase {
       planId: plan.id,
       status: SubscriptionStatus.Incomplete,
       startedAt: new Date(),
-      provider: command.provider,
     });
 
     const preparedInvoice = SubscriptionInvoice.create({

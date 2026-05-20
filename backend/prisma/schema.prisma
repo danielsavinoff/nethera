@@ -147,10 +147,6 @@ model Subscription {
 
   auto_renew Boolean @default(true)
 
-  provider                 String? @db.VarChar(32)
-  provider_customer_id     String? @db.VarChar(255)
-  provider_subscription_id String? @db.VarChar(255)
-
   created_at DateTime @default(now()) @db.Timestamptz
   updated_at DateTime @updatedAt @db.Timestamptz
 
@@ -159,7 +155,6 @@ model Subscription {
 
   invoices SubscriptionInvoice[]
 
-  @@unique([provider, provider_subscription_id])
   @@index([user_id])
   @@index([plan_id])
   @@index([status])

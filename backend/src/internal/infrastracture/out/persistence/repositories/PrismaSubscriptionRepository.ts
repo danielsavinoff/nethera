@@ -7,6 +7,8 @@ import type {
   LoadSubscriptionsQuery,
   SubscriptionRepository,
 } from '../../../../application/ports/SubscriptionRepository.js';
+import { Plan } from '../../../../domain/subscription/Plan.js';
+import { PlanTranslation } from '../../../../domain/subscription/PlanTranslation.js';
 import { Subscription } from '../../../../domain/subscription/Subscription.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
 
@@ -20,24 +22,96 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   ): Promise<Subscription | null> {
     const client = this.getClient(transactionContext);
 
+    const where = {
+      ...(query.filters.id
+        ? {
+            id: query.filters.id,
+          }
+        : {}),
+      ...(query.filters.userId
+        ? {
+            user_id: query.filters.userId,
+          }
+        : {}),
+      ...(query.filters.status
+        ? {
+            status: query.filters.status,
+          }
+        : {}),
+    };
+
+    if (query.with?.plan) {
+      const row = await client.subscription.findFirst({
+        where,
+        orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
+        include: {
+          plan: {
+            include: {
+              translations: {
+                where: {
+                  language: query.with.plan.translationLanguage,
+                },
+                orderBy: {
+                  language: 'asc',
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!row) {
+        return null;
+      }
+
+      return Subscription.hydrate({
+        id: row.id,
+        userId: row.user_id,
+        planId: row.plan_id,
+        status: row.status,
+        startedAt: row.started_at,
+        currentPeriodStartAt:
+          row.current_period_start_at ?? undefined,
+        currentPeriodEndAt:
+          row.current_period_end_at ?? undefined,
+        trialStartedAt: row.trial_started_at ?? undefined,
+        trialEndsAt: row.trial_ends_at ?? undefined,
+        cancelAtPeriodEnd: row.cancel_at_period_end,
+        canceledAt: row.canceled_at ?? undefined,
+        endedAt: row.ended_at ?? undefined,
+        autoRenew: row.auto_renew,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      }).withPlan(
+        Plan.hydrate({
+          id: row.plan.id,
+          code: row.plan.code,
+          priceAmount: row.plan.price_amount.toString(),
+          priceCurrency: row.plan.price_currency,
+          billingInterval: row.plan.billing_interval,
+          billingIntervalCount: row.plan.billing_interval_count,
+          trialDays: row.plan.trial_days ?? undefined,
+          active: row.plan.is_active,
+          createdAt: row.plan.created_at,
+          updatedAt: row.plan.updated_at,
+        }).withTranslations(
+          row.plan.translations.map((translation) =>
+            PlanTranslation.hydrate({
+              id: translation.id,
+              planId: translation.plan_id,
+              language: translation.language,
+              name: translation.name,
+              description: translation.description ?? undefined,
+              createdAt: translation.created_at,
+              updatedAt: translation.updated_at,
+            }),
+          ),
+        ),
+      );
+    }
+
     const row = await client.subscription.findFirst({
-      where: {
-        ...(query.filters.id
-          ? {
-              id: query.filters.id,
-            }
-          : {}),
-        ...(query.filters.userId
-          ? {
-              user_id: query.filters.userId,
-            }
-          : {}),
-        ...(query.filters.status
-          ? {
-              status: query.filters.status,
-            }
-          : {}),
-      },
+      where,
       orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
     });
 
@@ -60,10 +134,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       canceledAt: row.canceled_at ?? undefined,
       endedAt: row.ended_at ?? undefined,
       autoRenew: row.auto_renew,
-      provider: row.provider ?? undefined,
-      providerCustomerId: row.provider_customer_id ?? undefined,
-      providerSubscriptionId:
-        row.provider_subscription_id ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     });
@@ -91,19 +161,91 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   ): Promise<Subscription[]> {
     const client = this.getClient(transactionContext);
 
+    const where = {
+      ...(query.filters?.userId
+        ? {
+            user_id: query.filters.userId,
+          }
+        : {}),
+      ...(query.filters?.status
+        ? {
+            status: query.filters.status,
+          }
+        : {}),
+    };
+
+    if (query.with?.plan) {
+      const rows = await client.subscription.findMany({
+        where,
+        orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
+        include: {
+          plan: {
+            include: {
+              translations: {
+                where: {
+                  language: query.with.plan.translationLanguage,
+                },
+                orderBy: {
+                  language: 'asc',
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return rows.map((row) =>
+        Subscription.hydrate({
+          id: row.id,
+          userId: row.user_id,
+          planId: row.plan_id,
+          status: row.status,
+          startedAt: row.started_at,
+          currentPeriodStartAt:
+            row.current_period_start_at ?? undefined,
+          currentPeriodEndAt:
+            row.current_period_end_at ?? undefined,
+          trialStartedAt: row.trial_started_at ?? undefined,
+          trialEndsAt: row.trial_ends_at ?? undefined,
+          cancelAtPeriodEnd: row.cancel_at_period_end,
+          canceledAt: row.canceled_at ?? undefined,
+          endedAt: row.ended_at ?? undefined,
+          autoRenew: row.auto_renew,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        }).withPlan(
+          Plan.hydrate({
+            id: row.plan.id,
+            code: row.plan.code,
+            priceAmount: row.plan.price_amount.toString(),
+            priceCurrency: row.plan.price_currency,
+            billingInterval: row.plan.billing_interval,
+            billingIntervalCount:
+              row.plan.billing_interval_count,
+            trialDays: row.plan.trial_days ?? undefined,
+            active: row.plan.is_active,
+            createdAt: row.plan.created_at,
+            updatedAt: row.plan.updated_at,
+          }).withTranslations(
+            row.plan.translations.map((translation) =>
+              PlanTranslation.hydrate({
+                id: translation.id,
+                planId: translation.plan_id,
+                language: translation.language,
+                name: translation.name,
+                description:
+                  translation.description ?? undefined,
+                createdAt: translation.created_at,
+                updatedAt: translation.updated_at,
+              }),
+            ),
+          ),
+        ),
+      );
+    }
+
     const rows = await client.subscription.findMany({
-      where: {
-        ...(query.filters?.userId
-          ? {
-              user_id: query.filters.userId,
-            }
-          : {}),
-        ...(query.filters?.status
-          ? {
-              status: query.filters.status,
-            }
-          : {}),
-      },
+      where,
       orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
     });
 
@@ -124,11 +266,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         canceledAt: row.canceled_at ?? undefined,
         endedAt: row.ended_at ?? undefined,
         autoRenew: row.auto_renew,
-        provider: row.provider ?? undefined,
-        providerCustomerId:
-          row.provider_customer_id ?? undefined,
-        providerSubscriptionId:
-          row.provider_subscription_id ?? undefined,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }),
@@ -161,9 +298,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         canceled_at: record.canceledAt,
         ended_at: record.endedAt,
         auto_renew: record.autoRenew,
-        provider: record.provider,
-        provider_customer_id: record.providerCustomerId,
-        provider_subscription_id: record.providerSubscriptionId,
         created_at: record.createdAt,
         updated_at: record.updatedAt,
       },
@@ -180,9 +314,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         canceled_at: record.canceledAt,
         ended_at: record.endedAt,
         auto_renew: record.autoRenew,
-        provider: record.provider,
-        provider_customer_id: record.providerCustomerId,
-        provider_subscription_id: record.providerSubscriptionId,
         updated_at: record.updatedAt,
       },
     });
@@ -202,10 +333,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       canceledAt: row.canceled_at ?? undefined,
       endedAt: row.ended_at ?? undefined,
       autoRenew: row.auto_renew,
-      provider: row.provider ?? undefined,
-      providerCustomerId: row.provider_customer_id ?? undefined,
-      providerSubscriptionId:
-        row.provider_subscription_id ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     });

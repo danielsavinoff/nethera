@@ -7,6 +7,7 @@ import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetCurrentSubscriptionCommand {
   initiatorUserId: string;
+  language: string;
 }
 
 export interface GetCurrentSubscriptionResult {
@@ -59,6 +60,11 @@ export class GetCurrentSubscriptionUseCase {
         filters: {
           userId: initiator.id,
           status: SubscriptionStatus.Active,
+        },
+        with: {
+          plan: {
+            translationLanguage: command.language,
+          },
         },
       });
 

@@ -9,12 +9,22 @@ export interface LoadSubscriptionQuery {
     userId?: SubscriptionRecord['userId'];
     status?: SubscriptionStatus;
   };
+  with?: {
+    plan?: {
+      translationLanguage: string;
+    };
+  };
 }
 
 export interface LoadSubscriptionsQuery {
   filters?: {
     userId?: SubscriptionRecord['userId'];
     status?: SubscriptionStatus;
+  };
+  with?: {
+    plan?: {
+      translationLanguage: string;
+    };
   };
 }
 

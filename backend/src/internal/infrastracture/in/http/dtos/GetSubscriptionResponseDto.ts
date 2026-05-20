@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { GetSubscriptionPlanResponseDto } from './GetSubscriptionPlanResponseDto.js';
 
 export class GetSubscriptionResponseDto {
   @ApiProperty()
@@ -6,9 +7,6 @@ export class GetSubscriptionResponseDto {
 
   @ApiProperty()
   userId!: string;
-
-  @ApiProperty()
-  planId!: string;
 
   @ApiProperty()
   status!: string;
@@ -40,14 +38,11 @@ export class GetSubscriptionResponseDto {
   @ApiProperty()
   autoRenew!: boolean;
 
-  @ApiProperty({ required: false })
-  provider?: string;
-
-  @ApiProperty({ required: false })
-  providerCustomerId?: string;
-
-  @ApiProperty({ required: false })
-  providerSubscriptionId?: string;
+  @ApiProperty({
+    required: false,
+    type: GetSubscriptionPlanResponseDto,
+  })
+  plan?: GetSubscriptionPlanResponseDto;
 
   @ApiProperty()
   createdAt!: Date;

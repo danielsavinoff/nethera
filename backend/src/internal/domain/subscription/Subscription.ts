@@ -1,4 +1,5 @@
 import { InvalidSubscriptionStatusException } from './InvalidSubscriptionStatusException.js';
+import { Plan } from './Plan.js';
 import { SubscriptionRecord } from './SubscriptionRecord.js';
 import { SubscriptionStatus } from './SubscriptionStatus.js';
 
@@ -21,36 +22,35 @@ export class Subscription {
     canceledAt?: SubscriptionRecord['canceledAt'];
     endedAt?: SubscriptionRecord['endedAt'];
     autoRenew?: SubscriptionRecord['autoRenew'];
-    provider?: SubscriptionRecord['provider'];
-    providerCustomerId?: SubscriptionRecord['providerCustomerId'];
-    providerSubscriptionId?: SubscriptionRecord['providerSubscriptionId'];
+    plan?: Plan;
     createdAt?: SubscriptionRecord['createdAt'];
     updatedAt?: SubscriptionRecord['updatedAt'];
   }): Subscription {
-    return new Subscription({
-      id: props.id ?? crypto.randomUUID(),
-      userId: props.userId,
-      planId: props.planId,
-      status: props.status,
-      startedAt: props.startedAt,
-      currentPeriodStartAt: props.currentPeriodStartAt,
-      currentPeriodEndAt: props.currentPeriodEndAt,
-      trialStartedAt: props.trialStartedAt,
-      trialEndsAt: props.trialEndsAt,
-      cancelAtPeriodEnd: props.cancelAtPeriodEnd ?? false,
-      canceledAt: props.canceledAt,
-      endedAt: props.endedAt,
-      autoRenew: props.autoRenew ?? true,
-      provider: props.provider,
-      providerCustomerId: props.providerCustomerId,
-      providerSubscriptionId: props.providerSubscriptionId,
-      createdAt: props.createdAt ?? new Date(),
-      updatedAt: props.updatedAt ?? new Date(),
-    });
+    return new Subscription(
+      {
+        id: props.id ?? crypto.randomUUID(),
+        userId: props.userId,
+        planId: props.planId,
+        status: props.status,
+        startedAt: props.startedAt,
+        currentPeriodStartAt: props.currentPeriodStartAt,
+        currentPeriodEndAt: props.currentPeriodEndAt,
+        trialStartedAt: props.trialStartedAt,
+        trialEndsAt: props.trialEndsAt,
+        cancelAtPeriodEnd: props.cancelAtPeriodEnd ?? false,
+        canceledAt: props.canceledAt,
+        endedAt: props.endedAt,
+        autoRenew: props.autoRenew ?? true,
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
+      },
+      props.plan,
+    );
   }
 
   private constructor(
     private readonly props: SubscriptionRecord,
+    private readonly plan?: Plan,
   ) {}
 
   get id(): SubscriptionRecord['id'] {
@@ -115,24 +115,20 @@ export class Subscription {
     return this.props.autoRenew;
   }
 
-  get provider(): SubscriptionRecord['provider'] {
-    return this.props.provider;
-  }
-
-  get providerCustomerId(): SubscriptionRecord['providerCustomerId'] {
-    return this.props.providerCustomerId;
-  }
-
-  get providerSubscriptionId(): SubscriptionRecord['providerSubscriptionId'] {
-    return this.props.providerSubscriptionId;
-  }
-
   get createdAt(): SubscriptionRecord['createdAt'] {
     return this.props.createdAt;
   }
 
   get updatedAt(): SubscriptionRecord['updatedAt'] {
     return this.props.updatedAt;
+  }
+
+  getPlan(): Plan | null {
+    return this.plan ?? null;
+  }
+
+  withPlan(plan: Plan): Subscription {
+    return new Subscription(this.props, plan);
   }
 
   toRecord(): SubscriptionRecord {

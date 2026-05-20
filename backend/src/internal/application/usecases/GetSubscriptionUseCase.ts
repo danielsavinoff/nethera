@@ -7,6 +7,7 @@ import type { UserRepository } from '../ports/UserRepository.js';
 export interface GetSubscriptionCommand {
   initiatorUserId: string;
   subscriptionId: string;
+  language: string;
 }
 
 export interface GetSubscriptionResult {
@@ -48,6 +49,11 @@ export class GetSubscriptionUseCase {
       await this.subscriptionRepository.loadOrThrow({
         filters: {
           id: command.subscriptionId,
+        },
+        with: {
+          plan: {
+            translationLanguage: command.language,
+          },
         },
       });
 
