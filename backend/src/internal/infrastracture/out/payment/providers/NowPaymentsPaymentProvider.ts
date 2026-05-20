@@ -39,6 +39,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
   private readonly baseUrl: string;
   private readonly apiKey: string;
   private readonly ipnCallbackUrl: string;
+  private readonly successRedirectUrl: string;
 
   constructor(
     private readonly httpService: HttpService,
@@ -53,6 +54,10 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
     this.ipnCallbackUrl = this.configService.getOrThrow<string>(
       'IPN_CALLBACK_URL',
     );
+    this.successRedirectUrl =
+      this.configService.getOrThrow<string>(
+        'PAYMENT_SUCCESS_REDIRECT_URL',
+      );
   }
 
   async create(
@@ -66,9 +71,9 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
             price_amount: input.priceAmount,
             price_currency: input.priceCurrency.toLowerCase(),
             ipn_callback_url: this.ipnCallbackUrl,
-            //success cancel url
             order_id: input.invoiceId,
             order_description: input.description,
+            success_url: this.successRedirectUrl,
           },
           {
             headers: {
