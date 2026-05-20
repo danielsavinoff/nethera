@@ -44,10 +44,10 @@ render(
                   />
                   <Route path={"/subscription"} component={App} />
                   <Route path={"/plans"} component={Plans} />
-                  <Route path={"/billing"} component={Billing} />
                 </Route>
                 <Route component={Scrollable}>
                   <Route path={"/settings"} component={Settings} />
+                  <Route path={"/billing"} component={Billing} />
                 </Route>
               </Route>
             </Router>
