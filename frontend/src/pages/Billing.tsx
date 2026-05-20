@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/DropdownMenu";
 import { Ellipsis } from "lucide-solid";
 import { A } from "@solidjs/router";
+import { showToast } from "~/components/ui/Toast";
 
 type Invoice = GetSubscriptionInvoiceResponseDto;
 
@@ -57,6 +58,22 @@ function Billing() {
 
   const formatStatus = (status: string) =>
     t(`billingPage.status.${status.toLowerCase()}`);
+
+  const handleCopyPaymentId = async (paymentId: string) => {
+    try {
+      await navigator.clipboard.writeText(paymentId);
+
+      showToast({
+        title: t("billingPage.actions.copyPaymentIdSuccess"),
+        variant: "success",
+      });
+    } catch {
+      showToast({
+        title: t("billingPage.actions.copyPaymentIdError"),
+        variant: "error",
+      });
+    }
+  };
 
   const getStatusVariant = (
     status: string,
@@ -139,9 +156,7 @@ function Billing() {
                 <DropdownMenuSeparator />
               </Show>
               <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(props.row.original.id)
-                }
+                onClick={() => handleCopyPaymentId(props.row.original.id)}
               >
                 {t("billingPage.actions.copyPaymentId")}
               </DropdownMenuItem>

@@ -117,7 +117,9 @@
       "openMenu": "Open invoice actions",
       "label": "Actions",
       "payInvoice": "Pay the invoice",
-      "copyPaymentId": "Copy payment ID"
+      "copyPaymentId": "Copy payment ID",
+      "copyPaymentIdSuccess": "Payment ID copied.",
+      "copyPaymentIdError": "Could not copy the payment ID. Please try again."
     },
     "status": {
       "draft": "Draft",

@@ -117,7 +117,9 @@
       "openMenu": "Открыть действия со счётом",
       "label": "Действия",
       "payInvoice": "Оплатить счёт",
-      "copyPaymentId": "Скопировать ID платежа"
+      "copyPaymentId": "Скопировать ID платежа",
+      "copyPaymentIdSuccess": "ID платежа скопирован.",
+      "copyPaymentIdError": "Не удалось скопировать ID платежа. Попробуйте ещё раз."
     },
     "status": {
       "draft": "Черновик",
