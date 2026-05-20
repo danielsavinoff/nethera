@@ -21,7 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/Tooltip";
-import { Skeleton } from "~/components/ui/skeleton";
+import { Skeleton } from "~/components/ui/Skeleton";
 
 function App() {
   const { locale, t } = useLocale();
@@ -47,6 +47,21 @@ function App() {
   });
 
   const hasSubscription = () => Boolean(currentSubscription());
+
+  const formatSubscriptionValidity = () => {
+    const currentPeriodEndAt = currentSubscription()?.currentPeriodEndAt;
+
+    if (!currentPeriodEndAt) {
+      return t("subscriptionPage.validCard.unlimited");
+    }
+
+    const date = new Intl.DateTimeFormat(locale(), {
+      day: "numeric",
+      month: "long",
+    }).format(new Date(currentPeriodEndAt));
+
+    return t("subscriptionPage.validCard.until").replace("{date}", date);
+  };
 
   const chartData = {
     labels: [
@@ -163,7 +178,12 @@ function App() {
               </CardHeader>
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
-                  {t("subscriptionPage.validCard.value")}
+                  <Show
+                    when={!currentSubscription.loading}
+                    fallback={<Skeleton height={16} width={192} radius={10} />}
+                  >
+                    {formatSubscriptionValidity()}
+                  </Show>
                 </p>
               </CardContent>
               <CardFooter class="gap-4">

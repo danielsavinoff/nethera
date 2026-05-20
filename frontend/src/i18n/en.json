@@ -65,12 +65,12 @@
     },
     "planCard": {
       "title": "Plan",
-      "value": "Exclusive",
       "action": "Cancel"
     },
     "validCard": {
       "title": "Valid",
-      "value": "Until 15th March",
+      "unlimited": "Unlimited",
+      "until": "Until {date}",
       "action": "Extend"
     },
     "trafficCard": {
@@ -109,11 +109,9 @@
       "status": "Status",
       "issuedAt": "Issued at",
       "dueAt": "Due at",
-      "amountDue": "Amount due",
-      "checkout": "Checkout"
+      "amountDue": "Amount due"
     },
     "actions": {
-      "openCheckout": "Open",
       "openMenu": "Open invoice actions",
       "label": "Actions",
       "payInvoice": "Pay the invoice",

@@ -65,12 +65,12 @@
     },
     "planCard": {
       "title": "Тариф",
-      "value": "Эксклюзив",
       "action": "Отменить"
     },
     "validCard": {
       "title": "Действует",
-      "value": "До 15 марта",
+      "unlimited": "Бессрочно",
+      "until": "До {date}",
       "action": "Продлить"
     },
     "trafficCard": {
@@ -109,11 +109,9 @@
       "status": "Статус",
       "issuedAt": "Дата выставления",
       "dueAt": "Срок оплаты",
-      "amountDue": "Сумма к оплате",
-      "checkout": "Оплата"
+      "amountDue": "Сумма к оплате"
     },
     "actions": {
-      "openCheckout": "Открыть",
       "openMenu": "Открыть действия со счётом",
       "label": "Действия",
       "payInvoice": "Оплатить счёт",
