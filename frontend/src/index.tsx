@@ -10,7 +10,7 @@ import {
   localStorageManager,
 } from "@kobalte/core";
 import { AuthProvider } from "./context/Auth";
-import { Toaster } from "./components/ui/toast";
+import { Toaster } from "./components/ui/Toast";
 
 const root = document.getElementById("root");
 
