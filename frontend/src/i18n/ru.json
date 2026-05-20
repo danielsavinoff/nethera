@@ -9,6 +9,9 @@
       "download": "Скачать",
       "logout": "Выйти"
     },
+    "download": {
+      "platform": "Платформа"
+    },
     "account": {
       "label": "Мой аккаунт",
       "settings": "Настройки"

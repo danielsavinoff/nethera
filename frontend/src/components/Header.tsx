@@ -7,7 +7,7 @@ import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
 import { Button } from "./ui/Button";
-import { Cog, Download, Globe } from "lucide-solid";
+import { ChevronDown, Cog, Download, Globe } from "lucide-solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +24,16 @@ import {
 } from "./ui/DropdownMenu";
 import { A } from "@solidjs/router";
 import { authControllerHandleLogout } from "~/api/generated";
+import { Icon } from "@iconify-icon/solid";
+import { Separator } from "./ui/Separator";
+import {
+  IconBrandAndroid,
+  IconBrandApple,
+  IconBrandFinder,
+  IconBrandUbuntu,
+  IconBrandWindows,
+  IconDeviceTv,
+} from "@tabler/icons-solidjs";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
@@ -76,10 +86,25 @@ export function Header(props: HeaderProps) {
 
         <Col>
           <Flex class="justify-end gap-4">
-            <Button variant={"outline"}>
-              <Download />
-              {t("header.actions.download")}
-            </Button>
+            <Flex class="w-fit items-center gap-4">
+              <A href="#" class="flex justify-center items-center h-10">
+                <span class="sr-only">Telegram</span>
+                <Icon
+                  icon="mingcute:telegram-fill"
+                  class="text-xl text-muted-foreground/50 hover:text-primary/80 transition-colors"
+                />
+              </A>
+
+              <A href="#" class="flex justify-center items-center h-10">
+                <span class="sr-only">Telegram</span>
+                <Icon
+                  icon="simple-icons:signal"
+                  class="text-xl text-muted-foreground/50 hover:text-primary/80 transition-colors"
+                />
+              </A>
+            </Flex>
+
+            <Separator orientation="vertical" class="h-6" />
 
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -124,6 +149,47 @@ export function Header(props: HeaderProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleLogout}>
                   {t("header.actions.logout")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger as={Button} variant={"outline"}>
+                <Download />
+                {t("header.actions.download")}
+                <ChevronDown class="size-3!" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="min-w-3xs">
+                <DropdownMenuLabel>
+                  {t("header.download.platform")}
+                </DropdownMenuLabel>
+                <DropdownMenuItem>
+                  <IconBrandApple stroke={"1.75"} class="size-5" />
+                  iOS
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconBrandAndroid stroke={"1.75"} class="size-5" />
+                  Android
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconBrandUbuntu stroke={"1.75"} class="size-5" />
+                  Linux
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconBrandFinder stroke={"1.75"} class="size-5" />
+                  macOS
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconBrandWindows stroke={"1.75"} class="size-5" />
+                  Windows
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconDeviceTv stroke={"1.75"} class="size-5" />
+                  Android TV
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <IconDeviceTv stroke={"1.75"} class="size-5" />
+                  Apple TV
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -9,6 +9,9 @@
       "download": "Download",
       "logout": "Log out"
     },
+    "download": {
+      "platform": "Platform"
+    },
     "account": {
       "label": "My Account",
       "settings": "Settings"
