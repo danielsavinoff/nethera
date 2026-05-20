@@ -82,6 +82,10 @@
     "title": "Plans",
     "annualBilling": "Annual billing",
     "action": "Get started",
+    "errors": {
+      "checkoutCreateFailed": "Could not start checkout. Please try again.",
+      "checkoutUrlMissing": "Checkout link is unavailable. Please try again."
+    },
     "descriptionFallback": "Plan details are coming soon.",
     "features": "FEATURES",
     "billingInterval": {

@@ -82,6 +82,10 @@
     "title": "Тарифы",
     "annualBilling": "Годовая оплата",
     "action": "Подключить",
+    "errors": {
+      "checkoutCreateFailed": "Не удалось открыть оплату. Попробуйте ещё раз.",
+      "checkoutUrlMissing": "Ссылка на оплату недоступна. Попробуйте ещё раз."
+    },
     "descriptionFallback": "Описание тарифа скоро появится.",
     "features": "ВОЗМОЖНОСТИ",
     "billingInterval": {

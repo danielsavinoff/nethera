@@ -1,9 +1,11 @@
 import { LucideBadgeCheck } from "lucide-solid";
-import { createMemo, createResource, For, Show } from "solid-js";
+import { createResource, createSignal, For, Show } from "solid-js";
 import {
+  CreateSubscriptionInvoiceRequestDtoProvider,
   type GetPlanFeatureResponseDto,
   type GetPlanResponseDto,
   planControllerHandleGetPlans,
+  subscriptionInvoiceControllerHandleCreateSubscriptionInvoice,
 } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
@@ -11,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Flex } from "~/components/ui/Flex";
 import { Grid } from "~/components/ui/Grid";
 import { Separator } from "~/components/ui/Separator";
+import { showToast } from "~/components/ui/Toast";
 import {
   Switch,
   SwitchControl,
@@ -23,6 +26,8 @@ type PlanFeature = GetPlanFeatureResponseDto;
 
 function Plans() {
   const { locale, t } = useLocale();
+
+  const [isLoading, setIsLoading] = createSignal(false);
 
   const [plans] = createResource(async () => {
     const response = await planControllerHandleGetPlans();
@@ -65,6 +70,36 @@ function Plans() {
     );
   };
 
+  const handleCreateSubscriptionInvoice = async (plan: Plan) => {
+    setIsLoading(true);
+
+    try {
+      const response =
+        await subscriptionInvoiceControllerHandleCreateSubscriptionInvoice({
+          planId: plan.id,
+          provider: CreateSubscriptionInvoiceRequestDtoProvider.NOWPAYMENTS,
+        });
+
+      if (!response.data.checkoutUrl) {
+        showToast({
+          title: t("plansPage.errors.checkoutUrlMissing"),
+          variant: "error",
+        });
+
+        return;
+      }
+
+      window.location.assign(response.data.checkoutUrl);
+    } catch {
+      showToast({
+        title: t("plansPage.errors.checkoutCreateFailed"),
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
@@ -101,7 +136,13 @@ function Plans() {
                         {getPlanTranslation(plan)?.description ??
                           t("plansPage.descriptionFallback")}
                       </p>
-                      <Button size="sm">{t("plansPage.action")}</Button>
+                      <Button
+                        size="sm"
+                        disabled={isLoading()}
+                        onClick={() => handleCreateSubscriptionInvoice(plan)}
+                      >
+                        {t("plansPage.action")}
+                      </Button>
                     </Grid>
                     <Grid class="gap-6">
                       <Flex class="gap-3">
