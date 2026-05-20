@@ -241,6 +241,7 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
 export interface GetCurrentUserResponseDto {
   id: string;
   displayName: string;
+  email: string;
   language: string;
   permissions: GetCurrentUserResponseDtoPermissionsItem[];
 }

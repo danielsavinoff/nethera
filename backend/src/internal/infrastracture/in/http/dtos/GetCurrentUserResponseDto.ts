@@ -14,6 +14,10 @@ export class GetCurrentUserResponseDto {
 
   @Expose()
   @ApiProperty()
+  email!: string;
+
+  @Expose()
+  @ApiProperty()
   @Optional()
   language?: string;
 

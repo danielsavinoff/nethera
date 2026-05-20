@@ -19,6 +19,7 @@ import {
 } from "~/components/ui/Select";
 import { useLocale } from "~/context/Locale";
 import { TextField, TextFieldInput } from "~/components/ui/TextField";
+import { useAuth } from "~/context/Auth";
 
 type ThemeOption = {
   label: string;
@@ -27,6 +28,8 @@ type ThemeOption = {
 
 function Settings() {
   const { t } = useLocale();
+
+  const { user } = useAuth();
 
   const themeOptions: ThemeOption[] = [
     {
@@ -68,7 +71,7 @@ function Settings() {
                 <TextFieldInput
                   type="email"
                   id="email"
-                  value={"johndoe@gmail.com"}
+                  value={user()?.email ?? ""}
                   class="max-w-xs"
                   readonly
                 />

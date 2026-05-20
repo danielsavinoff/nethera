@@ -20,6 +20,7 @@ export class GetCurrentUserPresenter {
 
     return new GetCurrentUserResponseDto({
       displayName: result.user.displayName,
+      email: result.user.email,
       id: result.user.id,
       language: result.user.language,
       permissions,

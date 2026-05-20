@@ -27,6 +27,7 @@ export type Permission = (typeof Permission)[keyof typeof Permission];
 export interface User {
   id: string;
   displayName: string;
+  email: string;
   language: string;
   permissions: Permission[] | null;
 }
@@ -48,6 +49,7 @@ async function fetchMe(): Promise<User> {
   return {
     id: user.id,
     displayName: user.displayName,
+    email: user.email,
     language: user.language,
     permissions: user.permissions,
   };
