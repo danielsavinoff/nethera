@@ -27,12 +27,13 @@ function App() {
 
   const [currentSubscription] = createResource(locale, async (language) => {
     try {
-      const response =
-        await subscriptionControllerHandleGetCurrentSubscription({
+      const response = await subscriptionControllerHandleGetCurrentSubscription(
+        {
           headers: {
             "Accept-Language": language,
           },
-        });
+        },
+      );
 
       return response.data;
     } catch (error) {
@@ -139,7 +140,7 @@ function App() {
               </CardHeader>
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
-                  {t("subscriptionPage.planCard.value")}
+                  {currentSubscription()?.plan?.name}
                 </p>
               </CardContent>
               <CardFooter class="gap-4">
