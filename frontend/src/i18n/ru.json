@@ -104,6 +104,7 @@
   "billingPage": {
     "title": "Биллинг",
     "emptyState": "Счетов пока нет.",
+    "unknownDueDate": "Бессрочно",
     "columns": {
       "status": "Статус",
       "issuedAt": "Дата выставления",

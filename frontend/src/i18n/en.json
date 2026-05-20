@@ -104,6 +104,7 @@
   "billingPage": {
     "title": "Billing",
     "emptyState": "No invoices yet.",
+    "unknownDueDate": "No due date",
     "columns": {
       "status": "Status",
       "issuedAt": "Issued at",

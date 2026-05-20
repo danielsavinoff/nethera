@@ -46,7 +46,7 @@ function Billing() {
 
   const formatDate = (value?: string) => {
     if (!value) {
-      return "-";
+      return t("billingPage.unknownDueDate");
     }
 
     return new Intl.DateTimeFormat(locale(), {
