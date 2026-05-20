@@ -61,7 +61,9 @@
       "title": "Link",
       "tooltip": "Paste this link into your VPN client. To download the client, use the Download button in the top right and choose your platform.",
       "addSubscription": "Add subscription",
-      "copyUrl": "Copy URL"
+      "copyUrl": "Copy URL",
+      "copySuccess": "Link copied. Paste it into your VPN client.",
+      "copyError": "Could not copy the link. Please try again."
     },
     "planCard": {
       "title": "Plan",

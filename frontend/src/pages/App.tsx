@@ -22,6 +22,9 @@ import {
   TooltipTrigger,
 } from "~/components/ui/Tooltip";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { showToast } from "~/components/ui/Toast";
+
+const SUBSCRIPTION_LINK = "https://tuntunms.twilightparadox.com";
 
 function App() {
   const { locale, t } = useLocale();
@@ -47,6 +50,22 @@ function App() {
   });
 
   const hasSubscription = () => Boolean(currentSubscription());
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(SUBSCRIPTION_LINK);
+
+      showToast({
+        title: t("subscriptionPage.linkCard.copySuccess"),
+        variant: "success",
+      });
+    } catch {
+      showToast({
+        title: t("subscriptionPage.linkCard.copyError"),
+        variant: "error",
+      });
+    }
+  };
 
   const formatSubscriptionValidity = () => {
     const currentPeriodEndAt = currentSubscription()?.currentPeriodEndAt;
@@ -130,9 +149,8 @@ function App() {
               <CardContent class="flex-1 flex items-center">
                 <TextField class="grid w-full items-center gap-1.5">
                   <TextFieldInput
-                    type="email"
-                    id="email"
-                    value={"https://tuntunms.twilightparadox.com"}
+                    type="url"
+                    value={SUBSCRIPTION_LINK}
                     readonly
                   />
                 </TextField>
@@ -142,7 +160,7 @@ function App() {
                   <PlusIcon />
                   {t("subscriptionPage.linkCard.addSubscription")}
                 </Button>
-                <Button variant="secondary" class="w-full">
+                <Button variant="secondary" class="w-full" onClick={handleCopy}>
                   {t("subscriptionPage.linkCard.copyUrl")}
                 </Button>
               </CardFooter>
