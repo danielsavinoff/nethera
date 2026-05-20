@@ -122,7 +122,7 @@ function App() {
                   <TooltipTrigger>
                     <CircleQuestionMark class="text-muted-foreground size-4" />
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent class="max-w-2xs">
                     <p>{t("subscriptionPage.linkCard.tooltip")}</p>
                   </TooltipContent>
                 </Tooltip>
