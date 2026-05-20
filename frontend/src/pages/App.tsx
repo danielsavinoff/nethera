@@ -21,6 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/Tooltip";
+import { Skeleton } from "~/components/ui/skeleton";
 
 function App() {
   const { locale, t } = useLocale();
@@ -140,7 +141,12 @@ function App() {
               </CardHeader>
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
-                  {currentSubscription()?.plan?.name}
+                  <Show
+                    when={!currentSubscription.loading}
+                    fallback={<Skeleton height={16} width={192} radius={10} />}
+                  >
+                    {currentSubscription()?.plan?.name}
+                  </Show>
                 </p>
               </CardContent>
               <CardFooter class="gap-4">
