@@ -205,7 +205,11 @@ function App() {
                 </p>
               </CardContent>
               <CardFooter class="gap-4">
-                <Button variant="outline" class="w-full">
+                <Button
+                  variant="outline"
+                  class="w-full"
+                  disabled={!currentSubscription()?.currentPeriodEndAt}
+                >
                   {t("subscriptionPage.validCard.action")}
                 </Button>
               </CardFooter>
