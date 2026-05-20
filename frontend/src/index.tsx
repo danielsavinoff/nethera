@@ -10,6 +10,7 @@ import {
   localStorageManager,
 } from "@kobalte/core";
 import { AuthProvider } from "./context/Auth";
+import { Toaster } from "./components/ui/toast";
 
 const root = document.getElementById("root");
 
@@ -50,6 +51,7 @@ render(
                 </Route>
               </Route>
             </Router>
+            <Toaster />
           </AuthProvider>
         </LocaleProvider>
       </ColorModeProvider>
