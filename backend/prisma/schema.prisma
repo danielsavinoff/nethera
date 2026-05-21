@@ -20,10 +20,11 @@ model User {
 
   deleted_at DateTime?
 
-  session       Session[]
-  userRoles     UserRoleAssignment[]
-  subscriptions Subscription[]
-  invoices      SubscriptionInvoice[]
+  session         Session[]
+  userRoles       UserRoleAssignment[]
+  subscriptions   Subscription[]
+  vpnSubscription VpnSubscription?
+  invoices        SubscriptionInvoice[]
 
   @@map("users")
 }
@@ -204,6 +205,25 @@ model SubscriptionInvoice {
   @@index([user_id])
   @@index([status])
   @@map("subscription_invoices")
+}
+
+model VpnSubscription {
+  id String @id @default(uuid()) @db.Uuid
+
+  user_id String @unique @db.Uuid
+
+  provider    String @db.VarChar(32)
+  external_id String @db.VarChar(255)
+
+  subscription_url String
+
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, external_id])
+  @@map("vpn_subscriptions")
 }
 
 model PlanTranslation {
