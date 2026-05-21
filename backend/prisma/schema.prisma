@@ -126,7 +126,7 @@ model SubscriptionPlan {
   subscriptions Subscription[]
   translations  SubscriptionPlanTranslation[]
   features      SubscriptionPlanFeature[]
-  prices        SubscriptionPrice[]
+  prices        SubscriptionPlanPrice[]
 
   @@index([is_active])
   @@map("subscription_plans")
@@ -230,7 +230,7 @@ model InvoiceSubscription {
   @@map("invoice_subscriptions")
 }
 
-model SubscriptionPrice {
+model SubscriptionPlanPrice {
   id String @id @default(uuid()) @db.Uuid
 
   amount_minor Int
@@ -247,7 +247,7 @@ model SubscriptionPrice {
   @@unique([subscription_plan_id, country_code], where: { is_active: true })
   @@index([subscription_plan_id])
   @@index([country_code])
-  @@map("subscription_prices")
+  @@map("subscription_plan_prices")
 }
 
 model VpnSubscription {
