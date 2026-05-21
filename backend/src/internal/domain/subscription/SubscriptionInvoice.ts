@@ -1,5 +1,5 @@
-import { InvalidInvoiceStatusException } from './InvalidInvoiceStatusException.js';
-import { InvoiceStatus } from './InvoiceStatus.js';
+import { InvalidPaymentStatusException } from './InvalidPaymentStatusException.js';
+import { PaymentStatus } from './PaymentStatus.js';
 import { SubscriptionInvoiceRecord } from './SubscriptionInvoiceRecord.js';
 
 export class SubscriptionInvoice {
@@ -13,7 +13,7 @@ export class SubscriptionInvoice {
     id?: SubscriptionInvoiceRecord['id'];
     subscriptionId: SubscriptionInvoiceRecord['subscriptionId'];
     userId: SubscriptionInvoiceRecord['userId'];
-    status: InvoiceStatus;
+    status: PaymentStatus;
     amountDue: SubscriptionInvoiceRecord['amountDue'];
     amountPaid?: SubscriptionInvoiceRecord['amountPaid'];
     currency: SubscriptionInvoiceRecord['currency'];
@@ -77,16 +77,16 @@ export class SubscriptionInvoice {
     return this.props.userId;
   }
 
-  get status(): InvoiceStatus {
+  get status(): PaymentStatus {
     if (
-      !Object.values(InvoiceStatus).includes(
-        this.props.status as InvoiceStatus,
+      !Object.values(PaymentStatus).includes(
+        this.props.status as PaymentStatus,
       )
     ) {
-      throw new InvalidInvoiceStatusException(this.props.status);
+      throw new InvalidPaymentStatusException(this.props.status);
     }
 
-    return this.props.status as InvoiceStatus;
+    return this.props.status as PaymentStatus;
   }
 
   get amountDue(): SubscriptionInvoiceRecord['amountDue'] {

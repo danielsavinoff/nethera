@@ -1,11 +1,6 @@
-export enum ExternalPaymentStatus {
-  Pending = 'PENDING',
-  Completed = 'COMPLETED',
-  Expired = 'EXPIRED',
-  Failed = 'FAILED',
-}
+import type { PaymentStatus } from '../../domain/subscription/PaymentStatus.js';
 
 export interface ExternalPaymentState {
   externalId: string;
-  status: ExternalPaymentStatus;
+  status: PaymentStatus;
 }

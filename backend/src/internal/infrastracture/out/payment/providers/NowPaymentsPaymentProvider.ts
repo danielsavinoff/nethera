@@ -11,7 +11,8 @@ import type {
 } from '../../../../application/ports/PaymentProvider.js';
 import type { ExternalPayment } from '../../../../application/models/ExternalPayment.js';
 import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
-import { ExternalPaymentStatus } from '../../../../application/models/ExternalPaymentState.js';
+import { NowPaymentsPaymentStatusMapper } from '../mappers/NowPaymentsPaymentStatusMapper.js';
+import { PaymentStatus } from '../../../../domain/subscription/PaymentStatus.js';
 
 interface NowPaymentsCreatePaymentResponse {
   id: string | number;
@@ -44,6 +45,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly paymentStatusMapper: NowPaymentsPaymentStatusMapper,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>(
       'NOWPAYMENTS_BASE_URL',
@@ -94,7 +96,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
           response.data.price_currency ??
           input.priceCurrency.toLowerCase(),
         checkoutUrl: response.data.invoice_url,
-        status: ExternalPaymentStatus.Pending,
+        status: PaymentStatus.Open,
       };
     } catch {
       throw new PaymentCreationFailedException();
@@ -126,20 +128,9 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
       priceAmount: response.data.price_amount ?? '',
       priceCurrency: response.data.price_currency ?? '',
       checkoutUrl: response.data.pay_address,
-      status: this.mapStatus(response.data.payment_status),
+      status: this.paymentStatusMapper.map(
+        response.data.payment_status,
+      ),
     };
-  }
-
-  private mapStatus(status: string): ExternalPaymentStatus {
-    switch (status.toLowerCase()) {
-      case 'finished':
-        return ExternalPaymentStatus.Completed;
-      case 'expired':
-        return ExternalPaymentStatus.Expired;
-      case 'failed':
-        return ExternalPaymentStatus.Failed;
-      default:
-        return ExternalPaymentStatus.Pending;
-    }
   }
 }

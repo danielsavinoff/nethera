@@ -6,7 +6,6 @@ import type { IdGenerator } from '../ports/IdGenerator.js';
 import type { PaymentProviderResolver } from '../ports/PaymentProviderResolver.js';
 import type { PlanRepository } from '../ports/PlanRepository.js';
 import type { SubscriptionInvoiceRepository } from '../ports/SubscriptionInvoiceRepository.js';
-import type { SubscriptionInvoiceStatusMapper } from '../ports/SubscriptionInvoiceStatusMapper.js';
 import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { UserRepository } from '../ports/UserRepository.js';
@@ -30,7 +29,6 @@ export class CreateSubscriptionInvoiceUseCase {
     private readonly subscriptionRepository: SubscriptionRepository,
     private readonly subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
     private readonly paymentProviderResolver: PaymentProviderResolver,
-    private readonly subscriptionInvoiceStatusMapper: SubscriptionInvoiceStatusMapper,
     private readonly idGenerator: IdGenerator,
     private readonly transactionRunner: TransactionRunner,
   ) {}
@@ -82,9 +80,7 @@ export class CreateSubscriptionInvoiceUseCase {
       id: invoiceId,
       subscriptionId,
       userId: customer.id,
-      status: this.subscriptionInvoiceStatusMapper.map(
-        externalPayment.status,
-      ),
+      status: externalPayment.status,
       amountDue: plan.priceAmount,
       currency: plan.priceCurrency,
       provider: command.provider,

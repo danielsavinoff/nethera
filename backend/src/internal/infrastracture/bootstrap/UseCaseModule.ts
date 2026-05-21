@@ -37,7 +37,6 @@ import type { PlanRepository } from '../../application/ports/PlanRepository.js';
 import type { SubscriptionRepository } from '../../application/ports/SubscriptionRepository.js';
 import type { SubscriptionInvoiceRepository } from '../../application/ports/SubscriptionInvoiceRepository.js';
 import type { PaymentProviderResolver } from '../../application/ports/PaymentProviderResolver.js';
-import type { SubscriptionInvoiceStatusMapper } from '../../application/ports/SubscriptionInvoiceStatusMapper.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
@@ -57,7 +56,6 @@ import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenServic
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
 import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
 import { CryptoIdGenerator } from '../out/identity/generators/CryptoIdGenerator.js';
-import { DefaultSubscriptionInvoiceStatusMapper } from '../out/payment/mappers/DefaultSubscriptionInvoiceStatusMapper.js';
 import { NowPaymentsPaymentProvider } from '../out/payment/providers/NowPaymentsPaymentProvider.js';
 import { DefaultPaymentProviderResolver } from '../out/payment/resolvers/DefaultPaymentProviderResolver.js';
 import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
@@ -79,7 +77,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
   ],
   providers: [
     CryptoIdGenerator,
-    DefaultSubscriptionInvoiceStatusMapper,
     // {
     //   provide: DispatchIncomingWebhookUseCase,
     //   useFactory: (
@@ -331,7 +328,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         subscriptionRepository: SubscriptionRepository,
         subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
         paymentProviderResolver: PaymentProviderResolver,
-        subscriptionInvoiceStatusMapper: SubscriptionInvoiceStatusMapper,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
       ) => {
@@ -341,7 +337,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
           subscriptionRepository,
           subscriptionInvoiceRepository,
           paymentProviderResolver,
-          subscriptionInvoiceStatusMapper,
           idGenerator,
           transactionRunner,
         );
@@ -352,7 +347,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
         PrismaSubscriptionRepository,
         PrismaSubscriptionInvoiceRepository,
         DefaultPaymentProviderResolver,
-        DefaultSubscriptionInvoiceStatusMapper,
         CryptoIdGenerator,
         PrismaTransactionRunner,
       ],

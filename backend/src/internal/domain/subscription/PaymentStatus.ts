@@ -1,4 +1,4 @@
-export enum InvoiceStatus {
+export enum PaymentStatus {
   Draft = 'DRAFT',
   Open = 'OPEN',
   Paid = 'PAID',
