@@ -112,7 +112,7 @@ function Plans() {
         </Switch>
       </Grid>
       <div class="flex-1">
-        <Grid cols={1} colsMd={2} colsLg={3} class="gap-4">
+        <Grid cols={1} colsMd={2} colsLg={3} class="min-h-full gap-4">
           <For each={plans()}>
             {(plan) => (
               <Card class="w-full flex-1">
@@ -178,8 +178,13 @@ function Plans() {
               </Card>
             )}
           </For>
-          <Show when={plans.length < 3}>
+          <Show when={plans.length < 1}>
+            <Card class="bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
+          </Show>
+          <Show when={plans.length < 2}>
             <Card class="hidden md:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
+          </Show>
+          <Show when={plans.length < 3}>
             <Card class="hidden lg:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
           </Show>
         </Grid>
