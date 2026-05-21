@@ -4,10 +4,12 @@ import { PrismaUserRepository } from './repositories/PrismaUserRepository.js';
 import { PrismaSessionRepository } from './repositories/PrismaSessionRepository.js';
 import { PrismaAuthTokenRepository } from './repositories/PrismaAuthTokenRepository.js';
 import { PrismaRoleRepository } from './repositories/PrismaRoleRepository.js';
-import { PrismaPlanRepository } from './repositories/PrismaPlanRepository.js';
+import { PrismaSubscriptionPlanRepository } from './repositories/PrismaSubscriptionPlanRepository.js';
 import { PrismaSubscriptionRepository } from './repositories/PrismaSubscriptionRepository.js';
-import { PrismaSubscriptionInvoiceRepository } from './repositories/PrismaSubscriptionInvoiceRepository.js';
+import { PrismaInvoiceRepository } from './repositories/PrismaInvoiceRepository.js';
+import { PrismaPaymentRepository } from './repositories/PrismaPaymentRepository.js';
 import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.js';
+import { PrismaInvoiceSubscriptionRepository } from './repositories/PrismaInvoiceSubscriptionRepository.js';
 
 @Module({
   providers: [
@@ -15,9 +17,11 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaSessionRepository,
     PrismaAuthTokenRepository,
     PrismaRoleRepository,
-    PrismaPlanRepository,
+    PrismaSubscriptionPlanRepository,
     PrismaSubscriptionRepository,
-    PrismaSubscriptionInvoiceRepository,
+    PrismaInvoiceRepository,
+    PrismaPaymentRepository,
+    PrismaInvoiceSubscriptionRepository,
     PrismaTransactionRunner,
   ],
   exports: [
@@ -25,9 +29,11 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaSessionRepository,
     PrismaAuthTokenRepository,
     PrismaRoleRepository,
-    PrismaPlanRepository,
+    PrismaSubscriptionPlanRepository,
     PrismaSubscriptionRepository,
-    PrismaSubscriptionInvoiceRepository,
+    PrismaInvoiceRepository,
+    PrismaPaymentRepository,
+    PrismaInvoiceSubscriptionRepository,
     PrismaTransactionRunner,
   ],
   imports: [LoggingWiringModule],

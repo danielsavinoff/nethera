@@ -12,14 +12,14 @@ import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
 import { DeleteUserRoleUseCase } from '../../application/usecases/DeleteUserRoleUseCase.js';
-import { CreatePlanUseCase } from '../../application/usecases/CreatePlanUseCase.js';
-import { GetPlanUseCase } from '../../application/usecases/GetPlanUseCase.js';
-import { GetPlansUseCase } from '../../application/usecases/GetPlansUseCase.js';
-import { CreateSubscriptionInvoiceUseCase } from '../../application/usecases/CreateSubscriptionInvoiceUseCase.js';
+import { CreateSubscriptionPlanUseCase } from '../../application/usecases/CreateSubscriptionPlanUseCase.js';
+import { GetSubscriptionPlanUseCase } from '../../application/usecases/GetSubscriptionPlanUseCase.js';
+import { GetSubscriptionPlansUseCase } from '../../application/usecases/GetSubscriptionPlansUseCase.js';
+import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUseCase.js';
 import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCurrentSubscriptionUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
-import { GetSubscriptionInvoicesUseCase } from '../../application/usecases/GetSubscriptionInvoicesUseCase.js';
+import { GetPaymentsUseCase } from '../../application/usecases/GetPaymentsUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -32,39 +32,41 @@ import type { RefreshTokenService } from '../../application/ports/RefreshTokenSe
 import type { SessionRepository } from '../../application/ports/SessionRepository.js';
 import type { AuthTokenRepository } from '../../application/ports/AuthTokenRepository.js';
 import type { TransactionRunner } from '../../application/ports/TransactionRunner.js';
-import type { PlanRepository } from '../../application/ports/PlanRepository.js';
+import type { InvoiceRepository } from '../../application/ports/InvoiceRepository.js';
+import type { SubscriptionPlanRepository } from '../../application/ports/SubscriptionPlanRepository.js';
 import type { SubscriptionRepository } from '../../application/ports/SubscriptionRepository.js';
-import type { SubscriptionInvoiceRepository } from '../../application/ports/SubscriptionInvoiceRepository.js';
-import type { PaymentProviderResolver } from '../../application/ports/PaymentProviderResolver.js';
+import type { InvoiceProviderResolver } from '../../application/ports/InvoiceProviderResolver.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
 import { NotificationModule } from '../out/notification/NotificationModule.js';
-import { PaymentModule } from '../out/payment/PaymentModule.js';
+import { InvoiceModule } from '../out/payment/InvoiceModule.js';
 import { NestConsoleLogger } from '../out/logging/loggers/NestConsoleLogger.js';
 import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUserRepository.js';
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
 import { PrismaAuthTokenRepository } from '../out/persistence/repositories/PrismaAuthTokenRepository.js';
-import { PrismaPlanRepository } from '../out/persistence/repositories/PrismaPlanRepository.js';
+import { PrismaSubscriptionPlanRepository } from '../out/persistence/repositories/PrismaSubscriptionPlanRepository.js';
 import { PrismaSubscriptionRepository } from '../out/persistence/repositories/PrismaSubscriptionRepository.js';
-import { PrismaSubscriptionInvoiceRepository } from '../out/persistence/repositories/PrismaSubscriptionInvoiceRepository.js';
+import { PrismaInvoiceRepository } from '../out/persistence/repositories/PrismaInvoiceRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLinkTokenService.js';
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
 import { JwtRefreshTokenService } from '../out/auth/services/JwtRefreshTokenService.js';
 import { EmailNotificationService } from '../out/notification/services/EmailNotificationService.js';
 import { CryptoIdGenerator } from '../out/identity/generators/CryptoIdGenerator.js';
-import { NowPaymentsPaymentProvider } from '../out/payment/providers/NowPaymentsPaymentProvider.js';
-import { DefaultPaymentProviderResolver } from '../out/payment/resolvers/DefaultPaymentProviderResolver.js';
-import { PlanPolicy } from '../../domain/subscription/PlanPolicy.js';
+import { DefaultInvoiceProviderResolver } from '../out/payment/resolvers/DefaultInvoiceProviderResolver.js';
+import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
-import { SubscriptionInvoicePolicy } from '../../domain/subscription/SubscriptionInvoicePolicy.js';
+import { PaymentPolicy } from '../../domain/subscription/PaymentPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
+import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
+import { PrismaPaymentRepository } from '../out/persistence/repositories/PrismaPaymentRepository.js';
+import { InvoiceSubscriptionRepository } from '../../application/ports/InvoiceSubscriptionRepository.js';
+import { Money } from '../../domain/money/Money.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
-const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
 
 @Module({
   imports: [
@@ -72,29 +74,10 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     LoggingWiringModule,
     AuthModule,
     NotificationModule,
-    PaymentModule,
+    InvoiceModule,
   ],
   providers: [
     CryptoIdGenerator,
-    // {
-    //   provide: DispatchIncomingWebhookUseCase,
-    //   useFactory: (
-    //     eventProcessors: Record<string, EventHandlerUseCase>,
-    //     userProvider: UserProvider,
-    //     ensureTenantAuthValidityUseCase: EnsureTenantAuthValidityUseCase,
-    //   ) => {
-    //     return new DispatchIncomingWebhookUseCase(
-    //       eventProcessors,
-    //       userProvider,
-    //       ensureTenantAuthValidityUseCase,
-    //     );
-    //   },
-    //   inject: [
-    //     EVENT_PROCESSORS,
-    //     BitrixUserProvider,
-    //     EnsureTenantAuthValidityUseCase,
-    //   ],
-    // },
 
     {
       provide: SendMagicLinkUseCase,
@@ -263,89 +246,93 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: GetPlansUseCase,
+      provide: GetSubscriptionPlansUseCase,
       useFactory: (
         userRepository: UserRepository,
-        planRepository: PlanRepository,
-        planPolicy: PlanPolicy,
+        subscriptionPlanRepository: SubscriptionPlanRepository,
+        subscriptionPlanPolicy: SubscriptionPlanPolicy,
       ) => {
-        return new GetPlansUseCase(
+        return new GetSubscriptionPlansUseCase(
           userRepository,
-          planRepository,
-          planPolicy,
+          subscriptionPlanRepository,
+          subscriptionPlanPolicy,
         );
       },
       inject: [
         PrismaUserRepository,
-        PrismaPlanRepository,
-        PlanPolicy,
+        PrismaSubscriptionPlanRepository,
+        SubscriptionPlanPolicy,
       ],
     },
     {
-      provide: GetPlanUseCase,
+      provide: GetSubscriptionPlanUseCase,
       useFactory: (
         userRepository: UserRepository,
-        planRepository: PlanRepository,
-        planPolicy: PlanPolicy,
+        subscriptionPlanRepository: SubscriptionPlanRepository,
+        subscriptionPlanPolicy: SubscriptionPlanPolicy,
       ) => {
-        return new GetPlanUseCase(
+        return new GetSubscriptionPlanUseCase(
           userRepository,
-          planRepository,
-          planPolicy,
+          subscriptionPlanRepository,
+          subscriptionPlanPolicy,
         );
       },
       inject: [
         PrismaUserRepository,
-        PrismaPlanRepository,
-        PlanPolicy,
+        PrismaSubscriptionPlanRepository,
+        SubscriptionPlanPolicy,
       ],
     },
     {
-      provide: CreatePlanUseCase,
+      provide: CreateSubscriptionPlanUseCase,
       useFactory: (
         userRepository: UserRepository,
-        planRepository: PlanRepository,
-        planPolicy: PlanPolicy,
+        subscriptionPlanRepository: SubscriptionPlanRepository,
+        subscriptionPlanPolicy: SubscriptionPlanPolicy,
       ) => {
-        return new CreatePlanUseCase(
+        return new CreateSubscriptionPlanUseCase(
           userRepository,
-          planRepository,
-          planPolicy,
+          subscriptionPlanRepository,
+          subscriptionPlanPolicy,
         );
       },
       inject: [
         PrismaUserRepository,
-        PrismaPlanRepository,
-        PlanPolicy,
+        PrismaSubscriptionPlanRepository,
+        SubscriptionPlanPolicy,
       ],
     },
     {
-      provide: CreateSubscriptionInvoiceUseCase,
+      provide: CreateInvoiceUseCase,
       useFactory: (
         userRepository: UserRepository,
-        planRepository: PlanRepository,
+        subscriptionPlanRepository: SubscriptionPlanRepository,
         subscriptionRepository: SubscriptionRepository,
-        subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
-        paymentProviderResolver: PaymentProviderResolver,
+        invoiceRepository: InvoiceRepository,
+        invoiceProviderResolver: InvoiceProviderResolver,
+        invoiceSubscriptionRepository: InvoiceSubscriptionRepository,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
+        money: Money,
       ) => {
-        return new CreateSubscriptionInvoiceUseCase(
+        return new CreateInvoiceUseCase(
           userRepository,
-          planRepository,
+          subscriptionPlanRepository,
           subscriptionRepository,
-          subscriptionInvoiceRepository,
-          paymentProviderResolver,
+          invoiceRepository,
+          invoiceProviderResolver,
+          invoiceSubscriptionRepository,
           idGenerator,
           transactionRunner,
+          money,
         );
       },
       inject: [
         PrismaUserRepository,
-        PrismaPlanRepository,
+        PrismaSubscriptionPlanRepository,
         PrismaSubscriptionRepository,
-        PrismaSubscriptionInvoiceRepository,
-        DefaultPaymentProviderResolver,
+        PrismaInvoiceRepository,
+        DefaultInvoiceProviderResolver,
         CryptoIdGenerator,
         PrismaTransactionRunner,
       ],
@@ -408,33 +395,28 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
       ],
     },
     {
-      provide: GetSubscriptionInvoicesUseCase,
+      provide: GetPaymentsUseCase,
       useFactory: (
         userRepository: UserRepository,
-        subscriptionInvoiceRepository: SubscriptionInvoiceRepository,
-        subscriptionInvoicePolicy: SubscriptionInvoicePolicy,
+        paymentRepository: PaymentRepository,
+        paymentPolicy: PaymentPolicy,
       ) => {
-        return new GetSubscriptionInvoicesUseCase(
+        return new GetPaymentsUseCase(
           userRepository,
-          subscriptionInvoiceRepository,
-          subscriptionInvoicePolicy,
+          paymentRepository,
+          paymentPolicy,
         );
       },
       inject: [
         PrismaUserRepository,
-        PrismaSubscriptionInvoiceRepository,
-        SubscriptionInvoicePolicy,
+        PrismaPaymentRepository,
+        PaymentPolicy,
       ],
     },
     RolePolicy,
-    PlanPolicy,
+    SubscriptionPlanPolicy,
     SubscriptionPolicy,
-    SubscriptionInvoicePolicy,
-    {
-      provide: EVENT_PROCESSORS,
-      useFactory: () => ({}),
-      inject: [],
-    },
+    PaymentPolicy,
     {
       provide: NOTIFICATION_CHANNELS,
       useFactory: (
@@ -454,14 +436,14 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     GetUserRolesUseCase,
     AddUserRoleUseCase,
     DeleteUserRoleUseCase,
-    GetPlansUseCase,
-    GetPlanUseCase,
-    CreatePlanUseCase,
-    CreateSubscriptionInvoiceUseCase,
+    GetSubscriptionPlansUseCase,
+    GetSubscriptionPlanUseCase,
+    CreateSubscriptionPlanUseCase,
+    CreateInvoiceUseCase,
     GetSubscriptionsUseCase,
     GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,
-    GetSubscriptionInvoicesUseCase,
+    GetPaymentsUseCase,
   ],
 })
 export class UseCaseModule {}

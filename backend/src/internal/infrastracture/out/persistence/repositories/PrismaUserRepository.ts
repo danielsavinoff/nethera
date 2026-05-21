@@ -183,7 +183,6 @@ export class PrismaUserRepository implements UserRepository {
         id: record.id,
         email: record.email,
         is_active: record.active,
-        is_deleted: Boolean(record.deletedAt),
         language: record.language,
         created_at: record.createdAt,
         updated_at: record.updatedAt,
@@ -204,7 +203,6 @@ export class PrismaUserRepository implements UserRepository {
       update: {
         email: record.email,
         is_active: record.active,
-        is_deleted: Boolean(record.deletedAt),
         language: record.language,
         updated_at: record.updatedAt,
         deleted_at: record.deletedAt,

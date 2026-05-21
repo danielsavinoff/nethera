@@ -1,5 +1,5 @@
 import { InvalidSubscriptionStatusException } from './InvalidSubscriptionStatusException.js';
-import { Plan } from './Plan.js';
+import { SubscriptionPlan } from './SubscriptionPlan.js';
 import { SubscriptionRecord } from './SubscriptionRecord.js';
 import { SubscriptionStatus } from './SubscriptionStatus.js';
 
@@ -11,7 +11,7 @@ export class Subscription {
   static create(props: {
     id?: SubscriptionRecord['id'];
     userId: SubscriptionRecord['userId'];
-    planId: SubscriptionRecord['planId'];
+    subscriptionPlanId: SubscriptionRecord['subscriptionPlanId'];
     status: SubscriptionStatus;
     startedAt: SubscriptionRecord['startedAt'];
     currentPeriodStartAt?: SubscriptionRecord['currentPeriodStartAt'];
@@ -22,7 +22,7 @@ export class Subscription {
     canceledAt?: SubscriptionRecord['canceledAt'];
     endedAt?: SubscriptionRecord['endedAt'];
     autoRenew?: SubscriptionRecord['autoRenew'];
-    plan?: Plan;
+    subscriptionPlan?: SubscriptionPlan;
     createdAt?: SubscriptionRecord['createdAt'];
     updatedAt?: SubscriptionRecord['updatedAt'];
   }): Subscription {
@@ -30,7 +30,7 @@ export class Subscription {
       {
         id: props.id ?? crypto.randomUUID(),
         userId: props.userId,
-        planId: props.planId,
+        subscriptionPlanId: props.subscriptionPlanId,
         status: props.status,
         startedAt: props.startedAt,
         currentPeriodStartAt: props.currentPeriodStartAt,
@@ -44,13 +44,13 @@ export class Subscription {
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
-      props.plan,
+      props.subscriptionPlan,
     );
   }
 
   private constructor(
     private readonly props: SubscriptionRecord,
-    private readonly plan?: Plan,
+    private readonly subscriptionPlan?: SubscriptionPlan,
   ) {}
 
   get id(): SubscriptionRecord['id'] {
@@ -61,8 +61,8 @@ export class Subscription {
     return this.props.userId;
   }
 
-  get planId(): SubscriptionRecord['planId'] {
-    return this.props.planId;
+  get subscriptionPlanId(): SubscriptionRecord['subscriptionPlanId'] {
+    return this.props.subscriptionPlanId;
   }
 
   get status(): SubscriptionStatus {
@@ -123,12 +123,12 @@ export class Subscription {
     return this.props.updatedAt;
   }
 
-  getPlan(): Plan | null {
-    return this.plan ?? null;
+  getPlan(): SubscriptionPlan | null {
+    return this.subscriptionPlan ?? null;
   }
 
-  withPlan(plan: Plan): Subscription {
-    return new Subscription(this.props, plan);
+  withPlan(subscriptionPlan: SubscriptionPlan): Subscription {
+    return new Subscription(this.props, subscriptionPlan);
   }
 
   toRecord(): SubscriptionRecord {

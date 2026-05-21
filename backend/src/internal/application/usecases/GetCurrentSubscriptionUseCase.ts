@@ -62,7 +62,7 @@ export class GetCurrentSubscriptionUseCase {
           status: SubscriptionStatus.Active,
         },
         with: {
-          plan: {
+          subscriptionPlan: {
             translationLanguage: command.language,
           },
         },

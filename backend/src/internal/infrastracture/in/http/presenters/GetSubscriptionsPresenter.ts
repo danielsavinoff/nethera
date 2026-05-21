@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GetSubscriptionsResult } from '../../../../application/usecases/GetSubscriptionsUseCase.js';
-import { GetSubscriptionPlanResponseDto } from '../dtos/GetSubscriptionPlanResponseDto.js';
 import { GetSubscriptionResponseDto } from '../dtos/GetSubscriptionResponseDto.js';
+import { GetSubscriptionSummaryPlanResponseDto } from '../dtos/GetSubscriptionSummaryPlanResponseDto.js';
 import { GetSubscriptionsResponseDto } from '../dtos/GetSubscriptionsResponseDto.js';
 
 @Injectable()
@@ -12,8 +12,10 @@ export class GetSubscriptionsPresenter {
     return new GetSubscriptionsResponseDto({
       subscriptions: result.data.subscriptions.map(
         (subscription) => {
-          const plan = subscription.getPlan();
-          const planTranslation = plan?.getAllTranslations()[0];
+          const subscriptionPlan = subscription.getPlan();
+
+          const planTranslation =
+            subscriptionPlan?.getAllTranslations()[0];
 
           return new GetSubscriptionResponseDto({
             id: subscription.id,
@@ -29,14 +31,13 @@ export class GetSubscriptionsPresenter {
             canceledAt: subscription.canceledAt,
             endedAt: subscription.endedAt,
             autoRenew: subscription.autoRenew,
-            plan: plan
-              ? new GetSubscriptionPlanResponseDto({
-                  id: plan.id,
+            subscriptionPlan: subscriptionPlan
+              ? new GetSubscriptionSummaryPlanResponseDto({
+                  id: subscriptionPlan.id,
                   name: planTranslation?.name,
                 })
               : undefined,
             createdAt: subscription.createdAt,
-            updatedAt: subscription.updatedAt,
           });
         },
       ),

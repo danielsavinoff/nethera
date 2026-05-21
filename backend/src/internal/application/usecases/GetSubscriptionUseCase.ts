@@ -51,7 +51,7 @@ export class GetSubscriptionUseCase {
           id: command.subscriptionId,
         },
         with: {
-          plan: {
+          subscriptionPlan: {
             translationLanguage: command.language,
           },
         },

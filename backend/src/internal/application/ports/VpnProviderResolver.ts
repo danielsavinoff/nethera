@@ -5,5 +5,7 @@ export enum VpnSubscriptionProvider {
 }
 
 export interface VpnProviderResolver {
-  resolve(provider: VpnSubscriptionProvider): VpnSubscriptionProviderPort;
+  resolve(
+    provider: VpnSubscriptionProvider,
+  ): VpnSubscriptionProviderPort;
 }

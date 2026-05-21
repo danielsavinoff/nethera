@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GetSubscriptionPlanResponseDto } from './GetSubscriptionPlanResponseDto.js';
+import { GetSubscriptionSummaryPlanResponseDto } from './GetSubscriptionSummaryPlanResponseDto.js';
 
 export class GetSubscriptionResponseDto {
   @ApiProperty()
@@ -40,15 +40,12 @@ export class GetSubscriptionResponseDto {
 
   @ApiProperty({
     required: false,
-    type: GetSubscriptionPlanResponseDto,
+    type: GetSubscriptionSummaryPlanResponseDto,
   })
-  plan?: GetSubscriptionPlanResponseDto;
+  subscriptionPlan?: GetSubscriptionSummaryPlanResponseDto;
 
   @ApiProperty()
   createdAt!: Date;
-
-  @ApiProperty()
-  updatedAt!: Date;
 
   constructor(data: GetSubscriptionResponseDto) {
     Object.assign(this, data);

@@ -3,9 +3,10 @@ import { AppController } from './controllers/AppController.js';
 import { UseCaseModule } from '../../bootstrap/UseCaseModule.js';
 import { AuthController } from './controllers/AuthController.js';
 import { RoleController } from './controllers/RoleController.js';
-import { PlanController } from './controllers/PlanController.js';
+import { SubscriptionPlanController } from './controllers/SubscriptionPlanController.js';
 import { SubscriptionController } from './controllers/SubscriptionController.js';
-import { SubscriptionInvoiceController } from './controllers/SubscriptionInvoiceController.js';
+import { InvoiceController } from './controllers/InvoiceController.js';
+import { PaymentController } from './controllers/PaymentController.js';
 import { UserController } from './controllers/UserController.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
@@ -14,22 +15,23 @@ import { GetUserRolesPresenter } from './presenters/GetUserRolesPresenter.js';
 import { AddUserRolePresenter } from './presenters/AddUserRolePresenter.js';
 import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
-import { CreatePlanPresenter } from './presenters/CreatePlanPresenter.js';
-import { GetPlanPresenter } from './presenters/GetPlanPresenter.js';
-import { GetPlansPresenter } from './presenters/GetPlansPresenter.js';
+import { CreateSubscriptionPlanPresenter } from './presenters/CreateSubscriptionPlanPresenter.js';
+import { GetSubscriptionPlanPresenter } from './presenters/GetSubscriptionPlanPresenter.js';
+import { GetSubscriptionPlansPresenter } from './presenters/GetSubscriptionPlansPresenter.js';
 import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.js';
 import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresenter.js';
-import { GetSubscriptionInvoicesPresenter } from './presenters/GetSubscriptionInvoicesPresenter.js';
-import { CreateSubscriptionInvoicePresenter } from './presenters/CreateSubscriptionInvoicePresenter.js';
+import { GetPaymentsPresenter } from './presenters/GetPaymentsPresenter.js';
+import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
 
 @Module({
   controllers: [
     AppController,
     AuthController,
     RoleController,
-    PlanController,
+    SubscriptionPlanController,
     SubscriptionController,
-    SubscriptionInvoiceController,
+    InvoiceController,
+    PaymentController,
     UserController,
   ],
   providers: [
@@ -39,13 +41,13 @@ import { CreateSubscriptionInvoicePresenter } from './presenters/CreateSubscript
     AddUserRolePresenter,
     DeleteUserRolePresenter,
     GetRolesPresenter,
-    CreatePlanPresenter,
-    GetPlanPresenter,
-    GetPlansPresenter,
+    CreateSubscriptionPlanPresenter,
+    GetSubscriptionPlanPresenter,
+    GetSubscriptionPlansPresenter,
     GetSubscriptionPresenter,
     GetSubscriptionsPresenter,
-    GetSubscriptionInvoicesPresenter,
-    CreateSubscriptionInvoicePresenter,
+    GetPaymentsPresenter,
+    CreateInvoicePresenter,
   ],
   imports: [UseCaseModule, PersistenceModule],
 })

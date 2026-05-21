@@ -1,7 +1,7 @@
 export interface SubscriptionRecord {
   id: string;
   userId: string;
-  planId: string;
+  subscriptionPlanId: string;
   status: string;
   startedAt: Date;
   currentPeriodStartAt?: Date;

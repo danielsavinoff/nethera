@@ -3,9 +3,7 @@ import { UserRole } from '../../domain/authorization/UserRole.js';
 import { TransactionContext } from '../models/TransactionContext.js';
 
 export interface LoadRoleQuery {
-  filters:
-    | { id: Role['id'] }
-    | { name: UserRole };
+  filters: { id: Role['id'] } | { name: UserRole };
 }
 
 export interface LoadRolesQuery {

@@ -29,16 +29,16 @@ async function main() {
 
   const userPermissionNames = [
     Permission.SubscriptionViewOwn,
-    Permission.SubscriptionInvoiceViewOwn,
+    Permission.PaymentViewOwn,
     Permission.UserRoleViewOwn,
     Permission.UserViewOwn,
   ];
 
   const adminPermissionNames = [
-    Permission.PlanViewAny,
-    Permission.PlanAddAny,
+    Permission.SubscriptionPlanViewAny,
+    Permission.SubscriptionPlanAddAny,
     Permission.SubscriptionViewAny,
-    Permission.SubscriptionInvoiceViewAny,
+    Permission.PaymentViewAny,
     Permission.UserRoleViewAny,
     Permission.UserRoleUpdateAny,
     Permission.UserRoleDeleteAny,

@@ -6,5 +6,7 @@ export interface CreateVpnSubscriptionInput {
 }
 
 export interface VpnSubscriptionProvider {
-  create(input: CreateVpnSubscriptionInput): Promise<ExternalVpnSubscription>;
+  create(
+    input: CreateVpnSubscriptionInput,
+  ): Promise<ExternalVpnSubscription>;
 }

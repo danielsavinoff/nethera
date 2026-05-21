@@ -7,8 +7,8 @@ import type {
   LoadSubscriptionsQuery,
   SubscriptionRepository,
 } from '../../../../application/ports/SubscriptionRepository.js';
-import { Plan } from '../../../../domain/subscription/Plan.js';
-import { PlanTranslation } from '../../../../domain/subscription/PlanTranslation.js';
+import { SubscriptionPlan } from '../../../../domain/subscription/SubscriptionPlan.js';
+import { SubscriptionPlanTranslation } from '../../../../domain/subscription/SubscriptionPlanTranslation.js';
 import { Subscription } from '../../../../domain/subscription/Subscription.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
 
@@ -40,16 +40,18 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         : {}),
     };
 
-    if (query.with?.plan) {
+    if (query.with?.subscriptionPlan) {
       const row = await client.subscription.findFirst({
         where,
         orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
         include: {
-          plan: {
+          subscriptionPlan: {
             include: {
               translations: {
                 where: {
-                  language: query.with.plan.translationLanguage,
+                  language:
+                    query.with.subscriptionPlan
+                      .translationLanguage,
                 },
                 orderBy: {
                   language: 'asc',
@@ -67,7 +69,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       return Subscription.hydrate({
         id: row.id,
         userId: row.user_id,
-        planId: row.plan_id,
+        subscriptionPlanId: row.subscription_plan_id,
         status: row.status,
         startedAt: row.started_at,
         currentPeriodStartAt:
@@ -83,22 +85,23 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }).withPlan(
-        Plan.hydrate({
-          id: row.plan.id,
-          code: row.plan.code,
-          priceAmount: row.plan.price_amount.toString(),
-          priceCurrency: row.plan.price_currency,
-          billingInterval: row.plan.billing_interval,
-          billingIntervalCount: row.plan.billing_interval_count,
-          trialDays: row.plan.trial_days ?? undefined,
-          active: row.plan.is_active,
-          createdAt: row.plan.created_at,
-          updatedAt: row.plan.updated_at,
+        SubscriptionPlan.hydrate({
+          id: row.subscriptionPlan.id,
+          code: row.subscriptionPlan.code,
+          billingInterval: row.subscriptionPlan.billing_interval,
+          billingIntervalCount:
+            row.subscriptionPlan.billing_interval_count,
+          trialDays:
+            row.subscriptionPlan.trial_days ?? undefined,
+          active: row.subscriptionPlan.is_active,
+          createdAt: row.subscriptionPlan.created_at,
+          updatedAt: row.subscriptionPlan.updated_at,
         }).withTranslations(
-          row.plan.translations.map((translation) =>
-            PlanTranslation.hydrate({
+          row.subscriptionPlan.translations.map((translation) =>
+            SubscriptionPlanTranslation.hydrate({
               id: translation.id,
-              planId: translation.plan_id,
+              subscriptionPlanId:
+                translation.subscription_plan_id,
               language: translation.language,
               name: translation.name,
               description: translation.description ?? undefined,
@@ -122,7 +125,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
     return Subscription.hydrate({
       id: row.id,
       userId: row.user_id,
-      planId: row.plan_id,
+      subscriptionPlanId: row.subscription_plan_id,
       status: row.status,
       startedAt: row.started_at,
       currentPeriodStartAt:
@@ -174,16 +177,18 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         : {}),
     };
 
-    if (query.with?.plan) {
+    if (query.with?.subscriptionPlan) {
       const rows = await client.subscription.findMany({
         where,
         orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
         include: {
-          plan: {
+          subscriptionPlan: {
             include: {
               translations: {
                 where: {
-                  language: query.with.plan.translationLanguage,
+                  language:
+                    query.with.subscriptionPlan
+                      .translationLanguage,
                 },
                 orderBy: {
                   language: 'asc',
@@ -198,7 +203,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         Subscription.hydrate({
           id: row.id,
           userId: row.user_id,
-          planId: row.plan_id,
+          subscriptionPlanId: row.subscription_plan_id,
           status: row.status,
           startedAt: row.started_at,
           currentPeriodStartAt:
@@ -214,30 +219,32 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
           createdAt: row.created_at,
           updatedAt: row.updated_at,
         }).withPlan(
-          Plan.hydrate({
-            id: row.plan.id,
-            code: row.plan.code,
-            priceAmount: row.plan.price_amount.toString(),
-            priceCurrency: row.plan.price_currency,
-            billingInterval: row.plan.billing_interval,
+          SubscriptionPlan.hydrate({
+            id: row.subscriptionPlan.id,
+            code: row.subscriptionPlan.code,
+            billingInterval:
+              row.subscriptionPlan.billing_interval,
             billingIntervalCount:
-              row.plan.billing_interval_count,
-            trialDays: row.plan.trial_days ?? undefined,
-            active: row.plan.is_active,
-            createdAt: row.plan.created_at,
-            updatedAt: row.plan.updated_at,
+              row.subscriptionPlan.billing_interval_count,
+            trialDays:
+              row.subscriptionPlan.trial_days ?? undefined,
+            active: row.subscriptionPlan.is_active,
+            createdAt: row.subscriptionPlan.created_at,
+            updatedAt: row.subscriptionPlan.updated_at,
           }).withTranslations(
-            row.plan.translations.map((translation) =>
-              PlanTranslation.hydrate({
-                id: translation.id,
-                planId: translation.plan_id,
-                language: translation.language,
-                name: translation.name,
-                description:
-                  translation.description ?? undefined,
-                createdAt: translation.created_at,
-                updatedAt: translation.updated_at,
-              }),
+            row.subscriptionPlan.translations.map(
+              (translation) =>
+                SubscriptionPlanTranslation.hydrate({
+                  id: translation.id,
+                  subscriptionPlanId:
+                    translation.subscription_plan_id,
+                  language: translation.language,
+                  name: translation.name,
+                  description:
+                    translation.description ?? undefined,
+                  createdAt: translation.created_at,
+                  updatedAt: translation.updated_at,
+                }),
             ),
           ),
         ),
@@ -253,7 +260,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       Subscription.hydrate({
         id: row.id,
         userId: row.user_id,
-        planId: row.plan_id,
+        subscriptionPlanId: row.subscription_plan_id,
         status: row.status,
         startedAt: row.started_at,
         currentPeriodStartAt:
@@ -287,7 +294,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       create: {
         id: record.id,
         user_id: record.userId,
-        plan_id: record.planId,
+        subscription_plan_id: record.subscriptionPlanId,
         status: record.status,
         started_at: record.startedAt,
         current_period_start_at: record.currentPeriodStartAt,
@@ -303,7 +310,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       },
       update: {
         user_id: record.userId,
-        plan_id: record.planId,
+        subscription_plan_id: record.subscriptionPlanId,
         status: record.status,
         started_at: record.startedAt,
         current_period_start_at: record.currentPeriodStartAt,
@@ -321,7 +328,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
     return Subscription.hydrate({
       id: row.id,
       userId: row.user_id,
-      planId: row.plan_id,
+      subscriptionPlanId: row.subscription_plan_id,
       status: row.status,
       startedAt: row.started_at,
       currentPeriodStartAt:

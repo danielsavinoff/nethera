@@ -68,7 +68,7 @@ export class GetSubscriptionsUseCase {
               userId: initiator.id,
             },
         with: {
-          plan: {
+          subscriptionPlan: {
             translationLanguage: command.language,
           },
         },

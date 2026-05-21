@@ -10,7 +10,7 @@ export interface LoadSubscriptionQuery {
     status?: SubscriptionStatus;
   };
   with?: {
-    plan?: {
+    subscriptionPlan?: {
       translationLanguage: string;
     };
   };
@@ -22,7 +22,7 @@ export interface LoadSubscriptionsQuery {
     status?: SubscriptionStatus;
   };
   with?: {
-    plan?: {
+    subscriptionPlan?: {
       translationLanguage: string;
     };
   };
