@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
 import { PaymentCreationFailedException } from '../../../../application/exceptions/PaymentCreationFailedException.js';
-import { ExternalPaymentStatus } from '../../../../application/models/ExternalPayment.js';
 import type {
   CreatePaymentInput,
   FetchPaymentQuery,
@@ -12,6 +11,7 @@ import type {
 } from '../../../../application/ports/PaymentProvider.js';
 import type { ExternalPayment } from '../../../../application/models/ExternalPayment.js';
 import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
+import { ExternalPaymentStatus } from '../../../../application/models/ExternalPaymentState.js';
 
 interface NowPaymentsCreatePaymentResponse {
   id: string | number;
@@ -45,9 +45,9 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService
-      .getOrThrow<string>('NOWPAYMENTS_BASE_URL')
-      .replace(/\/$/, '');
+    this.baseUrl = this.configService.getOrThrow<string>(
+      'NOWPAYMENTS_BASE_URL',
+    );
     this.apiKey = this.configService.getOrThrow<string>(
       'NOWPAYMENTS_API_KEY',
     );

@@ -1,5 +1,5 @@
 import type { InvoiceStatus } from '../../domain/subscription/InvoiceStatus.js';
-import type { ExternalPaymentStatus } from '../models/ExternalPayment.js';
+import { ExternalPaymentStatus } from '../models/ExternalPaymentState.js';
 
 export interface SubscriptionInvoiceStatusMapper {
   map(payment: ExternalPaymentStatus): InvoiceStatus;

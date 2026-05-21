@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ExternalPaymentStatus } from '../../../../application/models/ExternalPayment.js';
+import { ExternalPaymentStatus } from '../../../../application/models/ExternalPaymentState.js';
 import type { SubscriptionInvoiceStatusMapper } from '../../../../application/ports/SubscriptionInvoiceStatusMapper.js';
 import { InvoiceStatus } from '../../../../domain/subscription/InvoiceStatus.js';
 
