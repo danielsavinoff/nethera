@@ -11,7 +11,7 @@ import type {
 } from '../../../../application/ports/PaymentProvider.js';
 import type { ExternalPayment } from '../../../../application/models/ExternalPayment.js';
 import { PaymentProvider } from '../../../../domain/subscription/PaymentProvider.js';
-import { NowPaymentsPaymentStatusMapper } from '../mappers/NowPaymentsPaymentStatusMapper.js';
+import { NowPaymentsPaymentStatusMapper } from '../../../shared/payment/mappers/NowPaymentsPaymentStatusMapper.js';
 import { PaymentStatus } from '../../../../domain/subscription/PaymentStatus.js';
 
 interface NowPaymentsCreatePaymentResponse {
@@ -56,6 +56,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
     this.ipnCallbackUrl = this.configService.getOrThrow<string>(
       'IPN_CALLBACK_URL',
     );
+    console.log(this.ipnCallbackUrl);
     this.successRedirectUrl =
       this.configService.getOrThrow<string>(
         'PAYMENT_SUCCESS_REDIRECT_URL',
@@ -87,6 +88,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
 
       return {
         externalId: String(response.data.id),
+        provider: PaymentProvider.NowPayments,
         invoiceId: response.data.order_id ?? input.invoiceId,
         description:
           response.data.order_description ?? input.description,
@@ -123,6 +125,7 @@ export class NowPaymentsPaymentProvider implements PaymentProviderPort {
 
     return {
       externalId: String(response.data.payment_id),
+      provider: PaymentProvider.NowPayments,
       invoiceId: response.data.order_id ?? '',
       description: response.data.order_description ?? '',
       priceAmount: response.data.price_amount ?? '',

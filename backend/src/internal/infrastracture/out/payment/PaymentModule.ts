@@ -5,7 +5,7 @@ import { NowPaymentsPaymentProvider } from './providers/NowPaymentsPaymentProvid
 import { PaymentProvider } from '../../../domain/subscription/PaymentProvider.js';
 import type { PaymentProvider as PaymentProviderPort } from '../../../application/ports/PaymentProvider.js';
 import { DefaultPaymentProviderResolver } from './resolvers/DefaultPaymentProviderResolver.js';
-import { NowPaymentsPaymentStatusMapper } from './mappers/NowPaymentsPaymentStatusMapper.js';
+import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/NowPaymentsPaymentStatusMapper.js';
 
 const PAYMENT_PROVIDERS = Symbol('PAYMENT_PROVIDERS');
 

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import type { Logger } from '../../domain/logging/Logger.js';
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
-import { DispatchIncomingWebhookUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
-import type { EventHandlerUseCase } from '../../application/usecases/DispatchIncomingWebhookUseCase.js';
+
 import { LoginWithMagicLinkUseCase } from '../../application/usecases/LoginWithMagicLinkUseCase.js';
 import { LogoutUseCase } from '../../application/usecases/LogoutUseCase.js';
 import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAccessTokenUseCase.js';
@@ -445,7 +444,6 @@ const EVENT_PROCESSORS = Symbol('EVENT_PROCESSORS');
     },
   ],
   exports: [
-    // DispatchIncomingWebhookUseCase,
     SendMagicLinkUseCase,
     LoginWithMagicLinkUseCase,
     RefreshAccessTokenUseCase,
