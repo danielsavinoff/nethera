@@ -3,6 +3,14 @@ import { PaymentStatus } from './PaymentStatus.js';
 import { PaymentRecord } from './PaymentRecord.js';
 
 export class Payment {
+  private readonly TERMINAL_PAYMENT_STATUSES =
+    new Set<PaymentStatus>([
+      PaymentStatus.Paid,
+      PaymentStatus.Failed,
+      PaymentStatus.Void,
+      PaymentStatus.Refunded,
+    ]);
+
   static hydrate(record: PaymentRecord): Payment {
     return new Payment(record);
   }
@@ -117,6 +125,18 @@ export class Payment {
 
   get updatedAt(): PaymentRecord['updatedAt'] {
     return this.props.updatedAt;
+  }
+
+  transitionTo(status: PaymentStatus): Payment {
+    return Payment.hydrate({ ...this.props, status: status });
+  }
+
+  isTerminal() {
+    return this.TERMINAL_PAYMENT_STATUSES.has(this.status);
+  }
+
+  hasStatus(status: PaymentStatus) {
+    return this.status === status;
   }
 
   toRecord(): PaymentRecord {

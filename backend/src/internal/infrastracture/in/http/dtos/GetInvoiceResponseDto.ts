@@ -17,9 +17,6 @@ export class GetInvoiceResponseDto {
   status!: string;
 
   @ApiProperty()
-  amountDueMinor!: number;
-
-  @ApiProperty()
   currency!: string;
 
   @ApiProperty()

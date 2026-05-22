@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { PaymentNotFoundException } from '../../../../application/exceptions/PaymentNotFoundException.js';
+import {
+  Filter,
+  FilterOperator,
+  PaginatedQuery,
+  Query,
+} from '../../../../application/models/Query.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
-import type {
-  LoadPaymentQuery,
-  LoadPaymentsQuery,
-  PaymentRepository,
-} from '../../../../application/ports/PaymentRepository.js';
+import type { PaymentRepository } from '../../../../application/ports/PaymentRepository.js';
 import { Payment } from '../../../../domain/subscription/Payment.js';
+import { PaymentRecord } from '../../../../domain/subscription/PaymentRecord.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
 
 @Injectable()
@@ -15,28 +18,42 @@ export class PrismaPaymentRepository implements PaymentRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async load(
-    query: LoadPaymentQuery,
+    query: Query<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment | null> {
     const client = this.getClient(transactionContext);
 
     const row = await client.payment.findFirst({
-      where:
-        'id' in query.filters
-          ? {
-              id: query.filters.id,
-            }
-          : {
-              provider: query.filters.provider,
-              external_id: query.filters.externalId,
-            },
+      where: this.buildWhere(query.filter),
     });
 
-    return row ? this.hydrate(row) : null;
+    return row
+      ? Payment.hydrate({
+          id: row.id,
+          userId: row.user_id,
+          status: row.status,
+          amountMinor: row.amount_minor,
+          currency: row.currency,
+          dueAt: row.due_at ?? undefined,
+          paidAt: row.paid_at ?? undefined,
+          failedAt: row.failed_at ?? undefined,
+          voidedAt: row.voided_at ?? undefined,
+          provider: row.provider,
+          externalId: row.external_id,
+          failureCode: row.failure_code ?? undefined,
+          failureMessage: row.failure_message ?? undefined,
+          metadata:
+            row.metadata === null
+              ? undefined
+              : JSON.stringify(row.metadata),
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        })
+      : null;
   }
 
   async loadOrThrow(
-    query: LoadPaymentQuery,
+    query: Query<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment> {
     const payment = await this.load(query, transactionContext);
@@ -49,40 +66,43 @@ export class PrismaPaymentRepository implements PaymentRepository {
   }
 
   async loadMany(
-    query: LoadPaymentsQuery,
+    query: PaginatedQuery<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment[]> {
     const client = this.getClient(transactionContext);
 
     const rows = await client.payment.findMany({
-      where: {
-        ...(query.filters?.userId
-          ? {
-              user_id: query.filters.userId,
-            }
-          : {}),
-        ...(query.filters?.status
-          ? {
-              status: query.filters.status,
-            }
-          : {}),
-        ...(query.filters?.provider
-          ? {
-              provider: query.filters.provider,
-            }
-          : {}),
-        ...(query.filters?.externalId
-          ? {
-              external_id: query.filters.externalId,
-            }
-          : {}),
-      },
+      where: query.filter
+        ? this.buildWhere(query.filter)
+        : undefined,
       orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
       take: query.page?.limit,
-      skip: query.page?.skip,
+      skip: query.page?.offset,
     });
 
-    return rows.map((row) => this.hydrate(row));
+    return rows.map((row) =>
+      Payment.hydrate({
+        id: row.id,
+        userId: row.user_id,
+        status: row.status,
+        amountMinor: row.amount_minor,
+        currency: row.currency,
+        dueAt: row.due_at ?? undefined,
+        paidAt: row.paid_at ?? undefined,
+        failedAt: row.failed_at ?? undefined,
+        voidedAt: row.voided_at ?? undefined,
+        provider: row.provider,
+        externalId: row.external_id,
+        failureCode: row.failure_code ?? undefined,
+        failureMessage: row.failure_message ?? undefined,
+        metadata:
+          row.metadata === null
+            ? undefined
+            : JSON.stringify(row.metadata),
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      }),
+    );
   }
 
   async save(
@@ -133,27 +153,6 @@ export class PrismaPaymentRepository implements PaymentRepository {
       },
     });
 
-    return this.hydrate(row);
-  }
-
-  private hydrate(row: {
-    id: string;
-    user_id: string;
-    status: string;
-    amount_minor: number;
-    currency: string;
-    due_at: Date | null;
-    paid_at: Date | null;
-    failed_at: Date | null;
-    voided_at: Date | null;
-    provider: string;
-    external_id: string;
-    failure_code: string | null;
-    failure_message: string | null;
-    metadata: unknown;
-    created_at: Date;
-    updated_at: Date;
-  }): Payment {
     return Payment.hydrate({
       id: row.id,
       userId: row.user_id,
@@ -175,6 +174,63 @@ export class PrismaPaymentRepository implements PaymentRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     });
+  }
+
+  private buildWhere(
+    filter: Filter<PaymentRecord>,
+  ): Prisma.PaymentWhereInput {
+    if ('and' in filter) {
+      return {
+        AND: filter.and.map((nestedFilter) =>
+          this.buildWhere(nestedFilter),
+        ),
+      };
+    }
+
+    if ('or' in filter) {
+      return {
+        OR: filter.or.map((nestedFilter) =>
+          this.buildWhere(nestedFilter),
+        ),
+      };
+    }
+
+    const field = this.mapField(filter.field);
+
+    if (filter.operator === FilterOperator.In) {
+      return {
+        [field]: {
+          in: filter.value,
+        },
+      };
+    }
+
+    return {
+      [field]: filter.value,
+    };
+  }
+
+  private mapField(field: keyof PaymentRecord): string {
+    const fieldMap: Record<keyof PaymentRecord, string> = {
+      id: 'id',
+      userId: 'user_id',
+      status: 'status',
+      amountMinor: 'amount_minor',
+      currency: 'currency',
+      dueAt: 'due_at',
+      paidAt: 'paid_at',
+      failedAt: 'failed_at',
+      voidedAt: 'voided_at',
+      provider: 'provider',
+      externalId: 'external_id',
+      failureCode: 'failure_code',
+      failureMessage: 'failure_message',
+      metadata: 'metadata',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    };
+
+    return fieldMap[field];
   }
 
   private getClient(transactionContext?: TransactionContext) {

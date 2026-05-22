@@ -64,7 +64,6 @@ import { DefaultNotificationComposerSelector } from '../out/notification/selecto
 import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
 import { PrismaPaymentRepository } from '../out/persistence/repositories/PrismaPaymentRepository.js';
 import { InvoiceSubscriptionRepository } from '../../application/ports/InvoiceSubscriptionRepository.js';
-import { Money } from '../../domain/money/Money.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 
@@ -313,7 +312,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         invoiceSubscriptionRepository: InvoiceSubscriptionRepository,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
-        money: Money,
       ) => {
         return new CreateInvoiceUseCase(
           userRepository,
@@ -324,7 +322,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
           invoiceSubscriptionRepository,
           idGenerator,
           transactionRunner,
-          money,
         );
       },
       inject: [

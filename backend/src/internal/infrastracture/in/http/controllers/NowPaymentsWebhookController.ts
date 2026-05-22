@@ -61,12 +61,26 @@ export class NowPaymentsWebhookController {
     handlePaymentStatusRequestBody: HandlePaymentStatusRequestBody,
   ) {
     // TODO: Check auth
+    const externalPaymentId =
+      handlePaymentStatusRequestBody.payment_id;
+
+    const externalInvoiceId =
+      handlePaymentStatusRequestBody.invoice_id;
+
+    const invoiceId = handlePaymentStatusRequestBody.order_id;
+
     await this.handlePaymentStatusChange.execute({
-      externalId: `${handlePaymentStatusRequestBody.payment_id}`,
+      externalId: String(externalPaymentId),
+      invoiceId: invoiceId ?? undefined,
+      externalInvoiceId: externalInvoiceId
+        ? String(externalInvoiceId)
+        : undefined,
       provider: BillingProvider.NowPayments,
       status: this.paymentStatusMapper.map(
         handlePaymentStatusRequestBody.payment_status,
       ),
+      amount: handlePaymentStatusRequestBody.price_amount,
+      currency: handlePaymentStatusRequestBody.price_currency,
     });
   }
 }

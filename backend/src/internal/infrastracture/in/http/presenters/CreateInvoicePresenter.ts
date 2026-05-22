@@ -13,7 +13,6 @@ export class CreateInvoicePresenter {
       provider: invoice.provider,
       userId: invoice.userId,
       status: invoice.status,
-      amountDueMinor: invoice.amountDueMinor,
       currency: invoice.currency,
       externalCheckoutUrl: invoice.externalCheckoutUrl,
       expiresAt: invoice.expiresAt,

@@ -1,6 +1,7 @@
 import { InvalidInvoiceStatusException } from './InvalidInvoiceStatusException.js';
 import { InvoiceRecord } from './InvoiceRecord.js';
 import { InvoiceStatus } from './InvoiceStatus.js';
+import { Payment } from './Payment.js';
 
 export class Invoice {
   static hydrate(record: InvoiceRecord): Invoice {
@@ -13,7 +14,8 @@ export class Invoice {
     provider: InvoiceRecord['provider'];
     userId: InvoiceRecord['userId'];
     status: InvoiceStatus;
-    amountDueMinor: InvoiceRecord['amountDueMinor'];
+    totalAmountMinor: InvoiceRecord['totalAmountMinor'];
+    amountPaidMinor: InvoiceRecord['amountPaidMinor'];
     currency: InvoiceRecord['currency'];
     externalCheckoutUrl: InvoiceRecord['externalCheckoutUrl'];
     expiresAt?: InvoiceRecord['expiresAt'];
@@ -26,7 +28,8 @@ export class Invoice {
       provider: props.provider,
       userId: props.userId,
       status: props.status,
-      amountDueMinor: props.amountDueMinor,
+      totalAmountMinor: props.totalAmountMinor,
+      amountPaidMinor: props.amountPaidMinor,
       currency: props.currency,
       externalCheckoutUrl: props.externalCheckoutUrl,
       expiresAt: props.expiresAt,
@@ -65,8 +68,8 @@ export class Invoice {
     return this.props.status as InvoiceStatus;
   }
 
-  get amountDueMinor(): InvoiceRecord['amountDueMinor'] {
-    return this.props.amountDueMinor;
+  get amountPaidMinor(): InvoiceRecord['amountPaidMinor'] {
+    return this.props.amountPaidMinor;
   }
 
   get currency(): InvoiceRecord['currency'] {
@@ -87,6 +90,36 @@ export class Invoice {
 
   get updatedAt(): InvoiceRecord['updatedAt'] {
     return this.props.updatedAt;
+  }
+
+  applyPayment(payment: Payment): Invoice {
+    const amountPaidMinor =
+      this.props.amountPaidMinor + payment.amountMinor;
+
+    const invoice = Invoice.hydrate({
+      ...this.props,
+      amountPaidMinor: amountPaidMinor,
+    });
+
+    if (invoice.isPaid()) {
+      return invoice.markAsPaid();
+    }
+
+    return invoice;
+  }
+
+  isPaid(): boolean {
+    return (
+      this.props.totalAmountMinor - this.props.amountPaidMinor <=
+      0
+    );
+  }
+
+  markAsPaid(): Invoice {
+    return Invoice.hydrate({
+      ...this.props,
+      status: InvoiceStatus.Paid,
+    });
   }
 
   toRecord(): InvoiceRecord {

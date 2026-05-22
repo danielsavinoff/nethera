@@ -1,6 +1,7 @@
 import { Permission } from '../../domain/authorization/Permission.js';
 import { Payment } from '../../domain/subscription/Payment.js';
 import { PaymentPolicy } from '../../domain/subscription/PaymentPolicy.js';
+import { FilterOperator } from '../models/Query.js';
 import type { PaymentRepository } from '../ports/PaymentRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
@@ -54,8 +55,10 @@ export class GetPaymentsUseCase {
     );
 
     const payments = await this.paymentRepository.loadMany({
-      filters: {
-        userId: initiator.id,
+      filter: {
+        field: 'userId',
+        operator: FilterOperator.Equals,
+        value: initiator.id,
       },
     });
 

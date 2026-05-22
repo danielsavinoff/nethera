@@ -37,7 +37,6 @@ export class CreateInvoiceUseCase {
     private readonly invoiceSubscriptionRepository: InvoiceSubscriptionRepository,
     private readonly idGenerator: IdGenerator,
     private readonly transactionRunner: TransactionRunner,
-    private readonly money: Money,
   ) {}
 
   async execute(
@@ -79,7 +78,7 @@ export class CreateInvoiceUseCase {
     const externalInvoice = await invoiceProvider.create({
       invoiceId,
       description: planName,
-      amount: this.money.fromMinor(
+      amount: Money.fromMinor(
         subscriptionPrice.amountMinor,
         subscriptionPrice.currency,
       ),
@@ -100,10 +99,11 @@ export class CreateInvoiceUseCase {
       provider: command.provider,
       userId: customer.id,
       status: externalInvoice.status ?? InvoiceStatus.Pending,
-      amountDueMinor: this.money.toMinor(
+      totalAmountMinor: Money.toMinor(
         externalInvoice.amount,
         externalInvoice.currency,
       ),
+      amountPaidMinor: 0,
       currency: externalInvoice.currency,
       externalCheckoutUrl: externalInvoice.externalCheckoutUrl,
       expiresAt: externalInvoice.expiresAt,

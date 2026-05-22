@@ -1,13 +1,13 @@
 import { UnknownCurrencyException } from './UnknownCurrencyException.js';
 
 export class Money {
-  private readonly currencyScale = {
+  static readonly currencyScale = {
     USD: 2,
     EUR: 2,
     RUB: 2,
   };
 
-  toMinor(amount: number, currency: string): number {
+  static toMinor(amount: number, currency: string): number {
     const scale = this.currencyScale[currency];
 
     if (scale === undefined) {
@@ -17,7 +17,10 @@ export class Money {
     return Math.round(amount * 10 ** scale);
   }
 
-  fromMinor(amountMinor: number, currency: string): number {
+  static fromMinor(
+    amountMinor: number,
+    currency: string,
+  ): number {
     const scale = this.currencyScale[currency];
 
     if (scale === undefined) {
