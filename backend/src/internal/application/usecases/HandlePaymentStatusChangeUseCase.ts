@@ -4,9 +4,9 @@ import { FilterOperator } from '../models/Query.js';
 import { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import { PaymentRepository } from '../ports/PaymentRepository.js';
 import { TransactionRunner } from '../ports/TransactionRunner.js';
-import { Payment } from 'src/internal/domain/subscription/Payment.js';
-import { Money } from 'src/internal/domain/money/Money.js';
-import { Invoice } from 'src/internal/domain/subscription/Invoice.js';
+import { Payment } from '../../domain/subscription/Payment.js';
+import { Money } from '../../domain/money/Money.js';
+import { Invoice } from '../../domain/subscription/Invoice.js';
 import { Event } from '../models/Event.js';
 import type { EventPublisher } from '../ports/EventPublisher.js';
 
