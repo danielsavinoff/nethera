@@ -4,12 +4,14 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UseCaseModule } from './UseCaseModule.js';
 import { HttpModule } from '../in/http/HttpModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
 import { PersistenceModule } from '../out/persistence/PersistenceModule.js';
 import { AuthGuard } from '../in/http/guards/AuthGuard.js';
 import { I18Module } from '../out/i18n/I18Module.js';
+import { MessagingInModule } from '../in/messaging/MessagingInModule.js';
 
 @Global()
 @Module({
@@ -20,9 +22,11 @@ import { I18Module } from '../out/i18n/I18Module.js';
     JwtModule.register({
       global: true,
     }),
+    EventEmitterModule.forRoot(),
     I18Module,
     HttpModule,
     UseCaseModule,
+    MessagingInModule,
     AuthModule,
     PersistenceModule,
   ],

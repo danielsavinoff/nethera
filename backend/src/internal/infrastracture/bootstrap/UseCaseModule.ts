@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import type { Logger } from '../../domain/logging/Logger.js';
 import { RolePolicy } from '../../domain/authorization/RolePolicy.js';
 
 import { LoginWithMagicLinkUseCase } from '../../application/usecases/LoginWithMagicLinkUseCase.js';
@@ -16,10 +15,13 @@ import { CreateSubscriptionPlanUseCase } from '../../application/usecases/Create
 import { GetSubscriptionPlanUseCase } from '../../application/usecases/GetSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlansUseCase } from '../../application/usecases/GetSubscriptionPlansUseCase.js';
 import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUseCase.js';
+import { FulfillInvoiceUseCase } from '../../application/usecases/FulfillInvoiceUseCase.js';
+import { GrantSubscriptionUseCase } from '../../application/usecases/GrantSubscriptionUseCase.js';
 import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCurrentSubscriptionUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
 import { GetPaymentsUseCase } from '../../application/usecases/GetPaymentsUseCase.js';
+import { HandlePaymentStatusChangeUseCase } from '../../application/usecases/HandlePaymentStatusChangeUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
 
 import type { UserRepository } from '../../application/ports/UserRepository.js';
@@ -41,7 +43,6 @@ import { LoggingWiringModule } from '../out/logging/LoggingWiringModule.js';
 import { AuthModule } from '../out/auth/AuthModule.js';
 import { NotificationModule } from '../out/notification/NotificationModule.js';
 import { InvoiceModule } from '../out/payment/InvoiceModule.js';
-import { NestConsoleLogger } from '../out/logging/loggers/NestConsoleLogger.js';
 import { PrismaUserRepository } from '../out/persistence/repositories/PrismaUserRepository.js';
 import { PrismaRoleRepository } from '../out/persistence/repositories/PrismaRoleRepository.js';
 import { PrismaSessionRepository } from '../out/persistence/repositories/PrismaSessionRepository.js';
@@ -63,7 +64,9 @@ import { NotificationComposerSelector } from '../../application/ports/Notificati
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
 import { PrismaPaymentRepository } from '../out/persistence/repositories/PrismaPaymentRepository.js';
-import { InvoiceSubscriptionRepository } from '../../application/ports/InvoiceSubscriptionRepository.js';
+import { MessagingOutModule } from '../out/messaging/MessagingOutModule.js';
+import { EventEmitterEventPublisher } from '../out/messaging/publishers/EventEmitterEventPublisher.js';
+import type { EventPublisher } from '../../application/ports/EventPublisher.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 
@@ -74,6 +77,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     AuthModule,
     NotificationModule,
     InvoiceModule,
+    MessagingOutModule,
   ],
   providers: [
     CryptoIdGenerator,
@@ -309,7 +313,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         subscriptionRepository: SubscriptionRepository,
         invoiceRepository: InvoiceRepository,
         invoiceProviderResolver: InvoiceProviderResolver,
-        invoiceSubscriptionRepository: InvoiceSubscriptionRepository,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
       ) => {
@@ -319,7 +322,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
           subscriptionRepository,
           invoiceRepository,
           invoiceProviderResolver,
-          invoiceSubscriptionRepository,
           idGenerator,
           transactionRunner,
         );
@@ -332,6 +334,51 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         DefaultInvoiceProviderResolver,
         CryptoIdGenerator,
         PrismaTransactionRunner,
+      ],
+    },
+    {
+      provide: GrantSubscriptionUseCase,
+      useFactory: () => {
+        return new GrantSubscriptionUseCase();
+      },
+      inject: [],
+    },
+    {
+      provide: FulfillInvoiceUseCase,
+      useFactory: (
+        invoiceRepository: InvoiceRepository,
+        grantSubscriptionUseCase: GrantSubscriptionUseCase,
+      ) => {
+        return new FulfillInvoiceUseCase(
+          invoiceRepository,
+          grantSubscriptionUseCase,
+        );
+      },
+      inject: [
+        PrismaInvoiceRepository,
+        GrantSubscriptionUseCase,
+      ],
+    },
+    {
+      provide: HandlePaymentStatusChangeUseCase,
+      useFactory: (
+        invoiceRepository: InvoiceRepository,
+        transactionRunner: TransactionRunner,
+        paymentRepository: PaymentRepository,
+        eventPublisher: EventPublisher,
+      ) => {
+        return new HandlePaymentStatusChangeUseCase(
+          invoiceRepository,
+          transactionRunner,
+          paymentRepository,
+          eventPublisher,
+        );
+      },
+      inject: [
+        PrismaInvoiceRepository,
+        PrismaTransactionRunner,
+        PrismaPaymentRepository,
+        EventEmitterEventPublisher,
       ],
     },
     {
@@ -416,9 +463,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     PaymentPolicy,
     {
       provide: NOTIFICATION_CHANNELS,
-      useFactory: (
-        NotificationService: NotificationService,
-      ) => ({}),
+      useFactory: () => ({}),
       inject: [],
     },
   ],
@@ -437,6 +482,9 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionPlanUseCase,
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
+    GrantSubscriptionUseCase,
+    FulfillInvoiceUseCase,
+    HandlePaymentStatusChangeUseCase,
     GetSubscriptionsUseCase,
     GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,

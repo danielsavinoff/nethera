@@ -12,8 +12,8 @@ import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js'
 import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { Money } from '../../domain/money/Money.js';
-import { InvoiceSubscriptionRepository } from '../ports/InvoiceSubscriptionRepository.js';
-import { InvoiceSubscription } from '../../domain/subscription/InvoiceSubscription.js';
+import { InvoiceLine } from '../../domain/subscription/InvoiceLine.js';
+import { InvoiceLineType } from '../../domain/subscription/InvoiceLineType.js';
 
 export interface CreateInvoiceCommand {
   initiatorUserId: string;
@@ -34,7 +34,6 @@ export class CreateInvoiceUseCase {
     private readonly subscriptionRepository: SubscriptionRepository,
     private readonly invoiceRepository: InvoiceRepository,
     private readonly invoiceProviderResolver: InvoiceProviderResolver,
-    private readonly invoiceSubscriptionRepository: InvoiceSubscriptionRepository,
     private readonly idGenerator: IdGenerator,
     private readonly transactionRunner: TransactionRunner,
   ) {}
@@ -107,7 +106,15 @@ export class CreateInvoiceUseCase {
       currency: externalInvoice.currency,
       externalCheckoutUrl: externalInvoice.externalCheckoutUrl,
       expiresAt: externalInvoice.expiresAt,
-    });
+    }).withLines([
+      InvoiceLine.create({
+        id: this.idGenerator.generate(),
+        invoiceId,
+        referenceId: subscriptionId,
+        type: InvoiceLineType.Subscription,
+        amount: subscriptionPrice.amountMinor,
+      }),
+    ]);
 
     const savedInvoice = await this.transactionRunner.run(
       async (transactionContext) => {
@@ -119,14 +126,6 @@ export class CreateInvoiceUseCase {
         const invoice = await this.invoiceRepository.save(
           preparedInvoice,
           transactionContext,
-        );
-
-        await this.invoiceSubscriptionRepository.save(
-          InvoiceSubscription.create({
-            id: this.idGenerator.generate(),
-            invoiceId: invoice.id,
-            subscriptionId: subscriptionId,
-          }),
         );
 
         return invoice;

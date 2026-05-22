@@ -7,6 +7,8 @@ import { TransactionRunner } from '../ports/TransactionRunner.js';
 import { Payment } from 'src/internal/domain/subscription/Payment.js';
 import { Money } from 'src/internal/domain/money/Money.js';
 import { Invoice } from 'src/internal/domain/subscription/Invoice.js';
+import { Event } from '../models/Event.js';
+import type { EventPublisher } from '../ports/EventPublisher.js';
 
 export interface HandlePaymentStatusChangeCommand {
   externalId: string;
@@ -25,6 +27,7 @@ export class HandlePaymentStatusChangeUseCase {
     private readonly invoiceRepository: InvoiceRepository,
     private readonly transactionRunner: TransactionRunner,
     private readonly paymentRepository: PaymentRepository,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
   async execute(
@@ -110,6 +113,7 @@ export class HandlePaymentStatusChangeUseCase {
           if (payment.hasStatus(PaymentStatus.Paid)) {
             return this.invoiceRepository.save(
               invoice.applyPayment(payment),
+              transactionContext,
             );
           }
 
@@ -117,10 +121,12 @@ export class HandlePaymentStatusChangeUseCase {
         },
       );
 
-    if (!recalculatedInvoice.isPaid()) {
+    if (invoice.isPaid() || !recalculatedInvoice.isPaid()) {
       return;
     }
 
-    // TODO: Emit an event invoice.paid.
+    await this.eventPublisher.publish(Event.InvoicePaid, {
+      invoiceId: recalculatedInvoice.id,
+    });
   }
 }

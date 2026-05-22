@@ -9,6 +9,8 @@ import {
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import type { InvoiceRepository } from '../../../../application/ports/InvoiceRepository.js';
 import { Invoice } from '../../../../domain/subscription/Invoice.js';
+import { InvoiceLine } from '../../../../domain/subscription/InvoiceLine.js';
+import { InvoiceLineRecord } from '../../../../domain/subscription/InvoiceLineRecord.js';
 import { InvoiceRecord } from '../../../../domain/subscription/InvoiceRecord.js';
 import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
 
@@ -24,24 +26,39 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
 
     const row = await client.invoice.findFirst({
       where: this.buildWhere(query.filter),
+      include: {
+        lines: true,
+      },
     });
 
-    return row
-      ? Invoice.hydrate({
-          id: row.id,
-          externalId: row.external_id,
-          provider: row.provider,
-          userId: row.user_id,
-          status: row.status,
-          totalAmountMinor: row.total_amount_minor,
-          amountPaidMinor: row.amount_paid_minor,
-          currency: row.currency,
-          externalCheckoutUrl: row.external_checkout_url,
-          expiresAt: row.expires_at ?? undefined,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at,
-        })
-      : null;
+    if (!row) {
+      return null;
+    }
+
+    return Invoice.hydrate({
+      id: row.id,
+      externalId: row.external_id,
+      provider: row.provider,
+      userId: row.user_id,
+      status: row.status,
+      totalAmountMinor: row.total_amount_minor,
+      amountPaidMinor: row.amount_paid_minor,
+      currency: row.currency,
+      externalCheckoutUrl: row.external_checkout_url,
+      expiresAt: row.expires_at ?? undefined,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }).withLines(
+      row.lines.map((line) =>
+        InvoiceLine.hydrate({
+          id: line.id,
+          referenceId: line.reference_id,
+          type: line.type,
+          amount: line.amount,
+          invoiceId: line.invoice_id,
+        }),
+      ),
+    );
   }
 
   async loadOrThrow(
@@ -68,6 +85,9 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const row = await client.invoice.upsert({
       where: {
         id: record.id,
+      },
+      include: {
+        lines: true,
       },
       create: {
         id: record.id,
@@ -97,6 +117,41 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       },
     });
 
+    const lineRows: InvoiceLineRecord[] = [];
+
+    for (const line of invoice.lines) {
+      const lineRecord = line.toRecord();
+
+      const upsertedLine = await client.invoiceLine.upsert({
+        where: {
+          id: lineRecord.id,
+        },
+        create: {
+          id: lineRecord.id,
+          reference_id: lineRecord.referenceId,
+          type: lineRecord.type,
+          amount: lineRecord.amount,
+          invoice_id: lineRecord.invoiceId,
+        },
+        update: {
+          reference_id: lineRecord.referenceId,
+          type: lineRecord.type,
+          amount: lineRecord.amount,
+          invoice_id: lineRecord.invoiceId,
+        },
+      });
+
+      lineRows.push(
+        InvoiceLine.hydrate({
+          id: line.id,
+          referenceId: line.referenceId,
+          type: line.type,
+          amount: line.amount,
+          invoiceId: line.invoiceId,
+        }),
+      );
+    }
+
     return Invoice.hydrate({
       id: row.id,
       externalId: row.external_id,
@@ -110,7 +165,19 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       expiresAt: row.expires_at ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-    });
+    }).withLines(
+      lineRows.length > 0
+        ? lineRows.map((line) => InvoiceLine.hydrate(line))
+        : row.lines.map((line) =>
+            InvoiceLine.hydrate({
+              id: line.id,
+              referenceId: line.reference_id,
+              type: line.type,
+              amount: line.amount,
+              invoiceId: line.invoice_id,
+            }),
+          ),
+    );
   }
 
   private buildWhere(

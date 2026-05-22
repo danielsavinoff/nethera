@@ -6,6 +6,7 @@ import { RoleController } from './controllers/RoleController.js';
 import { SubscriptionPlanController } from './controllers/SubscriptionPlanController.js';
 import { SubscriptionController } from './controllers/SubscriptionController.js';
 import { InvoiceController } from './controllers/InvoiceController.js';
+import { NowPaymentsWebhookController } from './controllers/NowPaymentsWebhookController.js';
 import { PaymentController } from './controllers/PaymentController.js';
 import { UserController } from './controllers/UserController.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
@@ -22,6 +23,7 @@ import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.
 import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresenter.js';
 import { GetPaymentsPresenter } from './presenters/GetPaymentsPresenter.js';
 import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
+import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/NowPaymentsPaymentStatusMapper.js';
 
 @Module({
   controllers: [
@@ -31,6 +33,7 @@ import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
     SubscriptionPlanController,
     SubscriptionController,
     InvoiceController,
+    NowPaymentsWebhookController,
     PaymentController,
     UserController,
   ],
@@ -48,6 +51,7 @@ import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
     GetSubscriptionsPresenter,
     GetPaymentsPresenter,
     CreateInvoicePresenter,
+    NowPaymentsPaymentStatusMapper,
   ],
   imports: [UseCaseModule, PersistenceModule],
 })

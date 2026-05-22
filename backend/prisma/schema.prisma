@@ -154,7 +154,6 @@ model Subscription {
 
   user                 User                  @relation(fields: [user_id], references: [id])
   subscriptionPlan     SubscriptionPlan      @relation(fields: [subscription_plan_id], references: [id])
-  invoiceSubscriptions InvoiceSubscription[]
 
   @@index([user_id])
   @@index([subscription_plan_id])
@@ -209,7 +208,8 @@ model Invoice {
 
   user_id String @db.Uuid
 
-  user User @relation(fields: [user_id], references: [id])
+  user  User          @relation(fields: [user_id], references: [id])
+  lines InvoiceLine[]
 
   @@unique([provider, external_id])
   @@index([user_id])
@@ -217,18 +217,20 @@ model Invoice {
   @@map("invoices")
 }
 
-model InvoiceSubscription {
+model InvoiceLine {
   id String @id @default(uuid()) @db.Uuid
 
-  invoice_id      String @db.Uuid
-  subscription_id String @db.Uuid
+  reference_id String @db.VarChar(255)
+  type         String @db.VarChar(64)
+  amount       Int
 
-  subscription Subscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+  invoice_id String @db.Uuid
 
-  @@unique([invoice_id, subscription_id])
+  invoice Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+
+  @@unique([reference_id, type])
   @@index([invoice_id])
-  @@index([subscription_id])
-  @@map("invoice_subscriptions")
+  @@map("invoice_lines")
 }
 
 model SubscriptionPlanPrice {

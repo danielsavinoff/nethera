@@ -1,4 +1,5 @@
 import { InvalidInvoiceStatusException } from './InvalidInvoiceStatusException.js';
+import { InvoiceLine } from './InvoiceLine.js';
 import { InvoiceRecord } from './InvoiceRecord.js';
 import { InvoiceStatus } from './InvoiceStatus.js';
 import { Payment } from './Payment.js';
@@ -38,7 +39,10 @@ export class Invoice {
     });
   }
 
-  private constructor(private readonly props: InvoiceRecord) {}
+  private constructor(
+    private readonly props: InvoiceRecord,
+    private readonly invoiceLines: InvoiceLine[] = [],
+  ) {}
 
   get id(): InvoiceRecord['id'] {
     return this.props.id;
@@ -92,6 +96,14 @@ export class Invoice {
     return this.props.updatedAt;
   }
 
+  get lines(): InvoiceLine[] {
+    return [...this.invoiceLines];
+  }
+
+  withLines(lines: InvoiceLine[]): Invoice {
+    return new Invoice(this.props, lines);
+  }
+
   applyPayment(payment: Payment): Invoice {
     const amountPaidMinor =
       this.props.amountPaidMinor + payment.amountMinor;
@@ -99,7 +111,7 @@ export class Invoice {
     const invoice = Invoice.hydrate({
       ...this.props,
       amountPaidMinor: amountPaidMinor,
-    });
+    }).withLines(this.lines);
 
     if (invoice.isPaid()) {
       return invoice.markAsPaid();
@@ -119,7 +131,7 @@ export class Invoice {
     return Invoice.hydrate({
       ...this.props,
       status: InvoiceStatus.Paid,
-    });
+    }).withLines(this.lines);
   }
 
   toRecord(): InvoiceRecord {
