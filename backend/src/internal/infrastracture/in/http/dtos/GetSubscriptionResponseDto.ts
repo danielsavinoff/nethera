@@ -15,12 +15,6 @@ export class GetSubscriptionResponseDto {
   startedAt!: Date;
 
   @ApiProperty({ required: false })
-  currentPeriodStartAt?: Date;
-
-  @ApiProperty({ required: false })
-  currentPeriodEndAt?: Date;
-
-  @ApiProperty({ required: false })
   trialStartedAt?: Date;
 
   @ApiProperty({ required: false })

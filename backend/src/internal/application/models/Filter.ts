@@ -26,15 +26,3 @@ export type Filter<T> =
   | {
       and: Filter<T>[];
     };
-
-export interface Query<T> {
-  filter: Filter<T>;
-}
-
-export interface PaginatedQuery<T> {
-  filter?: Filter<T>;
-  page?: {
-    limit?: number;
-    offset?: number;
-  };
-}

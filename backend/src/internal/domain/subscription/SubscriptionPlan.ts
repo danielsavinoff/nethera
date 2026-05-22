@@ -1,4 +1,4 @@
-import { BillingInterval } from './BillingInterval.js';
+import { Interval } from '../time/Interval.js';
 import { InvalidPlanBillingIntervalException } from './InvalidPlanBillingIntervalException.js';
 import { SubscriptionPrice } from './SubscriptionPrice.js';
 import { SubscriptionPlanFeature } from './SubscriptionPlanFeature.js';
@@ -15,7 +15,7 @@ export class SubscriptionPlan {
   static create(props: {
     id?: SubscriptionPlanRecord['id'];
     code: SubscriptionPlanRecord['code'];
-    billingInterval: BillingInterval;
+    billingInterval: Interval;
     billingIntervalCount?: SubscriptionPlanRecord['billingIntervalCount'];
     trialDays?: SubscriptionPlanRecord['trialDays'];
     active?: SubscriptionPlanRecord['active'];
@@ -57,10 +57,10 @@ export class SubscriptionPlan {
     return this.props.code;
   }
 
-  get billingInterval(): BillingInterval {
+  get billingInterval(): Interval {
     if (
-      !Object.values(BillingInterval).includes(
-        this.props.billingInterval as BillingInterval,
+      !Object.values(Interval).includes(
+        this.props.billingInterval as Interval,
       )
     ) {
       throw new InvalidPlanBillingIntervalException(
@@ -68,7 +68,7 @@ export class SubscriptionPlan {
       );
     }
 
-    return this.props.billingInterval as BillingInterval;
+    return this.props.billingInterval as Interval;
   }
 
   get billingIntervalCount(): SubscriptionPlanRecord['billingIntervalCount'] {

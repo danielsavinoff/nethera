@@ -4,8 +4,7 @@ export interface SubscriptionRecord {
   subscriptionPlanId: string;
   status: string;
   startedAt: Date;
-  currentPeriodStartAt?: Date;
-  currentPeriodEndAt?: Date;
+  expiresAt?: Date;
   trialStartedAt?: Date;
   trialEndsAt?: Date;
   cancelAtPeriodEnd: boolean;

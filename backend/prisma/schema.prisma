@@ -135,30 +135,28 @@ model SubscriptionPlan {
 model Subscription {
   id String @id @default(uuid()) @db.Uuid
 
-  status               String  @db.VarChar(32)
-  auto_renew           Boolean @default(true)
-  cancel_at_period_end Boolean @default(false)
+  status     String  @db.VarChar(32)
+  auto_renew Boolean @default(false)
 
-  started_at              DateTime  @db.Timestamptz
-  created_at              DateTime  @default(now()) @db.Timestamptz
-  updated_at              DateTime  @updatedAt @db.Timestamptz
-  current_period_start_at DateTime? @db.Timestamptz
-  current_period_end_at   DateTime? @db.Timestamptz
-  trial_started_at        DateTime? @db.Timestamptz
-  trial_ends_at           DateTime? @db.Timestamptz
-  canceled_at             DateTime? @db.Timestamptz
-  ended_at                DateTime? @db.Timestamptz
+  started_at       DateTime  @db.Timestamptz
+  expires_at       DateTime? @db.Timestamptz
+  trial_started_at DateTime? @db.Timestamptz
+  trial_ends_at    DateTime? @db.Timestamptz
+  canceled_at      DateTime? @db.Timestamptz
+  ended_at         DateTime? @db.Timestamptz
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  updated_at       DateTime  @updatedAt @db.Timestamptz
 
   user_id              String @db.Uuid
   subscription_plan_id String @db.Uuid
 
-  user                 User                  @relation(fields: [user_id], references: [id])
-  subscriptionPlan     SubscriptionPlan      @relation(fields: [subscription_plan_id], references: [id])
+  user             User             @relation(fields: [user_id], references: [id])
+  subscriptionPlan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id])
 
   @@index([user_id])
   @@index([subscription_plan_id])
   @@index([status])
-  @@index([current_period_end_at])
+  @@index([expires_at])
   @@map("subscriptions")
 }
 

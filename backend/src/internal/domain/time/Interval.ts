@@ -1,4 +1,4 @@
-export enum BillingInterval {
+export enum Interval {
   Day = 'DAY',
   Week = 'WEEK',
   Month = 'MONTH',

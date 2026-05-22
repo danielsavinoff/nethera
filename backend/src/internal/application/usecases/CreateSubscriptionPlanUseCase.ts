@@ -1,7 +1,7 @@
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { Permission } from '../../domain/authorization/Permission.js';
-import { BillingInterval } from '../../domain/subscription/BillingInterval.js';
+import { Interval } from '../../domain/time/Interval.js';
 import { SubscriptionPlan } from '../../domain/subscription/SubscriptionPlan.js';
 import { SubscriptionPlanFeature } from '../../domain/subscription/SubscriptionPlanFeature.js';
 import { SubscriptionPlanFeatureTranslation } from '../../domain/subscription/SubscriptionPlanFeatureTranslation.js';
@@ -39,7 +39,7 @@ export interface CreateSubscriptionPlanCommandPrice {
 export interface CreateSubscriptionPlanCommand {
   initiatorUserId: string;
   code: string;
-  billingInterval: BillingInterval;
+  billingInterval: Interval;
   billingIntervalCount?: number;
   trialDays?: number;
   active?: boolean;

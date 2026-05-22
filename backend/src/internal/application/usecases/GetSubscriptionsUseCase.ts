@@ -1,6 +1,7 @@
 import { Permission } from '../../domain/authorization/Permission.js';
 import { Subscription } from '../../domain/subscription/Subscription.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
+import { FilterOperator } from '../models/Filter.js';
 import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
@@ -44,32 +45,34 @@ export class GetSubscriptionsUseCase {
       ),
     ] as Permission[];
 
-    const canViewAny = initiatorPermissions.includes(
-      Permission.SubscriptionViewAny,
+    this.subscriptionPolicy.assertCanView(
+      {
+        userId: initiator.id,
+        permissions: initiatorPermissions,
+      },
+      {
+        userId: initiator.id,
+      },
     );
-
-    if (!canViewAny) {
-      this.subscriptionPolicy.assertCanView(
-        {
-          userId: initiator.id,
-          permissions: initiatorPermissions,
-        },
-        {
-          userId: initiator.id,
-        },
-      );
-    }
 
     const subscriptions =
       await this.subscriptionRepository.loadMany({
-        filters: canViewAny
-          ? undefined
-          : {
-              userId: initiator.id,
-            },
+        filter: {
+          field: 'userId',
+          operator: FilterOperator.Equals,
+          value: initiator.id,
+        },
         with: {
-          subscriptionPlan: {
-            translationLanguage: command.language,
+          subscriptionPlans: {
+            with: {
+              subscriptionPlanTranslations: {
+                filter: {
+                  field: 'language',
+                  operator: FilterOperator.Equals,
+                  value: command.language,
+                },
+              },
+            },
           },
         },
       });

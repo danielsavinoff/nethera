@@ -2,7 +2,7 @@ import { InvoiceLineType } from '../../domain/subscription/InvoiceLineType.js';
 import { Invoice } from '../../domain/subscription/Invoice.js';
 import type { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import { GrantSubscriptionUseCase } from './GrantSubscriptionUseCase.js';
-import { FilterOperator } from '../models/Query.js';
+import { FilterOperator } from '../models/Filter.js';
 
 export interface FulfillInvoiceCommand {
   invoiceId: string;
@@ -28,6 +28,9 @@ export class FulfillInvoiceUseCase {
         field: 'id',
         operator: FilterOperator.Equals,
         value: command.invoiceId,
+      },
+      with: {
+        lines: true,
       },
     });
 

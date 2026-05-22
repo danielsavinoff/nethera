@@ -1,3 +1,4 @@
+import { Duration } from '../time/Duration.js';
 import { InvalidSubscriptionStatusException } from './InvalidSubscriptionStatusException.js';
 import { SubscriptionPlan } from './SubscriptionPlan.js';
 import { SubscriptionRecord } from './SubscriptionRecord.js';
@@ -14,8 +15,7 @@ export class Subscription {
     subscriptionPlanId: SubscriptionRecord['subscriptionPlanId'];
     status: SubscriptionStatus;
     startedAt: SubscriptionRecord['startedAt'];
-    currentPeriodStartAt?: SubscriptionRecord['currentPeriodStartAt'];
-    currentPeriodEndAt?: SubscriptionRecord['currentPeriodEndAt'];
+    expiresAt?: SubscriptionRecord['expiresAt'];
     trialStartedAt?: SubscriptionRecord['trialStartedAt'];
     trialEndsAt?: SubscriptionRecord['trialEndsAt'];
     cancelAtPeriodEnd?: SubscriptionRecord['cancelAtPeriodEnd'];
@@ -33,8 +33,7 @@ export class Subscription {
         subscriptionPlanId: props.subscriptionPlanId,
         status: props.status,
         startedAt: props.startedAt,
-        currentPeriodStartAt: props.currentPeriodStartAt,
-        currentPeriodEndAt: props.currentPeriodEndAt,
+        expiresAt: props.expiresAt,
         trialStartedAt: props.trialStartedAt,
         trialEndsAt: props.trialEndsAt,
         cancelAtPeriodEnd: props.cancelAtPeriodEnd ?? false,
@@ -83,12 +82,8 @@ export class Subscription {
     return this.props.startedAt;
   }
 
-  get currentPeriodStartAt(): SubscriptionRecord['currentPeriodStartAt'] {
-    return this.props.currentPeriodStartAt;
-  }
-
-  get currentPeriodEndAt(): SubscriptionRecord['currentPeriodEndAt'] {
-    return this.props.currentPeriodEndAt;
+  get expiresAt(): SubscriptionRecord['expiresAt'] {
+    return this.props.expiresAt;
   }
 
   get trialStartedAt(): SubscriptionRecord['trialStartedAt'] {
@@ -123,8 +118,125 @@ export class Subscription {
     return this.props.updatedAt;
   }
 
+  isActive(): boolean {
+    return this.props.status === SubscriptionStatus.Active;
+  }
+
+  isActivated(): boolean {
+    return !!this.props.startedAt;
+  }
+
+  isInfinite(): boolean {
+    return !this.props.expiresAt;
+  }
+
+  private activate(duration?: Duration): Subscription {
+    if (this.isActivated()) {
+      throw new Error('already activated');
+    }
+
+    const now = new Date();
+    const expiration = duration?.addTo(now);
+
+    return new Subscription(
+      {
+        ...this.props,
+        status: SubscriptionStatus.Active,
+        startedAt: now,
+        expiresAt: expiration,
+      },
+      this.subscriptionPlan,
+    );
+  }
+
+  private extend(duration: Duration): Subscription {
+    if (!this.isActivated()) {
+      throw new Error('is not activated yet');
+    }
+
+    if (this.isInfinite()) {
+      throw new Error('cannot extend infinite sub');
+    }
+
+    const now = new Date();
+
+    const previousExpiration = this.props.expiresAt!;
+
+    const extensionBase =
+      now > previousExpiration ? now : previousExpiration;
+
+    return new Subscription(
+      {
+        ...this.props,
+        status: SubscriptionStatus.Active,
+        expiresAt: duration.addTo(extensionBase),
+      },
+      this.subscriptionPlan,
+    );
+  }
+
+  private limit(duration: Duration): Subscription {
+    if (!this.isInfinite()) {
+      throw new Error('already finite');
+    }
+
+    if (!this.isActive()) {
+      throw new Error('is not yet active');
+    }
+
+    const now = new Date();
+
+    return new Subscription(
+      {
+        ...this.props,
+        expiresAt: duration.addTo(now),
+      },
+      this.subscriptionPlan,
+    );
+  }
+
+  private unlimit(): Subscription {
+    if (this.isInfinite()) {
+      throw new Error('already infinite');
+    }
+
+    return new Subscription(
+      {
+        ...this.props,
+        expiresAt: undefined,
+      },
+      this.subscriptionPlan,
+    );
+  }
+
+  renew(duration?: Duration): Subscription {
+    if (!this.isActivated()) {
+      return this.activate(duration);
+    }
+
+    if (!duration) {
+      if (this.isInfinite()) {
+        return this;
+      }
+
+      return this.unlimit();
+    }
+
+    if (!this.isInfinite()) {
+      return this.extend(duration);
+    }
+
+    return this.limit(duration);
+  }
+
   getPlan(): SubscriptionPlan | null {
     return this.subscriptionPlan ?? null;
+  }
+
+  isPlanLoaded(): this is this & {
+    getPlan(): SubscriptionPlan;
+  } {
+    return !!this.subscriptionPlan;
   }
 
   withPlan(subscriptionPlan: SubscriptionPlan): Subscription {

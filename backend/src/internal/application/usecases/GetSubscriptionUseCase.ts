@@ -1,6 +1,7 @@
 import { Permission } from '../../domain/authorization/Permission.js';
 import { Subscription } from '../../domain/subscription/Subscription.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
+import { FilterOperator } from '../models/Filter.js';
 import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
@@ -47,12 +48,22 @@ export class GetSubscriptionUseCase {
 
     const subscription =
       await this.subscriptionRepository.loadOrThrow({
-        filters: {
-          id: command.subscriptionId,
+        filter: {
+          field: 'id',
+          operator: FilterOperator.Equals,
+          value: command.subscriptionId,
         },
         with: {
-          subscriptionPlan: {
-            translationLanguage: command.language,
+          subscriptionPlans: {
+            with: {
+              subscriptionPlanTranslations: {
+                filter: {
+                  field: 'language',
+                  operator: FilterOperator.Equals,
+                  value: command.language,
+                },
+              },
+            },
           },
         },
       });

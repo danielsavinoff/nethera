@@ -2,29 +2,58 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { PaymentNotFoundException } from '../../../../application/exceptions/PaymentNotFoundException.js';
 import {
-  Filter,
-  FilterOperator,
-  PaginatedQuery,
-  Query,
-} from '../../../../application/models/Query.js';
+  PaginatedRepositoryQuery,
+  RepositoryQuery,
+} from '../../../../application/models/RepositoryQuery.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import type { PaymentRepository } from '../../../../application/ports/PaymentRepository.js';
 import { Payment } from '../../../../domain/subscription/Payment.js';
 import { PaymentRecord } from '../../../../domain/subscription/PaymentRecord.js';
-import { PrismaTransactionContext } from '../transaction/PrismaTransactionContext.js';
+import { PrismaBaseRepository } from '../base/PrismaBaseRepository.js';
 
 @Injectable()
-export class PrismaPaymentRepository implements PaymentRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+export class PrismaPaymentRepository
+  extends PrismaBaseRepository
+  implements PaymentRepository
+{
+  private readonly fieldMaps = {
+    payments: {
+      id: 'id',
+      userId: 'user_id',
+      status: 'status',
+      amountMinor: 'amount_minor',
+      currency: 'currency',
+      dueAt: 'due_at',
+      paidAt: 'paid_at',
+      failedAt: 'failed_at',
+      voidedAt: 'voided_at',
+      provider: 'provider',
+      externalId: 'external_id',
+      failureCode: 'failure_code',
+      failureMessage: 'failure_message',
+      metadata: 'metadata',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    } satisfies Record<keyof PaymentRecord, string>,
+  };
+
+  constructor(prisma: PrismaClient) {
+    super(prisma);
+  }
 
   async load(
-    query: Query<PaymentRecord>,
+    query: RepositoryQuery<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment | null> {
     const client = this.getClient(transactionContext);
 
     const row = await client.payment.findFirst({
-      where: this.buildWhere(query.filter),
+      where: query.filter
+        ? this.buildWhere<
+            PaymentRecord,
+            Prisma.PaymentWhereInput
+          >(query.filter, this.fieldMaps.payments)
+        : undefined,
     });
 
     return row
@@ -53,7 +82,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
   }
 
   async loadOrThrow(
-    query: Query<PaymentRecord>,
+    query: RepositoryQuery<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment> {
     const payment = await this.load(query, transactionContext);
@@ -66,14 +95,17 @@ export class PrismaPaymentRepository implements PaymentRepository {
   }
 
   async loadMany(
-    query: PaginatedQuery<PaymentRecord>,
+    query: PaginatedRepositoryQuery<PaymentRecord>,
     transactionContext?: TransactionContext,
   ): Promise<Payment[]> {
     const client = this.getClient(transactionContext);
 
     const rows = await client.payment.findMany({
       where: query.filter
-        ? this.buildWhere(query.filter)
+        ? this.buildWhere<
+            PaymentRecord,
+            Prisma.PaymentWhereInput
+          >(query.filter, this.fieldMaps.payments)
         : undefined,
       orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
       take: query.page?.limit,
@@ -174,70 +206,5 @@ export class PrismaPaymentRepository implements PaymentRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     });
-  }
-
-  private buildWhere(
-    filter: Filter<PaymentRecord>,
-  ): Prisma.PaymentWhereInput {
-    if ('and' in filter) {
-      return {
-        AND: filter.and.map((nestedFilter) =>
-          this.buildWhere(nestedFilter),
-        ),
-      };
-    }
-
-    if ('or' in filter) {
-      return {
-        OR: filter.or.map((nestedFilter) =>
-          this.buildWhere(nestedFilter),
-        ),
-      };
-    }
-
-    const field = this.mapField(filter.field);
-
-    if (filter.operator === FilterOperator.In) {
-      return {
-        [field]: {
-          in: filter.value,
-        },
-      };
-    }
-
-    return {
-      [field]: filter.value,
-    };
-  }
-
-  private mapField(field: keyof PaymentRecord): string {
-    const fieldMap: Record<keyof PaymentRecord, string> = {
-      id: 'id',
-      userId: 'user_id',
-      status: 'status',
-      amountMinor: 'amount_minor',
-      currency: 'currency',
-      dueAt: 'due_at',
-      paidAt: 'paid_at',
-      failedAt: 'failed_at',
-      voidedAt: 'voided_at',
-      provider: 'provider',
-      externalId: 'external_id',
-      failureCode: 'failure_code',
-      failureMessage: 'failure_message',
-      metadata: 'metadata',
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    };
-
-    return fieldMap[field];
-  }
-
-  private getClient(transactionContext?: TransactionContext) {
-    if (transactionContext instanceof PrismaTransactionContext) {
-      return transactionContext.client;
-    }
-
-    return this.prisma;
   }
 }

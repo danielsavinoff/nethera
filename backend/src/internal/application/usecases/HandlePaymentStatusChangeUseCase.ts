@@ -1,6 +1,6 @@
 import type { BillingProvider } from '../../domain/subscription/BillingProvider.js';
 import { PaymentStatus } from '../../domain/subscription/PaymentStatus.js';
-import { FilterOperator } from '../models/Query.js';
+import { FilterOperator } from '../models/Filter.js';
 import { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import { PaymentRepository } from '../ports/PaymentRepository.js';
 import { TransactionRunner } from '../ports/TransactionRunner.js';

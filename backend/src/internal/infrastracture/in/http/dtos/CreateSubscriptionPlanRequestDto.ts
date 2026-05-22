@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BillingInterval } from '../../../../domain/subscription/BillingInterval.js';
+import { Interval } from '../../../../domain/time/Interval.js';
 import { CreateSubscriptionPlanFeatureRequestDto } from './CreateSubscriptionPlanFeatureRequestDto.js';
 import { CreateSubscriptionPlanTranslationRequestDto } from './CreateSubscriptionPlanTranslationRequestDto.js';
 import { CreateSubscriptionPriceRequestDto } from './CreateSubscriptionPriceRequestDto.js';
@@ -20,10 +20,10 @@ export class CreateSubscriptionPlanRequestDto {
   code!: string;
 
   @ApiProperty({
-    enum: BillingInterval,
+    enum: Interval,
   })
-  @IsEnum(BillingInterval)
-  billingInterval!: BillingInterval;
+  @IsEnum(Interval)
+  billingInterval!: Interval;
 
   @ApiProperty({ required: false })
   @IsOptional()

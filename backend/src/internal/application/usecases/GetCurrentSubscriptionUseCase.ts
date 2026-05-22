@@ -2,6 +2,7 @@ import { Permission } from '../../domain/authorization/Permission.js';
 import { Subscription } from '../../domain/subscription/Subscription.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
 import { SubscriptionStatus } from '../../domain/subscription/SubscriptionStatus.js';
+import { FilterOperator } from '../models/Filter.js';
 import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
@@ -57,13 +58,31 @@ export class GetCurrentSubscriptionUseCase {
 
     const subscription =
       await this.subscriptionRepository.loadOrThrow({
-        filters: {
-          userId: initiator.id,
-          status: SubscriptionStatus.Active,
+        filter: {
+          and: [
+            {
+              field: 'userId',
+              operator: FilterOperator.Equals,
+              value: initiator.id,
+            },
+            {
+              field: 'status',
+              operator: FilterOperator.Equals,
+              value: SubscriptionStatus.Active,
+            },
+          ],
         },
         with: {
-          subscriptionPlan: {
-            translationLanguage: command.language,
+          subscriptionPlans: {
+            with: {
+              subscriptionPlanTranslations: {
+                filter: {
+                  field: 'language',
+                  operator: FilterOperator.Equals,
+                  value: command.language,
+                },
+              },
+            },
           },
         },
       });

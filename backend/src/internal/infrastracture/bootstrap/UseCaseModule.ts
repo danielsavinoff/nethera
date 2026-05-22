@@ -64,9 +64,15 @@ import { NotificationComposerSelector } from '../../application/ports/Notificati
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
 import { PrismaPaymentRepository } from '../out/persistence/repositories/PrismaPaymentRepository.js';
+import type { VpnSubscriptionProvider } from '../../application/ports/VpnSubscriptionProvider.js';
+import type { VpnSubscriptionRepository } from '../../application/ports/VpnSubscriptionRepository.js';
+import type { VpnUserProvider } from '../../application/ports/VpnUserProvider.js';
 import { MessagingOutModule } from '../out/messaging/MessagingOutModule.js';
 import { EventEmitterEventPublisher } from '../out/messaging/publishers/EventEmitterEventPublisher.js';
 import type { EventPublisher } from '../../application/ports/EventPublisher.js';
+import { VpnModule } from '../out/vpn/VpnModule.js';
+import { RemnawaveVpnSubscriptionProvider } from '../out/vpn/providers/RemnawaveVpnSubscriptionProvider.js';
+import { PrismaVpnSubscriptionRepository } from '../out/persistence/repositories/PrismaVpnSubscriptionRepository.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 
@@ -78,6 +84,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     NotificationModule,
     InvoiceModule,
     MessagingOutModule,
+    VpnModule,
   ],
   providers: [
     CryptoIdGenerator,
@@ -338,10 +345,28 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     },
     {
       provide: GrantSubscriptionUseCase,
-      useFactory: () => {
-        return new GrantSubscriptionUseCase();
+      useFactory: (
+        subscriptionRepository: SubscriptionRepository,
+        vpnSubscriptionProvider: VpnSubscriptionProvider,
+        vpnSubscriptionRepository: VpnSubscriptionRepository,
+        idGenerator: CryptoIdGenerator,
+        transactionRunner: TransactionRunner,
+      ) => {
+        return new GrantSubscriptionUseCase(
+          subscriptionRepository,
+          vpnSubscriptionProvider,
+          vpnSubscriptionRepository,
+          idGenerator,
+          transactionRunner,
+        );
       },
-      inject: [],
+      inject: [
+        PrismaSubscriptionRepository,
+        RemnawaveVpnSubscriptionProvider,
+        PrismaVpnSubscriptionRepository,
+        CryptoIdGenerator,
+        PrismaTransactionRunner,
+      ],
     },
     {
       provide: FulfillInvoiceUseCase,
