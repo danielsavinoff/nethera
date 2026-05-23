@@ -8,6 +8,10 @@ export interface VpnSubscriptionRepository {
     query: RepositoryQuery<VpnSubscriptionRecord>,
     transactionContext?: TransactionContext,
   ): Promise<VpnSubscription | null>;
+  loadOrThrow(
+    query: RepositoryQuery<VpnSubscriptionRecord>,
+    transactionContext?: TransactionContext,
+  ): Promise<VpnSubscription>;
   save(
     vpnSubscription: VpnSubscription,
     transactionContext?: TransactionContext,

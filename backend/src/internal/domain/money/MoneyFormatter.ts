@@ -8,9 +8,11 @@ export class MoneyFormatter {
     'ru-RU': 'RUB',
   };
 
-  static format(amountMinor: number, locale: string): string {
-    const currency = this.getCurrency(locale);
-
+  static format(
+    amountMinor: number,
+    locale: string,
+    currency = this.getCurrency(locale),
+  ): string {
     const amount = Money.fromMinor(amountMinor, currency);
 
     return new Intl.NumberFormat(locale, {

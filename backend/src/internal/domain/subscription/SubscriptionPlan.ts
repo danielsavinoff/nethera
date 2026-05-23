@@ -139,14 +139,11 @@ export class SubscriptionPlan {
     return this.prices ?? [];
   }
 
-  getActivePrice(
-    locale?: string,
-  ): SubscriptionPrice | null {
+  getActivePrice(locale?: string): SubscriptionPrice | null {
     return (
       this.prices?.find(
         (price) =>
-          price.active &&
-          (!locale || price.locale === locale),
+          price.active && (!locale || price.locale === locale),
       ) ?? null
     );
   }

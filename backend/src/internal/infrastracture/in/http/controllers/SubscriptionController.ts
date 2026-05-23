@@ -34,8 +34,9 @@ export class SubscriptionController {
     private readonly getSubscriptionPresenter: GetSubscriptionPresenter,
     private readonly configService: ConfigService,
   ) {
-    this.fallbackLocale =
-      this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
+    this.fallbackLocale = this.configService.getOrThrow<string>(
+      'FALLBACK_LANGUAGE',
+    );
   }
 
   @ApiOkResponse({ type: GetSubscriptionsResponseDto })

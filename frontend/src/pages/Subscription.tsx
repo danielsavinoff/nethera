@@ -1,8 +1,12 @@
 import { A } from "@solidjs/router";
 import axios from "axios";
 import { CircleQuestionMark, PlusIcon } from "lucide-solid";
-import { createResource, Show } from "solid-js";
-import { subscriptionControllerHandleGetCurrentSubscription } from "~/api/generated";
+import { createMemo, createResource, Show } from "solid-js";
+import {
+  subscriptionControllerHandleGetCurrentSubscription,
+  vpnSubscriptionControllerHandleGetCurrentVpnSubscription,
+  vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage,
+} from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import {
@@ -24,8 +28,6 @@ import {
 import { Skeleton } from "~/components/ui/Skeleton";
 import { showToast } from "~/components/ui/Toast";
 
-const SUBSCRIPTION_LINK = "https://tuntunms.twilightparadox.com";
-
 function App() {
   const { locale, t } = useLocale();
 
@@ -34,13 +36,51 @@ function App() {
     async (requestLocale) => {
       try {
         const response =
-          await subscriptionControllerHandleGetCurrentSubscription(
-            {
-              headers: {
-                "Accept-Language": requestLocale,
-              },
+          await subscriptionControllerHandleGetCurrentSubscription({
+            headers: {
+              "Accept-Language": requestLocale,
             },
-          );
+          });
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          return null;
+        }
+
+        throw error;
+      }
+    },
+  );
+
+  const [vpnSubscription] = createResource(
+    () => currentSubscription()?.id,
+    async () => {
+      try {
+        const response =
+          await vpnSubscriptionControllerHandleGetCurrentVpnSubscription();
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          return null;
+        }
+
+        throw error;
+      }
+    },
+  );
+
+  const [vpnUsage] = createResource(
+    () => currentSubscription()?.id,
+    async (subscriptionId) => {
+      if (!subscriptionId) {
+        return null;
+      }
+
+      try {
+        const response =
+          await vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage();
 
         return response.data;
       } catch (error) {
@@ -55,12 +95,13 @@ function App() {
 
   const hasSubscription = () => Boolean(currentSubscription());
 
-  const getSubscriptionValidUntil = () =>
-    currentSubscription()?.trialEndsAt ?? currentSubscription()?.endedAt;
+  const getSubscriptionValidUntil = () => currentSubscription()?.expiresAt;
+
+  const getSubscriptionUrl = () => vpnSubscription()?.subscriptionUrl!;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(SUBSCRIPTION_LINK);
+      await navigator.clipboard.writeText(getSubscriptionUrl());
 
       showToast({
         title: t("subscriptionPage.linkCard.copySuccess"),
@@ -89,25 +130,32 @@ function App() {
     return t("subscriptionPage.validCard.until").replace("{date}", date);
   };
 
-  const chartData = {
-    labels: [
-      "Amphibians",
-      "Birds",
-      "Crustaceans",
-      "Ferns",
-      "Arachnids",
-      "Corals",
-      "Algae",
-    ],
-    datasets: [
-      {
-        label: "Number of threatened species",
-        data: [2488, 1445, 734, 281, 251, 232, 98],
-        backgroundColor: "var(--color-chart-3)",
-        borderColor: "var(--color-chart-3)",
-      },
-    ],
+  const formatChartDate = (date: string) => {
+    const [year, month, day] = date.split("-").map(Number);
+
+    return new Intl.DateTimeFormat(locale(), {
+      day: "numeric",
+      month: "short",
+    }).format(new Date(year, month - 1, day));
   };
+
+  const chartData = createMemo(() => {
+    const entries = Object.entries(vpnUsage()?.usage ?? {}).sort(
+      ([left], [right]) => left.localeCompare(right),
+    );
+
+    return {
+      labels: entries.map(([date]) => formatChartDate(date)),
+      datasets: [
+        {
+          label: t("subscriptionPage.trafficCard.datasetLabel"),
+          data: entries.map(([, usage]) => usage),
+          backgroundColor: "var(--color-chart-3)",
+          borderColor: "var(--color-chart-3)",
+        },
+      ],
+    };
+  });
 
   return (
     <>
@@ -157,7 +205,8 @@ function App() {
                 <TextField class="grid w-full items-center gap-1.5">
                   <TextFieldInput
                     type="url"
-                    value={SUBSCRIPTION_LINK}
+                    value={getSubscriptionUrl()}
+                    onClick={handleCopy}
                     readonly
                   />
                 </TextField>
@@ -167,7 +216,12 @@ function App() {
                   <PlusIcon />
                   {t("subscriptionPage.linkCard.addSubscription")}
                 </Button>
-                <Button variant="secondary" class="w-full" onClick={handleCopy}>
+                <Button
+                  variant="secondary"
+                  class="w-full"
+                  disabled={!getSubscriptionUrl()}
+                  onClick={handleCopy}
+                >
                   {t("subscriptionPage.linkCard.copyUrl")}
                 </Button>
               </CardFooter>
@@ -233,7 +287,7 @@ function App() {
               </CardHeader>
               <CardContent class="flex flex-1 min-h-0 overflow-hidden">
                 <div class="h-full min-h-0 w-full">
-                  <BarChart data={chartData} />
+                  <BarChart data={chartData()} />
                 </div>
               </CardContent>
             </Card>

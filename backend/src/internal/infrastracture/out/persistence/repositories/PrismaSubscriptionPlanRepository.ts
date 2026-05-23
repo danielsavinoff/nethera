@@ -59,11 +59,13 @@ export class PrismaSubscriptionPlanRepository
       active: 'is_active',
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-    } satisfies Record<keyof SubscriptionPlanFeatureRecord, string>,
+    } satisfies Record<
+      keyof SubscriptionPlanFeatureRecord,
+      string
+    >,
     subscriptionPlanFeatureTranslations: {
       id: 'id',
-      subscriptionPlanFeatureId:
-        'subscription_plan_feature_id',
+      subscriptionPlanFeatureId: 'subscription_plan_feature_id',
       locale: 'locale',
       title: 'title',
       description: 'description',
@@ -158,7 +160,8 @@ export class PrismaSubscriptionPlanRepository
                       .subscriptionPlanFeatures !== 'boolean' &&
                     query.with.subscriptionPlanFeatures.with
                       ?.subscriptionPlanFeatureTranslations &&
-                    typeof query.with.subscriptionPlanFeatures.with
+                    typeof query.with.subscriptionPlanFeatures
+                      .with
                       .subscriptionPlanFeatureTranslations !==
                       'boolean' &&
                     query.with.subscriptionPlanFeatures.with
@@ -167,7 +170,8 @@ export class PrismaSubscriptionPlanRepository
                           SubscriptionPlanFeatureTranslationRecord,
                           Prisma.SubscriptionPlanFeatureTranslationWhereInput
                         >(
-                          query.with.subscriptionPlanFeatures.with
+                          query.with.subscriptionPlanFeatures
+                            .with
                             .subscriptionPlanFeatureTranslations
                             .filter,
                           this.fieldMaps
@@ -361,7 +365,8 @@ export class PrismaSubscriptionPlanRepository
                       .subscriptionPlanFeatures !== 'boolean' &&
                     query.with.subscriptionPlanFeatures.with
                       ?.subscriptionPlanFeatureTranslations &&
-                    typeof query.with.subscriptionPlanFeatures.with
+                    typeof query.with.subscriptionPlanFeatures
+                      .with
                       .subscriptionPlanFeatureTranslations !==
                       'boolean' &&
                     query.with.subscriptionPlanFeatures.with
@@ -370,7 +375,8 @@ export class PrismaSubscriptionPlanRepository
                           SubscriptionPlanFeatureTranslationRecord,
                           Prisma.SubscriptionPlanFeatureTranslationWhereInput
                         >(
-                          query.with.subscriptionPlanFeatures.with
+                          query.with.subscriptionPlanFeatures
+                            .with
                             .subscriptionPlanFeatureTranslations
                             .filter,
                           this.fieldMaps
@@ -434,8 +440,7 @@ export class PrismaSubscriptionPlanRepository
                 translation.subscription_plan_id,
               locale: translation.locale,
               name: translation.name,
-              description:
-                translation.description ?? undefined,
+              description: translation.description ?? undefined,
               createdAt: translation.created_at,
               updatedAt: translation.updated_at,
             }),

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { InvoiceNotFoundException } from '../../../../application/exceptions/InvoiceNotFoundException.js';
-import { RepositoryQuery } from '../../../../application/models/RepositoryQuery.js';
+import {
+  PaginatedRepositoryQuery,
+  RepositoryQuery,
+} from '../../../../application/models/RepositoryQuery.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import type {
   InvoiceRepository,
@@ -129,6 +132,75 @@ export class PrismaInvoiceRepository
     return invoice;
   }
 
+  async loadMany(
+    query: PaginatedRepositoryQuery<InvoiceRecord, InvoiceWith>,
+    transactionContext?: TransactionContext,
+  ): Promise<Invoice[]> {
+    const client = this.getClient(transactionContext);
+
+    const rows = await client.invoice.findMany({
+      where: query.filter
+        ? this.buildWhere<
+            InvoiceRecord,
+            Prisma.InvoiceWhereInput
+          >(query.filter, this.fieldMaps.invoices)
+        : undefined,
+      include: {
+        lines: query.with?.lines
+          ? {
+              where:
+                typeof query.with?.lines !== 'boolean' &&
+                query.with?.lines.filter
+                  ? this.buildWhere<
+                      InvoiceLineRecord,
+                      Prisma.InvoiceLineWhereInput
+                    >(
+                      query.with?.lines.filter,
+                      this.fieldMaps.invoiceLines,
+                    )
+                  : undefined,
+            }
+          : false,
+      },
+      orderBy: [{ created_at: 'desc' }, { id: 'asc' }],
+      take: query.page?.limit,
+      skip: query.page?.offset,
+    });
+
+    return rows.map((row) => {
+      const invoice = Invoice.hydrate({
+        id: row.id,
+        externalId: row.external_id,
+        provider: row.provider,
+        userId: row.user_id,
+        status: row.status,
+        totalAmountMinor: row.total_amount_minor,
+        amountPaidMinor: row.amount_paid_minor,
+        currency: row.currency,
+        externalCheckoutUrl: row.external_checkout_url,
+        expiresAt: row.expires_at ?? undefined,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      });
+
+      if (!query.with) {
+        return invoice;
+      }
+
+      return invoice.withLines(
+        row.lines.map((line) =>
+          InvoiceLine.hydrate({
+            id: line.id,
+            referenceId: line.reference_id,
+            type: line.type,
+            amount: line.amount,
+            invoiceId: line.invoice_id,
+          }),
+        ),
+      );
+    });
+  }
+
   async save(
     invoice: Invoice,
     transactionContext?: TransactionContext,
@@ -137,16 +209,9 @@ export class PrismaInvoiceRepository
 
     const record = invoice.toRecord();
 
-    const lineRecords = invoice.lines.map((line) =>
-      line.toRecord(),
-    );
-
     const row = await client.invoice.upsert({
       where: {
         id: record.id,
-      },
-      include: {
-        lines: true,
       },
       create: {
         id: record.id,
@@ -161,16 +226,6 @@ export class PrismaInvoiceRepository
         expires_at: record.expiresAt,
         created_at: record.createdAt,
         updated_at: record.updatedAt,
-        lines: {
-          createMany: {
-            data: lineRecords.map((lineRecord) => ({
-              id: lineRecord.id,
-              reference_id: lineRecord.referenceId,
-              type: lineRecord.type,
-              amount: lineRecord.amount,
-            })),
-          },
-        },
       },
       update: {
         external_id: record.externalId,
@@ -183,21 +238,10 @@ export class PrismaInvoiceRepository
         external_checkout_url: record.externalCheckoutUrl,
         expires_at: record.expiresAt,
         updated_at: record.updatedAt,
-        lines: {
-          deleteMany: {},
-          createMany: {
-            data: lineRecords.map((lineRecord) => ({
-              id: lineRecord.id,
-              reference_id: lineRecord.referenceId,
-              type: lineRecord.type,
-              amount: lineRecord.amount,
-            })),
-          },
-        },
       },
     });
 
-    const savedInvoice = Invoice.hydrate({
+    return Invoice.hydrate({
       id: row.id,
       externalId: row.external_id,
       provider: row.provider,
@@ -210,18 +254,6 @@ export class PrismaInvoiceRepository
       expiresAt: row.expires_at ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-    });
-
-    return savedInvoice.withLines(
-      row.lines.map((line) =>
-        InvoiceLine.hydrate({
-          id: line.id,
-          referenceId: line.reference_id,
-          type: line.type,
-          amount: line.amount,
-          invoiceId: line.invoice_id,
-        }),
-      ),
-    );
+    }).withLines(invoice.lines);
   }
 }

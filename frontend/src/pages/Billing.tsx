@@ -3,8 +3,8 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import { DataTable } from "~/components/DataTable";
 import { Badge } from "~/components/ui/Badge";
 import {
-  type GetPaymentResponseDto,
-  paymentControllerGetPayments,
+  type GetInvoiceResponseDto,
+  invoiceControllerHandleGetInvoices,
 } from "~/api/generated";
 import { createMemo, createResource } from "solid-js";
 import { useLocale } from "~/context/Locale";
@@ -20,29 +20,20 @@ import {
 import { Ellipsis } from "lucide-solid";
 import { showToast } from "~/components/ui/Toast";
 
-type Payment = GetPaymentResponseDto;
+type Invoice = GetInvoiceResponseDto;
 
 function Billing() {
   const { locale, t } = useLocale();
 
-  const [payments] = createResource(async () => {
-    const response = await paymentControllerGetPayments();
+  const [invoices] = createResource(locale, async (requestLocale) => {
+    const response = await invoiceControllerHandleGetInvoices({
+      headers: {
+        "Accept-Language": requestLocale,
+      },
+    });
 
-    return response.data.payments;
+    return response.data.invoices;
   });
-
-  const formatMoney = (amountMinor: number, currency: string) => {
-    try {
-      const amount = amountMinor / 100;
-
-      return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency,
-      }).format(amount);
-    } catch {
-      return `${amountMinor} ${currency.toUpperCase()}`;
-    }
-  };
 
   const formatDate = (value?: string) => {
     if (!value) {
@@ -58,17 +49,17 @@ function Billing() {
   const formatStatus = (status: string) =>
     t(`billingPage.status.${status.toLowerCase()}`);
 
-  const handleCopyPaymentId = async (paymentId: string) => {
+  const handleCopyInvoiceId = async (invoiceId: string) => {
     try {
-      await navigator.clipboard.writeText(paymentId);
+      await navigator.clipboard.writeText(invoiceId);
 
       showToast({
-        title: t("billingPage.actions.copyPaymentIdSuccess"),
+        title: t("billingPage.actions.copyInvoiceIdSuccess"),
         variant: "success",
       });
     } catch {
       showToast({
-        title: t("billingPage.actions.copyPaymentIdError"),
+        title: t("billingPage.actions.copyInvoiceIdError"),
         variant: "error",
       });
     }
@@ -77,22 +68,22 @@ function Billing() {
   const getStatusVariant = (
     status: string,
   ): "success" | "warning" | "error" | "secondary" => {
-    if (status === "PAID") {
+    if (status === "paid") {
       return "success";
     }
 
-    if (status === "OPEN" || status === "DRAFT") {
+    if (status === "pending") {
       return "warning";
     }
 
-    if (status === "FAILED" || status === "VOID") {
+    if (status === "expired" || status === "canceled") {
       return "error";
     }
 
     return "secondary";
   };
 
-  const columns = createMemo<ColumnDef<Payment>[]>(() => [
+  const columns = createMemo<ColumnDef<Invoice>[]>(() => [
     {
       accessorKey: "status",
       header: t("billingPage.columns.status"),
@@ -105,23 +96,19 @@ function Billing() {
       },
     },
     {
-      accessorKey: "issuedAt",
+      accessorKey: "createdAt",
       header: t("billingPage.columns.issuedAt"),
       cell: (row) => formatDate(String(row.cell.getValue())),
     },
     {
-      accessorKey: "dueAt",
+      accessorKey: "expiresAt",
       header: t("billingPage.columns.dueAt"),
       cell: (row) => formatDate(row.cell.getValue() as string | undefined),
     },
     {
-      accessorKey: "amountDue",
-      header: t("billingPage.columns.amountDue"),
-      cell: (row) => {
-        const payment = row.row.original;
-
-        return formatMoney(payment.amountMinor, payment.currency);
-      },
+      accessorKey: "total.formatted",
+      header: t("billingPage.columns.totalAmount"),
+      cell: (row) => row.row.original.total.formatted,
     },
     {
       id: "actions",
@@ -134,9 +121,7 @@ function Billing() {
               variant="ghost"
               class="size-8 p-0"
             >
-              <span class="sr-only">
-                {t("billingPage.actions.openMenu")}
-              </span>
+              <span class="sr-only">{t("billingPage.actions.openMenu")}</span>
               <Ellipsis />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="min-w-3xs">
@@ -144,10 +129,22 @@ function Billing() {
                 {t("billingPage.actions.label")}
               </DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => handleCopyPaymentId(props.row.original.id)}
+                onClick={() => handleCopyInvoiceId(props.row.original.id)}
               >
-                {t("billingPage.actions.copyPaymentId")}
+                {t("billingPage.actions.copyInvoiceId")}
               </DropdownMenuItem>
+              {props.row.original.status === "pending" &&
+                props.row.original.externalCheckoutUrl && (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      window.location.assign(
+                        props.row.original.externalCheckoutUrl,
+                      )
+                    }
+                  >
+                    {t("billingPage.actions.payInvoice")}
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -161,9 +158,9 @@ function Billing() {
         <h1 class="text-3xl font-semibold">{t("billingPage.title")}</h1>
       </Grid>
       <div class="flex-1">
-        <DataTable<Payment, unknown>
+        <DataTable<Invoice, unknown>
           columns={columns()}
-          data={payments() ?? []}
+          data={invoices() ?? []}
           emptyMessage={t("billingPage.emptyState")}
         />
       </div>

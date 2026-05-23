@@ -77,7 +77,8 @@
     },
     "trafficCard": {
       "title": "Traffic usage",
-      "description": "Showing total traffic for the last 3 months"
+      "description": "Showing daily traffic for the current month",
+      "datasetLabel": "Traffic, MB"
     }
   },
   "plansPage": {
@@ -111,23 +112,23 @@
       "status": "Status",
       "issuedAt": "Issued at",
       "dueAt": "Due at",
+      "totalAmount": "Total",
+      "paidAmount": "Paid",
       "amountDue": "Amount due"
     },
     "actions": {
       "openMenu": "Open invoice actions",
       "label": "Actions",
       "payInvoice": "Pay the invoice",
-      "copyPaymentId": "Copy payment ID",
-      "copyPaymentIdSuccess": "Payment ID copied.",
-      "copyPaymentIdError": "Could not copy the payment ID. Please try again."
+      "copyInvoiceId": "Copy invoice ID",
+      "copyInvoiceIdSuccess": "Invoice ID copied.",
+      "copyInvoiceIdError": "Could not copy the invoice ID. Please try again."
     },
     "status": {
-      "draft": "Draft",
-      "open": "Open",
+      "pending": "Pending",
       "paid": "Paid",
-      "failed": "Failed",
-      "void": "Void",
-      "refunded": "Refunded"
+      "expired": "Expired",
+      "canceled": "Canceled"
     }
   },
   "settingsPage": {

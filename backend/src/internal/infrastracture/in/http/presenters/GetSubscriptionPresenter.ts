@@ -18,6 +18,7 @@ export class GetSubscriptionPresenter {
       userId: result.data.subscription.userId,
       status: result.data.subscription.status,
       startedAt: result.data.subscription.startedAt,
+      expiresAt: result.data.subscription.expiresAt,
       trialStartedAt: result.data.subscription.trialStartedAt,
       trialEndsAt: result.data.subscription.trialEndsAt,
       cancelAtPeriodEnd:

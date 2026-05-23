@@ -15,6 +15,9 @@ import { CreateSubscriptionPlanUseCase } from '../../application/usecases/Create
 import { GetSubscriptionPlanUseCase } from '../../application/usecases/GetSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlansUseCase } from '../../application/usecases/GetSubscriptionPlansUseCase.js';
 import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUseCase.js';
+import { GetInvoicesUseCase } from '../../application/usecases/GetInvoicesUseCase.js';
+import { GetCurrentVpnSubscriptionUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUseCase.js';
+import { GetCurrentVpnSubscriptionUsageUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUsageUseCase.js';
 import { FulfillInvoiceUseCase } from '../../application/usecases/FulfillInvoiceUseCase.js';
 import { GrantSubscriptionUseCase } from '../../application/usecases/GrantSubscriptionUseCase.js';
 import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCurrentSubscriptionUseCase.js';
@@ -35,6 +38,7 @@ import type { SessionRepository } from '../../application/ports/SessionRepositor
 import type { AuthTokenRepository } from '../../application/ports/AuthTokenRepository.js';
 import type { TransactionRunner } from '../../application/ports/TransactionRunner.js';
 import type { InvoiceRepository } from '../../application/ports/InvoiceRepository.js';
+import type { InvoiceLineRepository } from '../../application/ports/InvoiceLineRepository.js';
 import type { SubscriptionPlanRepository } from '../../application/ports/SubscriptionPlanRepository.js';
 import type { SubscriptionRepository } from '../../application/ports/SubscriptionRepository.js';
 import type { InvoiceProviderResolver } from '../../application/ports/InvoiceProviderResolver.js';
@@ -50,6 +54,7 @@ import { PrismaAuthTokenRepository } from '../out/persistence/repositories/Prism
 import { PrismaSubscriptionPlanRepository } from '../out/persistence/repositories/PrismaSubscriptionPlanRepository.js';
 import { PrismaSubscriptionRepository } from '../out/persistence/repositories/PrismaSubscriptionRepository.js';
 import { PrismaInvoiceRepository } from '../out/persistence/repositories/PrismaInvoiceRepository.js';
+import { PrismaInvoiceLineRepository } from '../out/persistence/repositories/PrismaInvoiceLineRepository.js';
 import { PrismaTransactionRunner } from '../out/persistence/transaction/PrismaTransactionRunner.js';
 import { CryptoMagicLinkTokenService } from '../out/auth/services/CryptoMagicLinkTokenService.js';
 import { JwtAccessTokenService } from '../out/auth/services/JwtAccessTokenService.js';
@@ -60,18 +65,20 @@ import { DefaultInvoiceProviderResolver } from '../out/payment/resolvers/Default
 import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
 import { PaymentPolicy } from '../../domain/subscription/PaymentPolicy.js';
+import { VpnSubscriptionPolicy } from '../../domain/subscription/VpnSubscriptionPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
 import { PrismaPaymentRepository } from '../out/persistence/repositories/PrismaPaymentRepository.js';
 import type { VpnSubscriptionProvider } from '../../application/ports/VpnSubscriptionProvider.js';
 import type { VpnSubscriptionRepository } from '../../application/ports/VpnSubscriptionRepository.js';
-import type { VpnUserProvider } from '../../application/ports/VpnUserProvider.js';
+import type { VpnUsageProvider } from '../../application/ports/VpnUsageProvider.js';
 import { MessagingOutModule } from '../out/messaging/MessagingOutModule.js';
 import { EventEmitterEventPublisher } from '../out/messaging/publishers/EventEmitterEventPublisher.js';
 import type { EventPublisher } from '../../application/ports/EventPublisher.js';
 import { VpnModule } from '../out/vpn/VpnModule.js';
 import { RemnawaveVpnSubscriptionProvider } from '../out/vpn/providers/RemnawaveVpnSubscriptionProvider.js';
+import { RemnawaveVpnUsageProvider } from '../out/vpn/providers/RemnawaveVpnUsageProvider.js';
 import { PrismaVpnSubscriptionRepository } from '../out/persistence/repositories/PrismaVpnSubscriptionRepository.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
@@ -319,6 +326,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         subscriptionPlanRepository: SubscriptionPlanRepository,
         subscriptionRepository: SubscriptionRepository,
         invoiceRepository: InvoiceRepository,
+        invoiceLineRepository: InvoiceLineRepository,
         invoiceProviderResolver: InvoiceProviderResolver,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
@@ -328,6 +336,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
           subscriptionPlanRepository,
           subscriptionRepository,
           invoiceRepository,
+          invoiceLineRepository,
           invoiceProviderResolver,
           idGenerator,
           transactionRunner,
@@ -338,10 +347,24 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         PrismaSubscriptionPlanRepository,
         PrismaSubscriptionRepository,
         PrismaInvoiceRepository,
+        PrismaInvoiceLineRepository,
         DefaultInvoiceProviderResolver,
         CryptoIdGenerator,
         PrismaTransactionRunner,
       ],
+    },
+    {
+      provide: GetInvoicesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        invoiceRepository: InvoiceRepository,
+      ) => {
+        return new GetInvoicesUseCase(
+          userRepository,
+          invoiceRepository,
+        );
+      },
+      inject: [PrismaUserRepository, PrismaInvoiceRepository],
     },
     {
       provide: GrantSubscriptionUseCase,
@@ -482,10 +505,52 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         PaymentPolicy,
       ],
     },
+    {
+      provide: GetCurrentVpnSubscriptionUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        vpnSubscriptionRepository: VpnSubscriptionRepository,
+        vpnSubscriptionPolicy: VpnSubscriptionPolicy,
+      ) => {
+        return new GetCurrentVpnSubscriptionUseCase(
+          userRepository,
+          vpnSubscriptionRepository,
+          vpnSubscriptionPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaVpnSubscriptionRepository,
+        VpnSubscriptionPolicy,
+      ],
+    },
+    {
+      provide: GetCurrentVpnSubscriptionUsageUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        vpnSubscriptionRepository: VpnSubscriptionRepository,
+        vpnUsageProvider: VpnUsageProvider,
+        vpnSubscriptionPolicy: VpnSubscriptionPolicy,
+      ) => {
+        return new GetCurrentVpnSubscriptionUsageUseCase(
+          userRepository,
+          vpnSubscriptionRepository,
+          vpnUsageProvider,
+          vpnSubscriptionPolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaVpnSubscriptionRepository,
+        RemnawaveVpnUsageProvider,
+        VpnSubscriptionPolicy,
+      ],
+    },
     RolePolicy,
     SubscriptionPlanPolicy,
     SubscriptionPolicy,
     PaymentPolicy,
+    VpnSubscriptionPolicy,
     {
       provide: NOTIFICATION_CHANNELS,
       useFactory: () => ({}),
@@ -507,6 +572,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionPlanUseCase,
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
+    GetInvoicesUseCase,
     GrantSubscriptionUseCase,
     FulfillInvoiceUseCase,
     HandlePaymentStatusChangeUseCase,
@@ -514,6 +580,8 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,
     GetPaymentsUseCase,
+    GetCurrentVpnSubscriptionUseCase,
+    GetCurrentVpnSubscriptionUsageUseCase,
   ],
 })
 export class UseCaseModule {}

@@ -138,7 +138,7 @@ model Subscription {
   status     String  @db.VarChar(32)
   auto_renew Boolean @default(false)
 
-  started_at       DateTime  @db.Timestamptz
+  started_at       DateTime? @db.Timestamptz
   expires_at       DateTime? @db.Timestamptz
   trial_started_at DateTime? @db.Timestamptz
   trial_ends_at    DateTime? @db.Timestamptz

@@ -6,8 +6,8 @@ import { RoleController } from './controllers/RoleController.js';
 import { SubscriptionPlanController } from './controllers/SubscriptionPlanController.js';
 import { SubscriptionController } from './controllers/SubscriptionController.js';
 import { InvoiceController } from './controllers/InvoiceController.js';
+import { VpnSubscriptionController } from './controllers/VpnSubscriptionController.js';
 import { NowPaymentsWebhookController } from './controllers/NowPaymentsWebhookController.js';
-import { PaymentController } from './controllers/PaymentController.js';
 import { UserController } from './controllers/UserController.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
@@ -21,8 +21,10 @@ import { GetSubscriptionPlanPresenter } from './presenters/GetSubscriptionPlanPr
 import { GetSubscriptionPlansPresenter } from './presenters/GetSubscriptionPlansPresenter.js';
 import { GetSubscriptionPresenter } from './presenters/GetSubscriptionPresenter.js';
 import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresenter.js';
-import { GetPaymentsPresenter } from './presenters/GetPaymentsPresenter.js';
+import { GetInvoicesPresenter } from './presenters/GetInvoicesPresenter.js';
 import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
+import { GetVpnSubscriptionPresenter } from './presenters/GetVpnSubscriptionPresenter.js';
+import { GetVpnUsagePresenter } from './presenters/GetVpnUsagePresenter.js';
 import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/NowPaymentsPaymentStatusMapper.js';
 
 @Module({
@@ -33,8 +35,8 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     SubscriptionPlanController,
     SubscriptionController,
     InvoiceController,
+    VpnSubscriptionController,
     NowPaymentsWebhookController,
-    PaymentController,
     UserController,
   ],
   providers: [
@@ -49,8 +51,10 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     GetSubscriptionPlansPresenter,
     GetSubscriptionPresenter,
     GetSubscriptionsPresenter,
-    GetPaymentsPresenter,
+    GetInvoicesPresenter,
     CreateInvoicePresenter,
+    GetVpnSubscriptionPresenter,
+    GetVpnUsagePresenter,
     NowPaymentsPaymentStatusMapper,
   ],
   imports: [UseCaseModule, PersistenceModule],

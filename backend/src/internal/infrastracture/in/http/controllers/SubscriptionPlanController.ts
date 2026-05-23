@@ -40,8 +40,9 @@ export class SubscriptionPlanController {
     private readonly createSubscriptionPlanPresenter: CreateSubscriptionPlanPresenter,
     private readonly configService: ConfigService,
   ) {
-    this.fallbackLocale =
-      this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
+    this.fallbackLocale = this.configService.getOrThrow<string>(
+      'FALLBACK_LANGUAGE',
+    );
   }
 
   @ApiOkResponse({ type: GetSubscriptionPlansResponseDto })

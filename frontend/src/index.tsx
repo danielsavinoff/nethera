@@ -15,7 +15,7 @@ import { Toaster } from "./components/ui/Toast";
 const root = document.getElementById("root");
 
 const Login = lazy(() => import("./pages/Login"));
-const App = lazy(() => import("./pages/App"));
+const Subscription = lazy(() => import("./pages/Subscription"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Billing = lazy(() => import("./pages/Billing"));
@@ -42,7 +42,7 @@ render(
                     path={"/"}
                     component={() => <Navigate href="/subscription" />}
                   />
-                  <Route path={"/subscription"} component={App} />
+                  <Route path={"/subscription"} component={Subscription} />
                   <Route path={"/plans"} component={Plans} />
                 </Route>
                 <Route component={Scrollable}>

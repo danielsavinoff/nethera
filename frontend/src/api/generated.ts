@@ -150,7 +150,8 @@ export interface GetSubscriptionResponseDto {
   id: string;
   userId: string;
   status: string;
-  startedAt: string;
+  startedAt?: string;
+  expiresAt?: string;
   trialStartedAt?: string;
   trialEndsAt?: string;
   cancelAtPeriodEnd: boolean;
@@ -165,6 +166,30 @@ export interface GetSubscriptionsResponseDto {
   subscriptions: GetSubscriptionResponseDto[];
 }
 
+export interface GetInvoiceAmountResponseDto {
+  amountMinor: number;
+  formatted: string;
+}
+
+export interface GetInvoiceResponseDto {
+  id: string;
+  externalId: string;
+  provider: string;
+  userId: string;
+  status: string;
+  total: GetInvoiceAmountResponseDto;
+  paid: GetInvoiceAmountResponseDto;
+  due: GetInvoiceAmountResponseDto;
+  currency: string;
+  externalCheckoutUrl: string;
+  expiresAt?: string;
+  createdAt: string;
+}
+
+export interface GetInvoicesResponseDto {
+  invoices: GetInvoiceResponseDto[];
+}
+
 export type CreateInvoiceRequestDtoProvider = typeof CreateInvoiceRequestDtoProvider[keyof typeof CreateInvoiceRequestDtoProvider];
 
 
@@ -177,40 +202,12 @@ export interface CreateInvoiceRequestDto {
   provider: CreateInvoiceRequestDtoProvider;
 }
 
-export interface GetInvoiceResponseDto {
-  id: string;
-  externalId: string;
-  provider: string;
-  userId: string;
-  status: string;
-  currency: string;
-  externalCheckoutUrl: string;
-  expiresAt?: string;
-  createdAt: string;
-  updatedAt: string;
+export interface GetVpnSubscriptionResponseDto {
+  subscriptionUrl: string;
 }
 
-export interface GetPaymentResponseDto {
-  id: string;
-  userId: string;
-  status: string;
-  amountMinor: number;
-  currency: string;
-  dueAt?: string;
-  paidAt?: string;
-  failedAt?: string;
-  voidedAt?: string;
-  provider: string;
-  externalId: string;
-  failureCode?: string;
-  failureMessage?: string;
-  metadata?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GetPaymentsResponseDto {
-  payments: GetPaymentResponseDto[];
+export interface GetVpnUsageResponseDto {
+  usage: Record<string, number>;
 }
 
 export interface GetUserResponseDto {
@@ -235,6 +232,8 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   'subscription-planaddany': 'subscription-plan.add.any',
   subscriptionviewown: 'subscription.view.own',
   subscriptionviewany: 'subscription.view.any',
+  'vpn-subscriptionviewown': 'vpn-subscription.view.own',
+  'vpn-subscriptionviewany': 'vpn-subscription.view.any',
   paymentviewown: 'payment.view.own',
   paymentviewany: 'payment.view.any',
   'user-roleviewown': 'user-role.view.own',
@@ -409,7 +408,16 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
-export const invoiceControllerCreateInvoice = (
+export const invoiceControllerHandleGetInvoices = (
+
+ options?: SecondParameter<typeof api<GetInvoicesResponseDto>>,) => {
+      return api<GetInvoicesResponseDto>(
+      {url: `/invoices`, method: 'GET'
+    },
+      options);
+    }
+
+export const invoiceControllerHandleCreateInvoice = (
     createInvoiceRequestDto: CreateInvoiceRequestDto,
  options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
       return api<GetInvoiceResponseDto>(
@@ -420,20 +428,29 @@ export const invoiceControllerCreateInvoice = (
       options);
     }
 
+export const vpnSubscriptionControllerHandleGetCurrentVpnSubscription = (
+
+ options?: SecondParameter<typeof api<GetVpnSubscriptionResponseDto>>,) => {
+      return api<GetVpnSubscriptionResponseDto>(
+      {url: `/vpn-subscriptions/current`, method: 'GET'
+    },
+      options);
+    }
+
+export const vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage = (
+
+ options?: SecondParameter<typeof api<GetVpnUsageResponseDto>>,) => {
+      return api<GetVpnUsageResponseDto>(
+      {url: `/vpn-subscriptions/current/usage`, method: 'GET'
+    },
+      options);
+    }
+
 export const nowPaymentsWebhookControllerHandlePaymentStatus = (
 
  options?: SecondParameter<typeof api<void>>,) => {
       return api<void>(
       {url: `/webhooks/nowpayments/payment-status`, method: 'POST'
-    },
-      options);
-    }
-
-export const paymentControllerGetPayments = (
-
- options?: SecondParameter<typeof api<GetPaymentsResponseDto>>,) => {
-      return api<GetPaymentsResponseDto>(
-      {url: `/payments`, method: 'GET'
     },
       options);
     }
@@ -500,9 +517,11 @@ export type SubscriptionPlanControllerGetSubscriptionPlanResult = NonNullable<Aw
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
 export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
-export type InvoiceControllerCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerCreateInvoice>>>
+export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
+export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>
+export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscription>>>
+export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsageResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage>>>
 export type NowPaymentsWebhookControllerHandlePaymentStatusResult = NonNullable<Awaited<ReturnType<typeof nowPaymentsWebhookControllerHandlePaymentStatus>>>
-export type PaymentControllerGetPaymentsResult = NonNullable<Awaited<ReturnType<typeof paymentControllerGetPayments>>>
 export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
 export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
 export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>

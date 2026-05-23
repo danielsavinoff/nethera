@@ -5,6 +5,7 @@ import { Subscription } from '../../domain/subscription/Subscription.js';
 import { SubscriptionStatus } from '../../domain/subscription/SubscriptionStatus.js';
 import { SubscriptionPriceNotFoundException } from '../exceptions/SubscriptionPriceNotFoundException.js';
 import type { IdGenerator } from '../ports/IdGenerator.js';
+import type { InvoiceLineRepository } from '../ports/InvoiceLineRepository.js';
 import type { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import type { InvoiceProviderResolver } from '../ports/InvoiceProviderResolver.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
@@ -20,11 +21,13 @@ export interface CreateInvoiceCommand {
   initiatorUserId: string;
   subscriptionPlanId: string;
   provider: BillingProvider;
+  locale: string;
 }
 
 export interface CreateInvoiceResult {
   data: {
     invoice: Invoice;
+    locale: string;
   };
 }
 
@@ -34,6 +37,7 @@ export class CreateInvoiceUseCase {
     private readonly subscriptionPlanRepository: SubscriptionPlanRepository,
     private readonly subscriptionRepository: SubscriptionRepository,
     private readonly invoiceRepository: InvoiceRepository,
+    private readonly invoiceLineRepository: InvoiceLineRepository,
     private readonly invoiceProviderResolver: InvoiceProviderResolver,
     private readonly idGenerator: IdGenerator,
     private readonly transactionRunner: TransactionRunner,
@@ -125,7 +129,6 @@ export class CreateInvoiceUseCase {
       userId: customer.id,
       subscriptionPlanId: subscriptionPlan.id,
       status: SubscriptionStatus.Incomplete,
-      startedAt: new Date(),
     });
 
     const preparedInvoice = Invoice.create({
@@ -142,7 +145,9 @@ export class CreateInvoiceUseCase {
       currency: externalInvoice.currency,
       externalCheckoutUrl: externalInvoice.externalCheckoutUrl,
       expiresAt: externalInvoice.expiresAt,
-    }).withLines([
+    });
+
+    const preparedInvoiceLines = [
       InvoiceLine.create({
         id: this.idGenerator.generate(),
         invoiceId,
@@ -150,7 +155,7 @@ export class CreateInvoiceUseCase {
         type: InvoiceLineType.Subscription,
         amount: subscriptionPrice.amountMinor,
       }),
-    ]);
+    ];
 
     const savedInvoice = await this.transactionRunner.run(
       async (transactionContext) => {
@@ -164,13 +169,25 @@ export class CreateInvoiceUseCase {
           transactionContext,
         );
 
-        return invoice;
+        const invoiceLines: InvoiceLine[] = [];
+
+        for (const preparedInvoiceLine of preparedInvoiceLines) {
+          invoiceLines.push(
+            await this.invoiceLineRepository.save(
+              preparedInvoiceLine,
+              transactionContext,
+            ),
+          );
+        }
+
+        return invoice.withLines(invoiceLines);
       },
     );
 
     return {
       data: {
         invoice: savedInvoice,
+        locale: customer.locale ?? command.locale,
       },
     };
   }

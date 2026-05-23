@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { GetInvoiceAmountResponseDto } from './GetInvoiceAmountResponseDto.js';
 
 export class GetInvoiceResponseDto {
   @ApiProperty()
@@ -16,6 +17,15 @@ export class GetInvoiceResponseDto {
   @ApiProperty()
   status!: string;
 
+  @ApiProperty({ type: GetInvoiceAmountResponseDto })
+  total!: GetInvoiceAmountResponseDto;
+
+  @ApiProperty({ type: GetInvoiceAmountResponseDto })
+  paid!: GetInvoiceAmountResponseDto;
+
+  @ApiProperty({ type: GetInvoiceAmountResponseDto })
+  due!: GetInvoiceAmountResponseDto;
+
   @ApiProperty()
   currency!: string;
 
@@ -27,9 +37,6 @@ export class GetInvoiceResponseDto {
 
   @ApiProperty()
   createdAt!: Date;
-
-  @ApiProperty()
-  updatedAt!: Date;
 
   constructor(data: GetInvoiceResponseDto) {
     Object.assign(this, data);

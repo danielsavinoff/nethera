@@ -4,6 +4,8 @@ export enum Permission {
   SubscriptionPlanAddAny = 'subscription-plan.add.any',
   SubscriptionViewOwn = 'subscription.view.own',
   SubscriptionViewAny = 'subscription.view.any',
+  VpnSubscriptionViewOwn = 'vpn-subscription.view.own',
+  VpnSubscriptionViewAny = 'vpn-subscription.view.any',
   PaymentViewOwn = 'payment.view.own',
   PaymentViewAny = 'payment.view.any',
   UserRoleViewOwn = 'user-role.view.own',

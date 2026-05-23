@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { VpnSubscriptionNotFoundException } from '../../../../application/exceptions/VpnSubscriptionNotFoundException.js';
 import { RepositoryQuery } from '../../../../application/models/RepositoryQuery.js';
 import { TransactionContext } from '../../../../application/models/TransactionContext.js';
 import type { VpnSubscriptionRepository } from '../../../../application/ports/VpnSubscriptionRepository.js';
@@ -54,6 +55,22 @@ export class PrismaVpnSubscriptionRepository
           updatedAt: row.updated_at,
         })
       : null;
+  }
+
+  async loadOrThrow(
+    query: RepositoryQuery<VpnSubscriptionRecord>,
+    transactionContext?: TransactionContext,
+  ): Promise<VpnSubscription> {
+    const vpnSubscription = await this.load(
+      query,
+      transactionContext,
+    );
+
+    if (!vpnSubscription) {
+      throw new VpnSubscriptionNotFoundException();
+    }
+
+    return vpnSubscription;
   }
 
   async save(

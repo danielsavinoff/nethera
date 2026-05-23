@@ -77,7 +77,8 @@
     },
     "trafficCard": {
       "title": "Использование трафика",
-      "description": "Показан суммарный трафик за последние 3 месяца"
+      "description": "Показан трафик по дням за текущий месяц",
+      "datasetLabel": "Трафик, МБ"
     }
   },
   "plansPage": {
@@ -111,23 +112,23 @@
       "status": "Статус",
       "issuedAt": "Дата выставления",
       "dueAt": "Срок оплаты",
+      "totalAmount": "Итого",
+      "paidAmount": "Оплачено",
       "amountDue": "Сумма к оплате"
     },
     "actions": {
       "openMenu": "Открыть действия со счётом",
       "label": "Действия",
       "payInvoice": "Оплатить счёт",
-      "copyPaymentId": "Скопировать ID платежа",
-      "copyPaymentIdSuccess": "ID платежа скопирован.",
-      "copyPaymentIdError": "Не удалось скопировать ID платежа. Попробуйте ещё раз."
+      "copyInvoiceId": "Скопировать ID счёта",
+      "copyInvoiceIdSuccess": "ID счёта скопирован.",
+      "copyInvoiceIdError": "Не удалось скопировать ID счёта. Попробуйте ещё раз."
     },
     "status": {
-      "draft": "Черновик",
-      "open": "Открыт",
+      "pending": "Ожидает оплаты",
       "paid": "Оплачен",
-      "failed": "Ошибка",
-      "void": "Аннулирован",
-      "refunded": "Возвращён"
+      "expired": "Истёк",
+      "canceled": "Отменён"
     }
   },
   "settingsPage": {

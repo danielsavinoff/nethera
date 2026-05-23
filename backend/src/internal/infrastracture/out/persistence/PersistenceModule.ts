@@ -7,6 +7,7 @@ import { PrismaRoleRepository } from './repositories/PrismaRoleRepository.js';
 import { PrismaSubscriptionPlanRepository } from './repositories/PrismaSubscriptionPlanRepository.js';
 import { PrismaSubscriptionRepository } from './repositories/PrismaSubscriptionRepository.js';
 import { PrismaInvoiceRepository } from './repositories/PrismaInvoiceRepository.js';
+import { PrismaInvoiceLineRepository } from './repositories/PrismaInvoiceLineRepository.js';
 import { PrismaPaymentRepository } from './repositories/PrismaPaymentRepository.js';
 import { PrismaVpnSubscriptionRepository } from './repositories/PrismaVpnSubscriptionRepository.js';
 import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.js';
@@ -20,6 +21,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaSubscriptionPlanRepository,
     PrismaSubscriptionRepository,
     PrismaInvoiceRepository,
+    PrismaInvoiceLineRepository,
     PrismaPaymentRepository,
     PrismaVpnSubscriptionRepository,
     PrismaTransactionRunner,
@@ -32,6 +34,7 @@ import { PrismaTransactionRunner } from './transaction/PrismaTransactionRunner.j
     PrismaSubscriptionPlanRepository,
     PrismaSubscriptionRepository,
     PrismaInvoiceRepository,
+    PrismaInvoiceLineRepository,
     PrismaPaymentRepository,
     PrismaVpnSubscriptionRepository,
     PrismaTransactionRunner,

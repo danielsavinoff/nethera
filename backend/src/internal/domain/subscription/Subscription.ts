@@ -14,7 +14,7 @@ export class Subscription {
     userId: SubscriptionRecord['userId'];
     subscriptionPlanId: SubscriptionRecord['subscriptionPlanId'];
     status: SubscriptionStatus;
-    startedAt: SubscriptionRecord['startedAt'];
+    startedAt?: SubscriptionRecord['startedAt'];
     expiresAt?: SubscriptionRecord['expiresAt'];
     trialStartedAt?: SubscriptionRecord['trialStartedAt'];
     trialEndsAt?: SubscriptionRecord['trialEndsAt'];

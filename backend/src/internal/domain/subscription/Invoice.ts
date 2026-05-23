@@ -72,8 +72,19 @@ export class Invoice {
     return this.props.status as InvoiceStatus;
   }
 
+  get totalAmountMinor(): InvoiceRecord['totalAmountMinor'] {
+    return this.props.totalAmountMinor;
+  }
+
   get amountPaidMinor(): InvoiceRecord['amountPaidMinor'] {
     return this.props.amountPaidMinor;
+  }
+
+  getAmountDueMinor(): number {
+    return Math.max(
+      this.props.totalAmountMinor - this.props.amountPaidMinor,
+      0,
+    );
   }
 
   get currency(): InvoiceRecord['currency'] {

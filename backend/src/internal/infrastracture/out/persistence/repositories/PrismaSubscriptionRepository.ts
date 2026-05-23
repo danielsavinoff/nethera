@@ -117,7 +117,7 @@ export class PrismaSubscriptionRepository
       userId: row.user_id,
       subscriptionPlanId: row.subscription_plan_id,
       status: row.status,
-      startedAt: row.started_at,
+      startedAt: row.started_at ?? undefined,
       expiresAt: row.expires_at ?? undefined,
       trialStartedAt: row.trial_started_at ?? undefined,
       trialEndsAt: row.trial_ends_at ?? undefined,
@@ -137,12 +137,10 @@ export class PrismaSubscriptionRepository
       SubscriptionPlan.hydrate({
         id: row.subscriptionPlan.id,
         code: row.subscriptionPlan.code,
-        billingInterval:
-          row.subscriptionPlan.billing_interval,
+        billingInterval: row.subscriptionPlan.billing_interval,
         billingIntervalCount:
           row.subscriptionPlan.billing_interval_count,
-        trialDays:
-          row.subscriptionPlan.trial_days ?? undefined,
+        trialDays: row.subscriptionPlan.trial_days ?? undefined,
         isPublic: row.subscriptionPlan.is_public,
         createdAt: row.subscriptionPlan.created_at,
         updatedAt: row.subscriptionPlan.updated_at,
@@ -154,17 +152,15 @@ export class PrismaSubscriptionRepository
             >[])
           : []
         ).map((translation) =>
-            SubscriptionPlanTranslation.hydrate({
-              id: translation.id,
-              subscriptionPlanId:
-                translation.subscription_plan_id,
-              locale: translation.locale,
-              name: translation.name,
-              description:
-                translation.description ?? undefined,
-              createdAt: translation.created_at,
-              updatedAt: translation.updated_at,
-            }),
+          SubscriptionPlanTranslation.hydrate({
+            id: translation.id,
+            subscriptionPlanId: translation.subscription_plan_id,
+            locale: translation.locale,
+            name: translation.name,
+            description: translation.description ?? undefined,
+            createdAt: translation.created_at,
+            updatedAt: translation.updated_at,
+          }),
         ),
       ),
     );
@@ -248,7 +244,7 @@ export class PrismaSubscriptionRepository
         userId: row.user_id,
         subscriptionPlanId: row.subscription_plan_id,
         status: row.status,
-        startedAt: row.started_at,
+        startedAt: row.started_at ?? undefined,
         expiresAt: row.expires_at ?? undefined,
         trialStartedAt: row.trial_started_at ?? undefined,
         trialEndsAt: row.trial_ends_at ?? undefined,
@@ -268,8 +264,7 @@ export class PrismaSubscriptionRepository
         SubscriptionPlan.hydrate({
           id: row.subscriptionPlan.id,
           code: row.subscriptionPlan.code,
-          billingInterval:
-            row.subscriptionPlan.billing_interval,
+          billingInterval: row.subscriptionPlan.billing_interval,
           billingIntervalCount:
             row.subscriptionPlan.billing_interval_count,
           trialDays:
@@ -285,17 +280,16 @@ export class PrismaSubscriptionRepository
               >[])
             : []
           ).map((translation) =>
-              SubscriptionPlanTranslation.hydrate({
-                id: translation.id,
-                subscriptionPlanId:
-                  translation.subscription_plan_id,
-                locale: translation.locale,
-                name: translation.name,
-                description:
-                  translation.description ?? undefined,
-                createdAt: translation.created_at,
-                updatedAt: translation.updated_at,
-              }),
+            SubscriptionPlanTranslation.hydrate({
+              id: translation.id,
+              subscriptionPlanId:
+                translation.subscription_plan_id,
+              locale: translation.locale,
+              name: translation.name,
+              description: translation.description ?? undefined,
+              createdAt: translation.created_at,
+              updatedAt: translation.updated_at,
+            }),
           ),
         ),
       );
@@ -349,7 +343,7 @@ export class PrismaSubscriptionRepository
       userId: row.user_id,
       subscriptionPlanId: row.subscription_plan_id,
       status: row.status,
-      startedAt: row.started_at,
+      startedAt: row.started_at ?? undefined,
       expiresAt: row.expires_at ?? undefined,
       trialStartedAt: row.trial_started_at ?? undefined,
       trialEndsAt: row.trial_ends_at ?? undefined,

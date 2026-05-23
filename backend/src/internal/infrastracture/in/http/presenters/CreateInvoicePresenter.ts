@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateInvoiceResult } from '../../../../application/usecases/CreateInvoiceUseCase.js';
+import { MoneyFormatter } from '../../../../domain/money/MoneyFormatter.js';
+import { Invoice } from '../../../../domain/subscription/Invoice.js';
+import { GetInvoiceAmountResponseDto } from '../dtos/GetInvoiceAmountResponseDto.js';
 import { GetInvoiceResponseDto } from '../dtos/GetInvoiceResponseDto.js';
 
 @Injectable()
@@ -13,11 +16,40 @@ export class CreateInvoicePresenter {
       provider: invoice.provider,
       userId: invoice.userId,
       status: invoice.status,
+      total: this.getAmountDto(
+        invoice.totalAmountMinor,
+        invoice,
+        result.data.locale,
+      ),
+      paid: this.getAmountDto(
+        invoice.amountPaidMinor,
+        invoice,
+        result.data.locale,
+      ),
+      due: this.getAmountDto(
+        invoice.getAmountDueMinor(),
+        invoice,
+        result.data.locale,
+      ),
       currency: invoice.currency,
       externalCheckoutUrl: invoice.externalCheckoutUrl,
       expiresAt: invoice.expiresAt,
       createdAt: invoice.createdAt,
-      updatedAt: invoice.updatedAt,
+    });
+  }
+
+  private getAmountDto(
+    amountMinor: number,
+    invoice: Invoice,
+    locale: string,
+  ): GetInvoiceAmountResponseDto {
+    return new GetInvoiceAmountResponseDto({
+      amountMinor,
+      formatted: MoneyFormatter.format(
+        amountMinor,
+        locale,
+        invoice.currency,
+      ),
     });
   }
 }

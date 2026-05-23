@@ -3,7 +3,7 @@ import { createResource, createSignal, For, Show } from "solid-js";
 import {
   CreateInvoiceRequestDtoProvider,
   type GetSubscriptionPlanResponseDto,
-  invoiceControllerCreateInvoice,
+  invoiceControllerHandleCreateInvoice,
   subscriptionPlanControllerGetSubscriptionPlans,
 } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
@@ -54,7 +54,7 @@ function Plans() {
     setIsLoading(true);
 
     try {
-      const response = await invoiceControllerCreateInvoice(
+      const response = await invoiceControllerHandleCreateInvoice(
         {
           subscriptionPlanId: plan.id,
           provider: CreateInvoiceRequestDtoProvider.NOWPAYMENTS,

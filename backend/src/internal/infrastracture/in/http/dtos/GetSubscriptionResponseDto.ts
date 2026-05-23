@@ -11,8 +11,11 @@ export class GetSubscriptionResponseDto {
   @ApiProperty()
   status!: string;
 
-  @ApiProperty()
-  startedAt!: Date;
+  @ApiProperty({ required: false })
+  startedAt?: Date;
+
+  @ApiProperty({ required: false })
+  expiresAt?: Date;
 
   @ApiProperty({ required: false })
   trialStartedAt?: Date;
