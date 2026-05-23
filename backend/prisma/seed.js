@@ -28,6 +28,7 @@ async function main() {
   const permissionNames = Object.values(Permission);
 
   const userPermissionNames = [
+    Permission.SubscriptionPlanViewPublic,
     Permission.SubscriptionViewOwn,
     Permission.PaymentViewOwn,
     Permission.UserRoleViewOwn,

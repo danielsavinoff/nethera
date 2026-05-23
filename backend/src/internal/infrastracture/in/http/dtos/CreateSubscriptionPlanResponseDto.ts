@@ -20,7 +20,7 @@ export class CreateSubscriptionPlanResponseDto {
   trialDays?: number;
 
   @ApiProperty()
-  active!: boolean;
+  isPublic!: boolean;
 
   @ApiProperty({
     type: [CreateSubscriptionPlanTranslationResponseDto],

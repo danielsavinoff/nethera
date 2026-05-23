@@ -10,7 +10,7 @@ export class SubscriptionPlanTranslation {
   static create(props: {
     id?: SubscriptionPlanTranslationRecord['id'];
     subscriptionPlanId: SubscriptionPlanTranslationRecord['subscriptionPlanId'];
-    language: SubscriptionPlanTranslationRecord['language'];
+    locale: SubscriptionPlanTranslationRecord['locale'];
     name: SubscriptionPlanTranslationRecord['name'];
     description?: SubscriptionPlanTranslationRecord['description'];
     createdAt?: SubscriptionPlanTranslationRecord['createdAt'];
@@ -19,7 +19,7 @@ export class SubscriptionPlanTranslation {
     return new SubscriptionPlanTranslation({
       id: props.id ?? crypto.randomUUID(),
       subscriptionPlanId: props.subscriptionPlanId,
-      language: props.language,
+      locale: props.locale,
       name: props.name,
       description: props.description,
       createdAt: props.createdAt ?? new Date(),
@@ -39,8 +39,8 @@ export class SubscriptionPlanTranslation {
     return this.props.subscriptionPlanId;
   }
 
-  get language(): SubscriptionPlanTranslationRecord['language'] {
-    return this.props.language;
+  get locale(): SubscriptionPlanTranslationRecord['locale'] {
+    return this.props.locale;
   }
 
   get name(): SubscriptionPlanTranslationRecord['name'] {

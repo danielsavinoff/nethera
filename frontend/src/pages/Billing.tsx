@@ -3,10 +3,10 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import { DataTable } from "~/components/DataTable";
 import { Badge } from "~/components/ui/Badge";
 import {
-  type GetSubscriptionInvoiceResponseDto,
-  subscriptionInvoiceControllerHandleGetSubscriptionInvoices,
+  type GetPaymentResponseDto,
+  paymentControllerGetPayments,
 } from "~/api/generated";
-import { createMemo, createResource, Show } from "solid-js";
+import { createMemo, createResource } from "solid-js";
 import { useLocale } from "~/context/Locale";
 
 import { Button } from "~/components/ui/Button";
@@ -15,33 +15,32 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/DropdownMenu";
 import { Ellipsis } from "lucide-solid";
-import { A } from "@solidjs/router";
 import { showToast } from "~/components/ui/Toast";
 
-type Invoice = GetSubscriptionInvoiceResponseDto;
+type Payment = GetPaymentResponseDto;
 
 function Billing() {
   const { locale, t } = useLocale();
 
-  const [invoices] = createResource(async () => {
-    const response =
-      await subscriptionInvoiceControllerHandleGetSubscriptionInvoices();
+  const [payments] = createResource(async () => {
+    const response = await paymentControllerGetPayments();
 
-    return response.data.invoices;
+    return response.data.payments;
   });
 
-  const formatMoney = (amount: string, currency: string) => {
+  const formatMoney = (amountMinor: number, currency: string) => {
     try {
+      const amount = amountMinor / 100;
+
       return new Intl.NumberFormat(locale(), {
         style: "currency",
         currency,
-      }).format(Number(amount));
+      }).format(amount);
     } catch {
-      return `${amount} ${currency.toUpperCase()}`;
+      return `${amountMinor} ${currency.toUpperCase()}`;
     }
   };
 
@@ -93,7 +92,7 @@ function Billing() {
     return "secondary";
   };
 
-  const columns = createMemo<ColumnDef<Invoice>[]>(() => [
+  const columns = createMemo<ColumnDef<Payment>[]>(() => [
     {
       accessorKey: "status",
       header: t("billingPage.columns.status"),
@@ -119,9 +118,9 @@ function Billing() {
       accessorKey: "amountDue",
       header: t("billingPage.columns.amountDue"),
       cell: (row) => {
-        const invoice = row.row.original;
+        const payment = row.row.original;
 
-        return formatMoney(invoice.amountDue, invoice.currency);
+        return formatMoney(payment.amountMinor, payment.currency);
       },
     },
     {
@@ -144,17 +143,6 @@ function Billing() {
               <DropdownMenuLabel>
                 {t("billingPage.actions.label")}
               </DropdownMenuLabel>
-              <Show when={props.row.getValue("status") === "OPEN"}>
-                <DropdownMenuItem
-                  as={A}
-                  href={props.row.original.checkoutUrl!}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {t("billingPage.actions.payInvoice")}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </Show>
               <DropdownMenuItem
                 onClick={() => handleCopyPaymentId(props.row.original.id)}
               >
@@ -173,9 +161,9 @@ function Billing() {
         <h1 class="text-3xl font-semibold">{t("billingPage.title")}</h1>
       </Grid>
       <div class="flex-1">
-        <DataTable<Invoice, unknown>
+        <DataTable<Payment, unknown>
           columns={columns()}
-          data={invoices() ?? []}
+          data={payments() ?? []}
           emptyMessage={t("billingPage.emptyState")}
         />
       </div>

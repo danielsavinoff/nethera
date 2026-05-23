@@ -29,27 +29,34 @@ const SUBSCRIPTION_LINK = "https://tuntunms.twilightparadox.com";
 function App() {
   const { locale, t } = useLocale();
 
-  const [currentSubscription] = createResource(locale, async (language) => {
-    try {
-      const response = await subscriptionControllerHandleGetCurrentSubscription(
-        {
-          headers: {
-            "Accept-Language": language,
-          },
-        },
-      );
+  const [currentSubscription] = createResource(
+    locale,
+    async (requestLocale) => {
+      try {
+        const response =
+          await subscriptionControllerHandleGetCurrentSubscription(
+            {
+              headers: {
+                "Accept-Language": requestLocale,
+              },
+            },
+          );
 
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return null;
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          return null;
+        }
+
+        throw error;
       }
-
-      throw error;
-    }
-  });
+    },
+  );
 
   const hasSubscription = () => Boolean(currentSubscription());
+
+  const getSubscriptionValidUntil = () =>
+    currentSubscription()?.trialEndsAt ?? currentSubscription()?.endedAt;
 
   const handleCopy = async () => {
     try {
@@ -68,16 +75,16 @@ function App() {
   };
 
   const formatSubscriptionValidity = () => {
-    const currentPeriodEndAt = currentSubscription()?.currentPeriodEndAt;
+    const validUntil = getSubscriptionValidUntil();
 
-    if (!currentPeriodEndAt) {
+    if (!validUntil) {
       return t("subscriptionPage.validCard.unlimited");
     }
 
     const date = new Intl.DateTimeFormat(locale(), {
       day: "numeric",
       month: "long",
-    }).format(new Date(currentPeriodEndAt));
+    }).format(new Date(validUntil));
 
     return t("subscriptionPage.validCard.until").replace("{date}", date);
   };
@@ -178,7 +185,7 @@ function App() {
                     when={!currentSubscription.loading}
                     fallback={<Skeleton height={16} width={192} radius={10} />}
                   >
-                    {currentSubscription()?.plan?.name}
+                    {currentSubscription()?.subscriptionPlan?.name}
                   </Show>
                 </p>
               </CardContent>
@@ -208,7 +215,7 @@ function App() {
                 <Button
                   variant="outline"
                   class="w-full"
-                  disabled={!currentSubscription()?.currentPeriodEndAt}
+                  disabled={!getSubscriptionValidUntil()}
                 >
                   {t("subscriptionPage.validCard.action")}
                 </Button>

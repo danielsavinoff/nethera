@@ -4,7 +4,7 @@ export interface SubscriptionPlanRecord {
   billingInterval: string;
   billingIntervalCount: number;
   trialDays?: number;
-  active: boolean;
+  isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

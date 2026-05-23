@@ -19,14 +19,14 @@ export class CreateSubscriptionPlanPresenter {
       billingIntervalCount:
         result.data.subscriptionPlan.billingIntervalCount,
       trialDays: result.data.subscriptionPlan.trialDays,
-      active: result.data.subscriptionPlan.active,
+      isPublic: result.data.subscriptionPlan.isPublic,
       translations: result.data.subscriptionPlan
         .getAllTranslations()
         .map(
           (translation) =>
             new CreateSubscriptionPlanTranslationResponseDto({
               id: translation.id,
-              language: translation.language,
+              locale: translation.locale,
               name: translation.name,
               description: translation.description,
             }),
@@ -46,7 +46,7 @@ export class CreateSubscriptionPlanPresenter {
                   new CreateSubscriptionPlanFeatureTranslationResponseDto(
                     {
                       id: translation.id,
-                      language: translation.language,
+                      locale: translation.locale,
                       title: translation.title,
                       description: translation.description,
                     },
@@ -61,7 +61,7 @@ export class CreateSubscriptionPlanPresenter {
             subscriptionPlanId: price.subscriptionPlanId,
             amountMinor: price.amountMinor,
             currency: price.currency,
-            countryCode: price.countryCode,
+            locale: price.locale,
             active: price.active,
             createdAt: price.createdAt,
           }),

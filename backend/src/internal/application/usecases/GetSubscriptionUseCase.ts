@@ -8,7 +8,7 @@ import type { UserRepository } from '../ports/UserRepository.js';
 export interface GetSubscriptionCommand {
   initiatorUserId: string;
   subscriptionId: string;
-  language: string;
+  locale: string;
 }
 
 export interface GetSubscriptionResult {
@@ -58,9 +58,9 @@ export class GetSubscriptionUseCase {
             with: {
               subscriptionPlanTranslations: {
                 filter: {
-                  field: 'language',
+                  field: 'locale',
                   operator: FilterOperator.Equals,
-                  value: command.language,
+                  value: command.locale,
                 },
               },
             },

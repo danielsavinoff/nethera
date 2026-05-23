@@ -3,7 +3,7 @@ CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "language" VARCHAR(2),
+    "locale" VARCHAR(10),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -77,7 +77,7 @@ CREATE TABLE "user_roles" (
 -- CreateTable
 CREATE TABLE "subscription_plans" (
     "id" UUID NOT NULL,
-    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "is_public" BOOLEAN NOT NULL DEFAULT true,
     "billing_interval" VARCHAR(16) NOT NULL,
     "billing_interval_count" INTEGER NOT NULL DEFAULT 1,
     "code" VARCHAR(64) NOT NULL,
@@ -92,17 +92,15 @@ CREATE TABLE "subscription_plans" (
 CREATE TABLE "subscriptions" (
     "id" UUID NOT NULL,
     "status" VARCHAR(32) NOT NULL,
-    "auto_renew" BOOLEAN NOT NULL DEFAULT true,
-    "cancel_at_period_end" BOOLEAN NOT NULL DEFAULT false,
+    "auto_renew" BOOLEAN NOT NULL DEFAULT false,
     "started_at" TIMESTAMPTZ NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
-    "current_period_start_at" TIMESTAMPTZ,
-    "current_period_end_at" TIMESTAMPTZ,
+    "expires_at" TIMESTAMPTZ,
     "trial_started_at" TIMESTAMPTZ,
     "trial_ends_at" TIMESTAMPTZ,
     "canceled_at" TIMESTAMPTZ,
     "ended_at" TIMESTAMPTZ,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL,
     "user_id" UUID NOT NULL,
     "subscription_plan_id" UUID NOT NULL,
 
@@ -137,7 +135,8 @@ CREATE TABLE "invoices" (
     "external_id" VARCHAR(255) NOT NULL,
     "provider" VARCHAR(32) NOT NULL,
     "status" VARCHAR(32) NOT NULL,
-    "amount_due_minor" INTEGER NOT NULL,
+    "total_amount_minor" INTEGER NOT NULL,
+    "amount_paid_minor" INTEGER NOT NULL,
     "currency" TEXT NOT NULL,
     "external_checkout_url" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -149,12 +148,14 @@ CREATE TABLE "invoices" (
 );
 
 -- CreateTable
-CREATE TABLE "invoice_subscriptions" (
+CREATE TABLE "invoice_lines" (
     "id" UUID NOT NULL,
+    "reference_id" VARCHAR(255) NOT NULL,
+    "type" VARCHAR(64) NOT NULL,
+    "amount" INTEGER NOT NULL,
     "invoice_id" UUID NOT NULL,
-    "subscription_id" UUID NOT NULL,
 
-    CONSTRAINT "invoice_subscriptions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "invoice_lines_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -162,7 +163,7 @@ CREATE TABLE "subscription_plan_prices" (
     "id" UUID NOT NULL,
     "amount_minor" INTEGER NOT NULL,
     "currency" CHAR(3) NOT NULL,
-    "country_code" CHAR(2) NOT NULL,
+    "locale" VARCHAR(10) NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "subscription_plan_id" UUID NOT NULL,
@@ -186,7 +187,7 @@ CREATE TABLE "vpn_subscriptions" (
 -- CreateTable
 CREATE TABLE "subscription_plan_translations" (
     "id" UUID NOT NULL,
-    "language" VARCHAR(10) NOT NULL,
+    "locale" VARCHAR(10) NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -213,7 +214,7 @@ CREATE TABLE "subscription_plan_features" (
 -- CreateTable
 CREATE TABLE "subscription_plan_feature_translations" (
     "id" UUID NOT NULL,
-    "language" VARCHAR(10) NOT NULL,
+    "locale" VARCHAR(10) NOT NULL,
     "title" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -242,7 +243,7 @@ CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 CREATE UNIQUE INDEX "subscription_plans_code_key" ON "subscription_plans"("code");
 
 -- CreateIndex
-CREATE INDEX "subscription_plans_is_active_idx" ON "subscription_plans"("is_active");
+CREATE INDEX "subscription_plans_is_public_idx" ON "subscription_plans"("is_public");
 
 -- CreateIndex
 CREATE INDEX "subscriptions_user_id_idx" ON "subscriptions"("user_id");
@@ -254,7 +255,7 @@ CREATE INDEX "subscriptions_subscription_plan_id_idx" ON "subscriptions"("subscr
 CREATE INDEX "subscriptions_status_idx" ON "subscriptions"("status");
 
 -- CreateIndex
-CREATE INDEX "subscriptions_current_period_end_at_idx" ON "subscriptions"("current_period_end_at");
+CREATE INDEX "subscriptions_expires_at_idx" ON "subscriptions"("expires_at");
 
 -- CreateIndex
 CREATE INDEX "payments_user_id_idx" ON "payments"("user_id");
@@ -275,22 +276,19 @@ CREATE INDEX "invoices_status_idx" ON "invoices"("status");
 CREATE UNIQUE INDEX "invoices_provider_external_id_key" ON "invoices"("provider", "external_id");
 
 -- CreateIndex
-CREATE INDEX "invoice_subscriptions_invoice_id_idx" ON "invoice_subscriptions"("invoice_id");
+CREATE INDEX "invoice_lines_invoice_id_idx" ON "invoice_lines"("invoice_id");
 
 -- CreateIndex
-CREATE INDEX "invoice_subscriptions_subscription_id_idx" ON "invoice_subscriptions"("subscription_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "invoice_subscriptions_invoice_id_subscription_id_key" ON "invoice_subscriptions"("invoice_id", "subscription_id");
+CREATE UNIQUE INDEX "invoice_lines_reference_id_type_key" ON "invoice_lines"("reference_id", "type");
 
 -- CreateIndex
 CREATE INDEX "subscription_plan_prices_subscription_plan_id_idx" ON "subscription_plan_prices"("subscription_plan_id");
 
 -- CreateIndex
-CREATE INDEX "subscription_plan_prices_country_code_idx" ON "subscription_plan_prices"("country_code");
+CREATE INDEX "subscription_plan_prices_locale_idx" ON "subscription_plan_prices"("locale");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subscription_plan_prices_subscription_plan_id_country_code_key" ON "subscription_plan_prices"("subscription_plan_id", "country_code") WHERE ("is_active" = true);
+CREATE UNIQUE INDEX "subscription_plan_prices_subscription_plan_id_locale_key" ON "subscription_plan_prices"("subscription_plan_id", "locale") WHERE ("is_active" = true);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "vpn_subscriptions_user_id_key" ON "vpn_subscriptions"("user_id");
@@ -299,10 +297,10 @@ CREATE UNIQUE INDEX "vpn_subscriptions_user_id_key" ON "vpn_subscriptions"("user
 CREATE UNIQUE INDEX "vpn_subscriptions_provider_external_id_key" ON "vpn_subscriptions"("provider", "external_id");
 
 -- CreateIndex
-CREATE INDEX "subscription_plan_translations_language_idx" ON "subscription_plan_translations"("language");
+CREATE INDEX "subscription_plan_translations_locale_idx" ON "subscription_plan_translations"("locale");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subscription_plan_translations_subscription_plan_id_languag_key" ON "subscription_plan_translations"("subscription_plan_id", "language");
+CREATE UNIQUE INDEX "subscription_plan_translations_subscription_plan_id_locale_key" ON "subscription_plan_translations"("subscription_plan_id", "locale");
 
 -- CreateIndex
 CREATE INDEX "subscription_plan_features_subscription_plan_id_idx" ON "subscription_plan_features"("subscription_plan_id");
@@ -314,10 +312,10 @@ CREATE INDEX "subscription_plan_features_sort_order_idx" ON "subscription_plan_f
 CREATE UNIQUE INDEX "subscription_plan_features_subscription_plan_id_code_key" ON "subscription_plan_features"("subscription_plan_id", "code");
 
 -- CreateIndex
-CREATE INDEX "subscription_plan_feature_translations_language_idx" ON "subscription_plan_feature_translations"("language");
+CREATE INDEX "subscription_plan_feature_translations_locale_idx" ON "subscription_plan_feature_translations"("locale");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subscription_plan_feature_translations_subscription_plan_fe_key" ON "subscription_plan_feature_translations"("subscription_plan_feature_id", "language");
+CREATE UNIQUE INDEX "subscription_plan_feature_translations_subscription_plan_fe_key" ON "subscription_plan_feature_translations"("subscription_plan_feature_id", "locale");
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -347,7 +345,7 @@ ALTER TABLE "payments" ADD CONSTRAINT "payments_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "invoice_subscriptions" ADD CONSTRAINT "invoice_subscriptions_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "subscriptions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "invoice_lines" ADD CONSTRAINT "invoice_lines_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "invoices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "subscription_plan_prices" ADD CONSTRAINT "subscription_plan_prices_subscription_plan_id_fkey" FOREIGN KEY ("subscription_plan_id") REFERENCES "subscription_plans"("id") ON DELETE CASCADE ON UPDATE CASCADE;

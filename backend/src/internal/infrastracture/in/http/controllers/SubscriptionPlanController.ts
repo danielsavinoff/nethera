@@ -3,11 +3,13 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Headers,
   NotFoundException,
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { CreateSubscriptionPlanUseCase } from '../../../../application/usecases/CreateSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlanUseCase } from '../../../../application/usecases/GetSubscriptionPlanUseCase.js';
@@ -25,7 +27,10 @@ import { GetSubscriptionPlansPresenter } from '../presenters/GetSubscriptionPlan
 import { SubscriptionPlanActionForbiddenException } from '../../../../domain/subscription/SubscriptionPlanActionForbiddenException.js';
 
 @Controller('subscription-plans')
+@ApiHeader({ name: 'Accept-Language', required: false })
 export class SubscriptionPlanController {
+  private readonly fallbackLocale: string;
+
   constructor(
     private readonly getSubscriptionPlansUseCase: GetSubscriptionPlansUseCase,
     private readonly getSubscriptionPlansPresenter: GetSubscriptionPlansPresenter,
@@ -33,15 +38,24 @@ export class SubscriptionPlanController {
     private readonly getSubscriptionPlanPresenter: GetSubscriptionPlanPresenter,
     private readonly createSubscriptionPlanUseCase: CreateSubscriptionPlanUseCase,
     private readonly createSubscriptionPlanPresenter: CreateSubscriptionPlanPresenter,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.fallbackLocale =
+      this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
+  }
 
   @ApiOkResponse({ type: GetSubscriptionPlansResponseDto })
   @Get()
-  async getSubscriptionPlans(@Claims() claims: AuthClaim) {
+  async getSubscriptionPlans(
+    @Claims() claims: AuthClaim,
+    @Headers('accept-language') acceptLanguage: string,
+  ) {
     try {
       const result =
         await this.getSubscriptionPlansUseCase.execute({
           initiatorUserId: claims.sub,
+          locale: this.getLocale(acceptLanguage),
+          onlyPublic: true,
         });
 
       return this.getSubscriptionPlansPresenter.present(result);
@@ -65,12 +79,14 @@ export class SubscriptionPlanController {
   async getSubscriptionPlan(
     @Param('id') subscriptionPlanId: string,
     @Claims() claims: AuthClaim,
+    @Headers('accept-language') acceptLanguage: string,
   ) {
     try {
       const result =
         await this.getSubscriptionPlanUseCase.execute({
           initiatorUserId: claims.sub,
           subscriptionPlanId,
+          locale: this.getLocale(acceptLanguage),
         });
 
       return this.getSubscriptionPlanPresenter.present(result);
@@ -112,7 +128,7 @@ export class SubscriptionPlanController {
           billingIntervalCount:
             createSubscriptionPlanRequestDto.billingIntervalCount,
           trialDays: createSubscriptionPlanRequestDto.trialDays,
-          active: createSubscriptionPlanRequestDto.active,
+          isPublic: createSubscriptionPlanRequestDto.isPublic,
           translations:
             createSubscriptionPlanRequestDto.translations,
           features: createSubscriptionPlanRequestDto.features,
@@ -135,5 +151,12 @@ export class SubscriptionPlanController {
 
       throw error;
     }
+  }
+
+  private getLocale(acceptLanguage?: string): string {
+    return (
+      acceptLanguage?.split(',')[0]?.trim() ||
+      this.fallbackLocale
+    );
   }
 }

@@ -11,7 +11,7 @@ export class User {
   static create(props: {
     id?: string;
     email: string;
-    language?: string;
+    locale?: string;
     active?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
@@ -20,7 +20,7 @@ export class User {
     return new User({
       id: props.id ?? crypto.randomUUID(),
       email: props.email,
-      language: props.language,
+      locale: props.locale,
       active: props.active ?? true,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
@@ -49,15 +49,15 @@ export class User {
     return this.props.email || 'Unnamed user';
   }
 
-  get language(): UserRecord['language'] {
-    return this.props.language;
+  get locale(): UserRecord['locale'] {
+    return this.props.locale;
   }
 
-  setLanguagePreference(language: string): User {
+  setLocalePreference(locale: string): User {
     return new User(
       {
         ...this.props,
-        language: language,
+        locale: locale,
       },
       this.roles,
     );

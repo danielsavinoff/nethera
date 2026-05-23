@@ -5,7 +5,9 @@ export interface ViewSubscriptionPlanActor {
   permissions: Permission[];
 }
 
-export type ViewSubscriptionPlanTarget = void;
+export interface ViewSubscriptionPlanTarget {
+  onlyPublic: boolean;
+}
 
 export interface CreateSubscriptionPlanActor {
   permissions: Permission[];
@@ -18,11 +20,18 @@ export class SubscriptionPlanPolicy {
     actor: ViewSubscriptionPlanActor,
     target: ViewSubscriptionPlanTarget,
   ): void {
-    void target;
-
     if (
       actor.permissions.includes(
         Permission.SubscriptionPlanViewAny,
+      )
+    ) {
+      return;
+    }
+
+    if (
+      target.onlyPublic &&
+      actor.permissions.includes(
+        Permission.SubscriptionPlanViewPublic,
       )
     ) {
       return;

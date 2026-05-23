@@ -14,7 +14,7 @@ export class GetSubscriptionPriceResponseDto {
   currency!: string;
 
   @ApiProperty()
-  countryCode!: string;
+  locale!: string;
 
   @ApiProperty()
   active!: boolean;

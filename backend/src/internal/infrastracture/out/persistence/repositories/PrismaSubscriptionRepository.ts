@@ -17,28 +17,6 @@ import { SubscriptionRecord } from '../../../../domain/subscription/Subscription
 import { SubscriptionPlanTranslationRecord } from '../../../../domain/subscription/SubscriptionPlanTranslationRecord.js';
 import { PrismaBaseRepository } from '../base/PrismaBaseRepository.js';
 
-type SubscriptionPlanTranslationRow = {
-  id: string;
-  subscription_plan_id: string;
-  language: string;
-  name: string;
-  description: string | null;
-  created_at: Date;
-  updated_at: Date;
-};
-
-type SubscriptionPlanRow = {
-  id: string;
-  code: string;
-  billing_interval: string;
-  billing_interval_count: number;
-  trial_days: number | null;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
-  translations: SubscriptionPlanTranslationRow[];
-};
-
 @Injectable()
 export class PrismaSubscriptionRepository
   extends PrismaBaseRepository
@@ -64,7 +42,7 @@ export class PrismaSubscriptionRepository
     subscriptionPlanTranslations: {
       id: 'id',
       subscriptionPlanId: 'subscription_plan_id',
-      language: 'language',
+      locale: 'locale',
       name: 'name',
       description: 'description',
       createdAt: 'created_at',
@@ -121,7 +99,7 @@ export class PrismaSubscriptionRepository
                         )
                       : undefined,
                   orderBy: {
-                    language: 'asc',
+                    locale: 'asc',
                   },
                 },
               },
@@ -155,31 +133,38 @@ export class PrismaSubscriptionRepository
       return subscription;
     }
 
-    const subscriptionPlan =
-      row.subscriptionPlan as SubscriptionPlanRow;
-
     return subscription.withPlan(
       SubscriptionPlan.hydrate({
-        id: subscriptionPlan.id,
-        code: subscriptionPlan.code,
-        billingInterval: subscriptionPlan.billing_interval,
+        id: row.subscriptionPlan.id,
+        code: row.subscriptionPlan.code,
+        billingInterval:
+          row.subscriptionPlan.billing_interval,
         billingIntervalCount:
-          subscriptionPlan.billing_interval_count,
-        trialDays: subscriptionPlan.trial_days ?? undefined,
-        active: subscriptionPlan.is_active,
-        createdAt: subscriptionPlan.created_at,
-        updatedAt: subscriptionPlan.updated_at,
+          row.subscriptionPlan.billing_interval_count,
+        trialDays:
+          row.subscriptionPlan.trial_days ?? undefined,
+        isPublic: row.subscriptionPlan.is_public,
+        createdAt: row.subscriptionPlan.created_at,
+        updatedAt: row.subscriptionPlan.updated_at,
       }).withTranslations(
-        subscriptionPlan.translations.map((translation) =>
-          SubscriptionPlanTranslation.hydrate({
-            id: translation.id,
-            subscriptionPlanId: translation.subscription_plan_id,
-            language: translation.language,
-            name: translation.name,
-            description: translation.description ?? undefined,
-            createdAt: translation.created_at,
-            updatedAt: translation.updated_at,
-          }),
+        ('translations' in row.subscriptionPlan
+          ? (row.subscriptionPlan
+              .translations as Prisma.SubscriptionPlanTranslationGetPayload<
+              Record<string, never>
+            >[])
+          : []
+        ).map((translation) =>
+            SubscriptionPlanTranslation.hydrate({
+              id: translation.id,
+              subscriptionPlanId:
+                translation.subscription_plan_id,
+              locale: translation.locale,
+              name: translation.name,
+              description:
+                translation.description ?? undefined,
+              createdAt: translation.created_at,
+              updatedAt: translation.updated_at,
+            }),
         ),
       ),
     );
@@ -248,7 +233,7 @@ export class PrismaSubscriptionRepository
                         )
                       : undefined,
                   orderBy: {
-                    language: 'asc',
+                    locale: 'asc',
                   },
                 },
               },
@@ -279,32 +264,38 @@ export class PrismaSubscriptionRepository
         return subscription;
       }
 
-      const subscriptionPlan =
-        row.subscriptionPlan as SubscriptionPlanRow;
-
       return subscription.withPlan(
         SubscriptionPlan.hydrate({
-          id: subscriptionPlan.id,
-          code: subscriptionPlan.code,
-          billingInterval: subscriptionPlan.billing_interval,
+          id: row.subscriptionPlan.id,
+          code: row.subscriptionPlan.code,
+          billingInterval:
+            row.subscriptionPlan.billing_interval,
           billingIntervalCount:
-            subscriptionPlan.billing_interval_count,
-          trialDays: subscriptionPlan.trial_days ?? undefined,
-          active: subscriptionPlan.is_active,
-          createdAt: subscriptionPlan.created_at,
-          updatedAt: subscriptionPlan.updated_at,
+            row.subscriptionPlan.billing_interval_count,
+          trialDays:
+            row.subscriptionPlan.trial_days ?? undefined,
+          isPublic: row.subscriptionPlan.is_public,
+          createdAt: row.subscriptionPlan.created_at,
+          updatedAt: row.subscriptionPlan.updated_at,
         }).withTranslations(
-          subscriptionPlan.translations.map((translation) =>
-            SubscriptionPlanTranslation.hydrate({
-              id: translation.id,
-              subscriptionPlanId:
-                translation.subscription_plan_id,
-              language: translation.language,
-              name: translation.name,
-              description: translation.description ?? undefined,
-              createdAt: translation.created_at,
-              updatedAt: translation.updated_at,
-            }),
+          ('translations' in row.subscriptionPlan
+            ? (row.subscriptionPlan
+                .translations as Prisma.SubscriptionPlanTranslationGetPayload<
+                Record<string, never>
+              >[])
+            : []
+          ).map((translation) =>
+              SubscriptionPlanTranslation.hydrate({
+                id: translation.id,
+                subscriptionPlanId:
+                  translation.subscription_plan_id,
+                locale: translation.locale,
+                name: translation.name,
+                description:
+                  translation.description ?? undefined,
+                createdAt: translation.created_at,
+                updatedAt: translation.updated_at,
+              }),
           ),
         ),
       );

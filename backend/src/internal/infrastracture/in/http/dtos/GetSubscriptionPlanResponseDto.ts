@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GetSubscriptionPlanFeatureResponseDto } from './GetSubscriptionPlanFeatureResponseDto.js';
-import { GetSubscriptionPriceResponseDto } from './GetSubscriptionPriceResponseDto.js';
-import { GetSubscriptionPlanTranslationResponseDto } from './GetSubscriptionPlanTranslationResponseDto.js';
+import { GetSubscriptionPlanPriceResponseDto } from './GetSubscriptionPlanPriceResponseDto.js';
 
 export class GetSubscriptionPlanResponseDto {
   @ApiProperty()
@@ -20,18 +19,13 @@ export class GetSubscriptionPlanResponseDto {
   trialDays?: number;
 
   @ApiProperty()
-  active!: boolean;
+  isPublic!: boolean;
 
-  @ApiProperty()
-  createdAt!: Date;
+  @ApiProperty({ required: false })
+  name?: string;
 
-  @ApiProperty()
-  updatedAt!: Date;
-
-  @ApiProperty({
-    type: [GetSubscriptionPlanTranslationResponseDto],
-  })
-  translations!: GetSubscriptionPlanTranslationResponseDto[];
+  @ApiProperty({ required: false })
+  description?: string;
 
   @ApiProperty({
     type: [GetSubscriptionPlanFeatureResponseDto],
@@ -39,9 +33,10 @@ export class GetSubscriptionPlanResponseDto {
   features!: GetSubscriptionPlanFeatureResponseDto[];
 
   @ApiProperty({
-    type: [GetSubscriptionPriceResponseDto],
+    type: GetSubscriptionPlanPriceResponseDto,
+    required: false,
   })
-  prices!: GetSubscriptionPriceResponseDto[];
+  price?: GetSubscriptionPlanPriceResponseDto;
 
   constructor(data: GetSubscriptionPlanResponseDto) {
     Object.assign(this, data);

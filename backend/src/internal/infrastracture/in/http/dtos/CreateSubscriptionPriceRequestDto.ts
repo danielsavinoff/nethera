@@ -19,8 +19,8 @@ export class CreateSubscriptionPriceRequestDto {
 
   @ApiProperty()
   @IsString()
-  @Length(2, 2)
-  countryCode!: string;
+  @Length(2, 10)
+  locale!: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

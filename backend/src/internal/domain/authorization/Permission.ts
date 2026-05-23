@@ -1,5 +1,6 @@
 export enum Permission {
   SubscriptionPlanViewAny = 'subscription-plan.view.any',
+  SubscriptionPlanViewPublic = 'subscription-plan.view.public',
   SubscriptionPlanAddAny = 'subscription-plan.add.any',
   SubscriptionViewOwn = 'subscription.view.own',
   SubscriptionViewAny = 'subscription.view.any',

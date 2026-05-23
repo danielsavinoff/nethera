@@ -3,7 +3,7 @@ export interface SubscriptionPriceRecord {
   subscriptionPlanId: string;
   amountMinor: number;
   currency: string;
-  countryCode: string;
+  locale: string;
   active: boolean;
   createdAt: Date;
 }

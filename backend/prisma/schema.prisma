@@ -12,7 +12,7 @@ model User {
 
   email     String  @unique
   is_active Boolean @default(true)
-  language  String? @db.VarChar(2)
+  locale    String? @db.VarChar(10)
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -114,7 +114,7 @@ model UserRoleAssignment {
 model SubscriptionPlan {
   id String @id @default(uuid()) @db.Uuid
 
-  is_active              Boolean @default(true)
+  is_public              Boolean @default(true)
   billing_interval       String  @db.VarChar(16)
   billing_interval_count Int     @default(1)
   code                   String  @unique @db.VarChar(64)
@@ -128,7 +128,7 @@ model SubscriptionPlan {
   features      SubscriptionPlanFeature[]
   prices        SubscriptionPlanPrice[]
 
-  @@index([is_active])
+  @@index([is_public])
   @@map("subscription_plans")
 }
 
@@ -236,7 +236,7 @@ model SubscriptionPlanPrice {
 
   amount_minor Int
   currency     String  @db.Char(3)
-  country_code String  @db.Char(2)
+  locale       String  @db.VarChar(10)
   is_active    Boolean @default(true)
 
   created_at DateTime @default(now()) @db.Timestamptz
@@ -245,9 +245,9 @@ model SubscriptionPlanPrice {
 
   subscriptionPlan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
 
-  @@unique([subscription_plan_id, country_code], where: { is_active: true })
+  @@unique([subscription_plan_id, locale], where: { is_active: true })
   @@index([subscription_plan_id])
-  @@index([country_code])
+  @@index([locale])
   @@map("subscription_plan_prices")
 }
 
@@ -272,7 +272,7 @@ model VpnSubscription {
 model SubscriptionPlanTranslation {
   id String @id @default(uuid()) @db.Uuid
 
-  language    String  @db.VarChar(10)
+  locale      String  @db.VarChar(10)
   name        String  @db.VarChar(255)
   description String?
 
@@ -283,8 +283,8 @@ model SubscriptionPlanTranslation {
 
   subscriptionPlan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
 
-  @@unique([subscription_plan_id, language])
-  @@index([language])
+  @@unique([subscription_plan_id, locale])
+  @@index([locale])
   @@map("subscription_plan_translations")
 }
 
@@ -313,7 +313,7 @@ model SubscriptionPlanFeature {
 model SubscriptionPlanFeatureTranslation {
   id String @id @default(uuid()) @db.Uuid
 
-  language    String  @db.VarChar(10)
+  locale      String  @db.VarChar(10)
   title       String  @db.VarChar(255)
   description String?
 
@@ -324,7 +324,7 @@ model SubscriptionPlanFeatureTranslation {
 
   subscriptionPlanFeature SubscriptionPlanFeature @relation(fields: [subscription_plan_feature_id], references: [id], onDelete: Cascade)
 
-  @@unique([subscription_plan_feature_id, language])
-  @@index([language])
+  @@unique([subscription_plan_feature_id, locale])
+  @@index([locale])
   @@map("subscription_plan_feature_translations")
 }

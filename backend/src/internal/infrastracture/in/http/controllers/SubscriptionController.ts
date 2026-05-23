@@ -24,7 +24,7 @@ import { ConfigService } from '@nestjs/config';
 @Controller('subscriptions')
 @ApiHeader({ name: 'Accept-Language', required: false })
 export class SubscriptionController {
-  private readonly fallbackLanguage: string;
+  private readonly fallbackLocale: string;
 
   constructor(
     private readonly getSubscriptionsUseCase: GetSubscriptionsUseCase,
@@ -34,7 +34,7 @@ export class SubscriptionController {
     private readonly getSubscriptionPresenter: GetSubscriptionPresenter,
     private readonly configService: ConfigService,
   ) {
-    this.fallbackLanguage =
+    this.fallbackLocale =
       this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
   }
 
@@ -47,7 +47,7 @@ export class SubscriptionController {
     try {
       const result = await this.getSubscriptionsUseCase.execute({
         initiatorUserId: claims.sub,
-        language: this.getLanguage(acceptLanguage),
+        locale: this.getLocale(acceptLanguage),
       });
 
       return this.getSubscriptionsPresenter.present(result);
@@ -76,7 +76,7 @@ export class SubscriptionController {
       const result =
         await this.getCurrentSubscriptionUseCase.execute({
           initiatorUserId: claims.sub,
-          language: this.getLanguage(acceptLanguage),
+          locale: this.getLocale(acceptLanguage),
         });
 
       return this.getSubscriptionPresenter.present(result);
@@ -112,7 +112,7 @@ export class SubscriptionController {
       const result = await this.getSubscriptionUseCase.execute({
         initiatorUserId: claims.sub,
         subscriptionId,
-        language: this.getLanguage(acceptLanguage),
+        locale: this.getLocale(acceptLanguage),
       });
 
       return this.getSubscriptionPresenter.present(result);
@@ -137,10 +137,10 @@ export class SubscriptionController {
     }
   }
 
-  private getLanguage(acceptLanguage?: string): string {
+  private getLocale(acceptLanguage?: string): string {
     return (
       acceptLanguage?.split(',')[0]?.trim() ||
-      this.fallbackLanguage
+      this.fallbackLocale
     );
   }
 }

@@ -19,127 +19,129 @@ export interface GetRolesResponseDto {
   roles: GetRoleResponseDto[];
 }
 
-export interface GetPlanTranslationResponseDto {
-  id: string;
-  language: string;
-  name: string;
-  description?: string;
-}
-
-export interface GetPlanFeatureTranslationResponseDto {
-  id: string;
-  language: string;
-  title: string;
-  description?: string;
-}
-
-export interface GetPlanFeatureResponseDto {
-  id: string;
-  code: string;
-  value?: string;
+export interface GetSubscriptionPlanFeatureResponseDto {
   sortOrder: number;
-  active: boolean;
-  translations: GetPlanFeatureTranslationResponseDto[];
+  title?: string;
+  description?: string;
 }
 
-export interface GetPlanResponseDto {
+export interface GetSubscriptionPlanPriceResponseDto {
+  currency: string;
+  amountMinor: number;
+  formatted: string;
+}
+
+export interface GetSubscriptionPlanResponseDto {
   id: string;
   code: string;
-  priceAmount: string;
-  priceCurrency: string;
   billingInterval: string;
   billingIntervalCount: number;
   trialDays?: number;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-  translations: GetPlanTranslationResponseDto[];
-  features: GetPlanFeatureResponseDto[];
+  isPublic: boolean;
+  name?: string;
+  description?: string;
+  features: GetSubscriptionPlanFeatureResponseDto[];
+  price?: GetSubscriptionPlanPriceResponseDto;
 }
 
-export interface GetPlansResponseDto {
-  plans: GetPlanResponseDto[];
+export interface GetSubscriptionPlansResponseDto {
+  subscriptionPlans: GetSubscriptionPlanResponseDto[];
 }
 
-export interface CreatePlanTranslationRequestDto {
-  language: string;
+export interface CreateSubscriptionPlanTranslationRequestDto {
+  locale: string;
   name: string;
   description?: string;
 }
 
-export interface CreatePlanFeatureTranslationRequestDto {
-  language: string;
+export interface CreateSubscriptionPlanFeatureTranslationRequestDto {
+  locale: string;
   title: string;
   description?: string;
 }
 
-export interface CreatePlanFeatureRequestDto {
+export interface CreateSubscriptionPlanFeatureRequestDto {
   code: string;
   value?: string;
   sortOrder?: number;
   active?: boolean;
-  translations?: CreatePlanFeatureTranslationRequestDto[];
+  translations?: CreateSubscriptionPlanFeatureTranslationRequestDto[];
 }
 
-export type CreatePlanRequestDtoBillingInterval = typeof CreatePlanRequestDtoBillingInterval[keyof typeof CreatePlanRequestDtoBillingInterval];
+export interface CreateSubscriptionPriceRequestDto {
+  amountMinor: number;
+  currency: string;
+  locale: string;
+  active?: boolean;
+}
+
+export type CreateSubscriptionPlanRequestDtoBillingInterval = typeof CreateSubscriptionPlanRequestDtoBillingInterval[keyof typeof CreateSubscriptionPlanRequestDtoBillingInterval];
 
 
-export const CreatePlanRequestDtoBillingInterval = {
+export const CreateSubscriptionPlanRequestDtoBillingInterval = {
   DAY: 'DAY',
   WEEK: 'WEEK',
   MONTH: 'MONTH',
   YEAR: 'YEAR',
 } as const;
 
-export interface CreatePlanRequestDto {
+export interface CreateSubscriptionPlanRequestDto {
   code: string;
-  priceAmount: string;
-  priceCurrency: string;
-  billingInterval: CreatePlanRequestDtoBillingInterval;
+  billingInterval: CreateSubscriptionPlanRequestDtoBillingInterval;
   billingIntervalCount?: number;
   trialDays?: number;
-  active?: boolean;
-  translations?: CreatePlanTranslationRequestDto[];
-  features?: CreatePlanFeatureRequestDto[];
+  isPublic?: boolean;
+  translations?: CreateSubscriptionPlanTranslationRequestDto[];
+  features?: CreateSubscriptionPlanFeatureRequestDto[];
+  prices?: CreateSubscriptionPriceRequestDto[];
 }
 
-export interface CreatePlanTranslationResponseDto {
+export interface CreateSubscriptionPlanTranslationResponseDto {
   id: string;
-  language: string;
+  locale: string;
   name: string;
   description?: string;
 }
 
-export interface CreatePlanFeatureTranslationResponseDto {
+export interface CreateSubscriptionPlanFeatureTranslationResponseDto {
   id: string;
-  language: string;
+  locale: string;
   title: string;
   description?: string;
 }
 
-export interface CreatePlanFeatureResponseDto {
+export interface CreateSubscriptionPlanFeatureResponseDto {
   id: string;
   code: string;
   value?: string;
   sortOrder: number;
   active: boolean;
-  translations: CreatePlanFeatureTranslationResponseDto[];
+  translations: CreateSubscriptionPlanFeatureTranslationResponseDto[];
 }
 
-export interface CreatePlanResponseDto {
+export interface GetSubscriptionPriceResponseDto {
+  id: string;
+  subscriptionPlanId: string;
+  amountMinor: number;
+  currency: string;
+  locale: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface CreateSubscriptionPlanResponseDto {
   id: string;
   code: string;
-  priceAmount: string;
-  priceCurrency: string;
   billingInterval: string;
   billingIntervalCount: number;
   trialDays?: number;
-  active: boolean;
-  translations: CreatePlanTranslationResponseDto[];
-  features: CreatePlanFeatureResponseDto[];
+  isPublic: boolean;
+  translations: CreateSubscriptionPlanTranslationResponseDto[];
+  features: CreateSubscriptionPlanFeatureResponseDto[];
+  prices: GetSubscriptionPriceResponseDto[];
 }
 
-export interface GetSubscriptionPlanResponseDto {
+export interface GetSubscriptionSummaryPlanResponseDto {
   id: string;
   name?: string;
 }
@@ -149,42 +151,57 @@ export interface GetSubscriptionResponseDto {
   userId: string;
   status: string;
   startedAt: string;
-  currentPeriodStartAt?: string;
-  currentPeriodEndAt?: string;
   trialStartedAt?: string;
   trialEndsAt?: string;
   cancelAtPeriodEnd: boolean;
   canceledAt?: string;
   endedAt?: string;
   autoRenew: boolean;
-  plan?: GetSubscriptionPlanResponseDto;
+  subscriptionPlan?: GetSubscriptionSummaryPlanResponseDto;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface GetSubscriptionsResponseDto {
   subscriptions: GetSubscriptionResponseDto[];
 }
 
-export interface GetSubscriptionInvoiceResponseDto {
+export type CreateInvoiceRequestDtoProvider = typeof CreateInvoiceRequestDtoProvider[keyof typeof CreateInvoiceRequestDtoProvider];
+
+
+export const CreateInvoiceRequestDtoProvider = {
+  NOWPAYMENTS: 'NOWPAYMENTS',
+} as const;
+
+export interface CreateInvoiceRequestDto {
+  subscriptionPlanId: string;
+  provider: CreateInvoiceRequestDtoProvider;
+}
+
+export interface GetInvoiceResponseDto {
   id: string;
-  subscriptionId: string;
+  externalId: string;
+  provider: string;
   userId: string;
   status: string;
-  amountDue: string;
-  amountPaid: string;
   currency: string;
-  periodStartAt?: string;
-  periodEndAt?: string;
-  issuedAt: string;
+  externalCheckoutUrl: string;
+  expiresAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GetPaymentResponseDto {
+  id: string;
+  userId: string;
+  status: string;
+  amountMinor: number;
+  currency: string;
   dueAt?: string;
   paidAt?: string;
   failedAt?: string;
   voidedAt?: string;
-  provider?: string;
-  providerInvoiceId?: string;
-  providerPaymentIntentId?: string;
-  checkoutUrl?: string;
+  provider: string;
+  externalId: string;
   failureCode?: string;
   failureMessage?: string;
   metadata?: string;
@@ -192,20 +209,8 @@ export interface GetSubscriptionInvoiceResponseDto {
   updatedAt: string;
 }
 
-export interface GetSubscriptionInvoicesResponseDto {
-  invoices: GetSubscriptionInvoiceResponseDto[];
-}
-
-export type CreateSubscriptionInvoiceRequestDtoProvider = typeof CreateSubscriptionInvoiceRequestDtoProvider[keyof typeof CreateSubscriptionInvoiceRequestDtoProvider];
-
-
-export const CreateSubscriptionInvoiceRequestDtoProvider = {
-  NOWPAYMENTS: 'NOWPAYMENTS',
-} as const;
-
-export interface CreateSubscriptionInvoiceRequestDto {
-  planId: string;
-  provider: CreateSubscriptionInvoiceRequestDtoProvider;
+export interface GetPaymentsResponseDto {
+  payments: GetPaymentResponseDto[];
 }
 
 export interface GetUserResponseDto {
@@ -225,12 +230,13 @@ export type GetCurrentUserResponseDtoPermissionsItem = typeof GetCurrentUserResp
 
 
 export const GetCurrentUserResponseDtoPermissionsItem = {
-  planviewany: 'plan.view.any',
-  planaddany: 'plan.add.any',
+  'subscription-planviewany': 'subscription-plan.view.any',
+  'subscription-planviewpublic': 'subscription-plan.view.public',
+  'subscription-planaddany': 'subscription-plan.add.any',
   subscriptionviewown: 'subscription.view.own',
   subscriptionviewany: 'subscription.view.any',
-  'subscription-invoiceviewown': 'subscription-invoice.view.own',
-  'subscription-invoiceviewany': 'subscription-invoice.view.any',
+  paymentviewown: 'payment.view.own',
+  paymentviewany: 'payment.view.any',
   'user-roleviewown': 'user-role.view.own',
   'user-roleviewany': 'user-role.view.any',
   'user-roleupdateany': 'user-role.update.any',
@@ -242,7 +248,7 @@ export interface GetCurrentUserResponseDto {
   id: string;
   displayName: string;
   email: string;
-  language: string;
+  locale: string;
   permissions: GetCurrentUserResponseDtoPermissionsItem[];
 }
 
@@ -347,31 +353,31 @@ export const roleControllerHandleGetRoles = (
       options);
     }
 
-export const planControllerHandleGetPlans = (
+export const subscriptionPlanControllerGetSubscriptionPlans = (
 
- options?: SecondParameter<typeof api<GetPlansResponseDto>>,) => {
-      return api<GetPlansResponseDto>(
-      {url: `/plans`, method: 'GET'
+ options?: SecondParameter<typeof api<GetSubscriptionPlansResponseDto>>,) => {
+      return api<GetSubscriptionPlansResponseDto>(
+      {url: `/subscription-plans`, method: 'GET'
     },
       options);
     }
 
-export const planControllerHandleCreatePlan = (
-    createPlanRequestDto: CreatePlanRequestDto,
- options?: SecondParameter<typeof api<CreatePlanResponseDto>>,) => {
-      return api<CreatePlanResponseDto>(
-      {url: `/plans`, method: 'POST',
+export const subscriptionPlanControllerCreateSubscriptionPlan = (
+    createSubscriptionPlanRequestDto: CreateSubscriptionPlanRequestDto,
+ options?: SecondParameter<typeof api<CreateSubscriptionPlanResponseDto>>,) => {
+      return api<CreateSubscriptionPlanResponseDto>(
+      {url: `/subscription-plans`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createPlanRequestDto
+      data: createSubscriptionPlanRequestDto
     },
       options);
     }
 
-export const planControllerHandleGetPlan = (
+export const subscriptionPlanControllerGetSubscriptionPlan = (
     id: string,
- options?: SecondParameter<typeof api<GetPlanResponseDto>>,) => {
-      return api<GetPlanResponseDto>(
-      {url: `/plans/${id}`, method: 'GET'
+ options?: SecondParameter<typeof api<GetSubscriptionPlanResponseDto>>,) => {
+      return api<GetSubscriptionPlanResponseDto>(
+      {url: `/subscription-plans/${id}`, method: 'GET'
     },
       options);
     }
@@ -403,22 +409,31 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
-export const subscriptionInvoiceControllerHandleGetSubscriptionInvoices = (
-
- options?: SecondParameter<typeof api<GetSubscriptionInvoicesResponseDto>>,) => {
-      return api<GetSubscriptionInvoicesResponseDto>(
-      {url: `/subscription-invoices`, method: 'GET'
+export const invoiceControllerCreateInvoice = (
+    createInvoiceRequestDto: CreateInvoiceRequestDto,
+ options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
+      return api<GetInvoiceResponseDto>(
+      {url: `/invoices`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createInvoiceRequestDto
     },
       options);
     }
 
-export const subscriptionInvoiceControllerHandleCreateSubscriptionInvoice = (
-    createSubscriptionInvoiceRequestDto: CreateSubscriptionInvoiceRequestDto,
- options?: SecondParameter<typeof api<GetSubscriptionInvoiceResponseDto>>,) => {
-      return api<GetSubscriptionInvoiceResponseDto>(
-      {url: `/subscription-invoices`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createSubscriptionInvoiceRequestDto
+export const nowPaymentsWebhookControllerHandlePaymentStatus = (
+
+ options?: SecondParameter<typeof api<void>>,) => {
+      return api<void>(
+      {url: `/webhooks/nowpayments/payment-status`, method: 'POST'
+    },
+      options);
+    }
+
+export const paymentControllerGetPayments = (
+
+ options?: SecondParameter<typeof api<GetPaymentsResponseDto>>,) => {
+      return api<GetPaymentsResponseDto>(
+      {url: `/payments`, method: 'GET'
     },
       options);
     }
@@ -479,14 +494,15 @@ export type AuthControllerHandleLogoutResult = NonNullable<Awaited<ReturnType<ty
 export type AuthControllerHandleRequestMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleRequestMagicLink>>>
 export type AuthControllerHandleVerifyMagicLinkResult = NonNullable<Awaited<ReturnType<typeof authControllerHandleVerifyMagicLink>>>
 export type RoleControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof roleControllerHandleGetRoles>>>
-export type PlanControllerHandleGetPlansResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlans>>>
-export type PlanControllerHandleCreatePlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleCreatePlan>>>
-export type PlanControllerHandleGetPlanResult = NonNullable<Awaited<ReturnType<typeof planControllerHandleGetPlan>>>
+export type SubscriptionPlanControllerGetSubscriptionPlansResult = NonNullable<Awaited<ReturnType<typeof subscriptionPlanControllerGetSubscriptionPlans>>>
+export type SubscriptionPlanControllerCreateSubscriptionPlanResult = NonNullable<Awaited<ReturnType<typeof subscriptionPlanControllerCreateSubscriptionPlan>>>
+export type SubscriptionPlanControllerGetSubscriptionPlanResult = NonNullable<Awaited<ReturnType<typeof subscriptionPlanControllerGetSubscriptionPlan>>>
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
 export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
-export type SubscriptionInvoiceControllerHandleGetSubscriptionInvoicesResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleGetSubscriptionInvoices>>>
-export type SubscriptionInvoiceControllerHandleCreateSubscriptionInvoiceResult = NonNullable<Awaited<ReturnType<typeof subscriptionInvoiceControllerHandleCreateSubscriptionInvoice>>>
+export type InvoiceControllerCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerCreateInvoice>>>
+export type NowPaymentsWebhookControllerHandlePaymentStatusResult = NonNullable<Awaited<ReturnType<typeof nowPaymentsWebhookControllerHandlePaymentStatus>>>
+export type PaymentControllerGetPaymentsResult = NonNullable<Awaited<ReturnType<typeof paymentControllerGetPayments>>>
 export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
 export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
 export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>

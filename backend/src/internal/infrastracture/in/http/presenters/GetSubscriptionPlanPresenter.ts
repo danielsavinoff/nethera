@@ -1,16 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { GetSubscriptionPlanResult } from '../../../../application/usecases/GetSubscriptionPlanUseCase.js';
+import { MoneyFormatter } from '../../../../domain/money/MoneyFormatter.js';
+import { SubscriptionPlan } from '../../../../domain/subscription/SubscriptionPlan.js';
+import { SubscriptionPlanTranslation } from '../../../../domain/subscription/SubscriptionPlanTranslation.js';
 import { GetSubscriptionPlanFeatureResponseDto } from '../dtos/GetSubscriptionPlanFeatureResponseDto.js';
-import { GetSubscriptionPlanFeatureTranslationResponseDto } from '../dtos/GetSubscriptionPlanFeatureTranslationResponseDto.js';
+import { GetSubscriptionPlanPriceResponseDto } from '../dtos/GetSubscriptionPlanPriceResponseDto.js';
 import { GetSubscriptionPlanResponseDto } from '../dtos/GetSubscriptionPlanResponseDto.js';
-import { GetSubscriptionPlanTranslationResponseDto } from '../dtos/GetSubscriptionPlanTranslationResponseDto.js';
-import { GetSubscriptionPriceResponseDto } from '../dtos/GetSubscriptionPriceResponseDto.js';
 
 @Injectable()
 export class GetSubscriptionPlanPresenter {
   present(
     result: GetSubscriptionPlanResult,
   ): GetSubscriptionPlanResponseDto {
+    const translation = this.getTranslation(
+      result.data.subscriptionPlan,
+      result.data.locale,
+    );
+
+    const price = this.getPrice(
+      result.data.subscriptionPlan,
+      result.data.locale,
+    );
+
     return new GetSubscriptionPlanResponseDto({
       id: result.data.subscriptionPlan.id,
       code: result.data.subscriptionPlan.code,
@@ -19,55 +30,56 @@ export class GetSubscriptionPlanPresenter {
       billingIntervalCount:
         result.data.subscriptionPlan.billingIntervalCount,
       trialDays: result.data.subscriptionPlan.trialDays,
-      active: result.data.subscriptionPlan.active,
-      createdAt: result.data.subscriptionPlan.createdAt,
-      updatedAt: result.data.subscriptionPlan.updatedAt,
-      translations: result.data.subscriptionPlan
-        .getAllTranslations()
-        .map(
-          (translation) =>
-            new GetSubscriptionPlanTranslationResponseDto({
-              id: translation.id,
-              language: translation.language,
-              name: translation.name,
-              description: translation.description,
-            }),
-        ),
+      isPublic: result.data.subscriptionPlan.isPublic,
+      name: translation?.name,
+      description: translation?.description,
       features: result.data.subscriptionPlan
         .getAllFeatures()
-        .map(
-          (feature) =>
-            new GetSubscriptionPlanFeatureResponseDto({
-              id: feature.id,
-              code: feature.code,
-              value: feature.value,
-              sortOrder: feature.sortOrder,
-              active: feature.active,
-              translations: feature.getAllTranslations().map(
-                (translation) =>
-                  new GetSubscriptionPlanFeatureTranslationResponseDto(
-                    {
-                      id: translation.id,
-                      language: translation.language,
-                      title: translation.title,
-                      description: translation.description,
-                    },
-                  ),
-              ),
-            }),
-        ),
-      prices: result.data.subscriptionPlan.getAllPrices().map(
-        (price) =>
-          new GetSubscriptionPriceResponseDto({
-            id: price.id,
-            subscriptionPlanId: price.subscriptionPlanId,
-            amountMinor: price.amountMinor,
-            currency: price.currency,
-            countryCode: price.countryCode,
-            active: price.active,
-            createdAt: price.createdAt,
-          }),
-      ),
+        .map((feature) => {
+          const translation = feature.getAllTranslations()[0];
+
+          return new GetSubscriptionPlanFeatureResponseDto({
+            sortOrder: feature.sortOrder,
+            title: translation?.title,
+            description: translation?.description,
+          });
+        }),
+      price,
     });
+  }
+
+  private getTranslation(
+    subscriptionPlan: SubscriptionPlan,
+    locale: string,
+  ): SubscriptionPlanTranslation | null {
+    return (
+      subscriptionPlan.getTranslation(locale) ??
+      subscriptionPlan.getAllTranslations()[0] ??
+      null
+    );
+  }
+
+  private getPrice(
+    subscriptionPlan: SubscriptionPlan,
+    locale: string,
+  ): GetSubscriptionPlanPriceResponseDto | undefined {
+    const price = subscriptionPlan
+      .getAllPrices()
+      .find(
+        (subscriptionPrice) =>
+          subscriptionPrice.active &&
+          subscriptionPrice.locale === locale,
+      );
+
+    return price
+      ? new GetSubscriptionPlanPriceResponseDto({
+          currency: price.currency,
+          amountMinor: price.amountMinor,
+          formatted: MoneyFormatter.format(
+            price.amountMinor,
+            locale,
+          ),
+        })
+      : undefined;
   }
 }

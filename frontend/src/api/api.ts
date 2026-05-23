@@ -67,6 +67,10 @@ client.interceptors.response.use(
 export const api = <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig,
-) => client<T>({ ...config, ...options });
+) =>
+  client<T>({
+    ...config,
+    ...options,
+  });
 
 export default api;

@@ -10,7 +10,7 @@ import { SubscriptionPlanTranslation } from '../../domain/subscription/Subscript
 import { SubscriptionPrice } from '../../domain/subscription/SubscriptionPrice.js';
 
 export interface CreateSubscriptionPlanCommandFeatureTranslation {
-  language: string;
+  locale: string;
   title: string;
   description?: string;
 }
@@ -24,7 +24,7 @@ export interface CreateSubscriptionPlanCommandFeature {
 }
 
 export interface CreateSubscriptionPlanCommandTranslation {
-  language: string;
+  locale: string;
   name: string;
   description?: string;
 }
@@ -32,7 +32,7 @@ export interface CreateSubscriptionPlanCommandTranslation {
 export interface CreateSubscriptionPlanCommandPrice {
   amountMinor: number;
   currency: string;
-  countryCode: string;
+  locale: string;
   active?: boolean;
 }
 
@@ -42,7 +42,7 @@ export interface CreateSubscriptionPlanCommand {
   billingInterval: Interval;
   billingIntervalCount?: number;
   trialDays?: number;
-  active?: boolean;
+  isPublic?: boolean;
   translations?: CreateSubscriptionPlanCommandTranslation[];
   features?: CreateSubscriptionPlanCommandFeature[];
   prices?: CreateSubscriptionPlanCommandPrice[];
@@ -95,14 +95,14 @@ export class CreateSubscriptionPlanUseCase {
       billingInterval: command.billingInterval,
       billingIntervalCount: command.billingIntervalCount,
       trialDays: command.trialDays,
-      active: command.active,
+      isPublic: command.isPublic,
     });
 
     const translations =
       command.translations?.map((translation) =>
         SubscriptionPlanTranslation.create({
           subscriptionPlanId: subscriptionPlan.id,
-          language: translation.language,
+          locale: translation.locale,
           name: translation.name,
           description: translation.description,
         }),
@@ -122,7 +122,7 @@ export class CreateSubscriptionPlanUseCase {
           feature.translations?.map((translation) =>
             SubscriptionPlanFeatureTranslation.create({
               subscriptionPlanFeatureId: planFeature.id,
-              language: translation.language,
+              locale: translation.locale,
               title: translation.title,
               description: translation.description,
             }),
@@ -137,7 +137,7 @@ export class CreateSubscriptionPlanUseCase {
           subscriptionPlanId: subscriptionPlan.id,
           amountMinor: price.amountMinor,
           currency: price.currency,
-          countryCode: price.countryCode,
+          locale: price.locale,
           active: price.active,
         }),
       ) ?? [];

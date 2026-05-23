@@ -1,7 +1,7 @@
 export interface SubscriptionPlanFeatureTranslationRecord {
   id: string;
   subscriptionPlanFeatureId: string;
-  language: string;
+  locale: string;
   title: string;
   description?: string;
   createdAt: Date;

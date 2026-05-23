@@ -6,7 +6,6 @@ import {
   createEffect,
   createResource,
   createSignal,
-  onMount,
   useContext,
   type ParentProps,
 } from "solid-js";
@@ -28,10 +27,26 @@ async function fetchDictionary(locale: Locale) {
   return i18n.flatten(dict.default);
 }
 
+function isSupportedLocale(value: string | null): value is Locale {
+  return SUPPORTED_LOCALE.includes(value as Locale);
+}
+
+function getInitialLocale(): Locale {
+  if (typeof localStorage === "undefined") {
+    return DEFAULT_LOCALE;
+  }
+
+  const storedLocale = localStorage.getItem("locale");
+
+  return isSupportedLocale(storedLocale) ? storedLocale : DEFAULT_LOCALE;
+}
+
 export const LocaleContext = createContext<LocaleContextValue>();
 
 export function LocaleProvider(props: ParentProps) {
-  const [locale, setLocale] = createSignal<Locale>(DEFAULT_LOCALE);
+  const initialLocale = getInitialLocale();
+
+  const [locale, setLocale] = createSignal<Locale>(initialLocale);
 
   const [dict] = createResource(locale, fetchDictionary);
 
@@ -41,22 +56,6 @@ export function LocaleProvider(props: ParentProps) {
 
   const t: LocaleContextValue["t"] = (path) =>
     (translate(path as never) as string | undefined) ?? path;
-
-  onMount(() => {
-    const storedLocale = localStorage.getItem("locale");
-
-    if (!storedLocale) {
-      return;
-    }
-
-    if (storedLocale) {
-      const isSupported = SUPPORTED_LOCALE.includes(storedLocale as Locale);
-
-      if (isSupported) {
-        setLocale(storedLocale as Locale);
-      }
-    }
-  });
 
   createEffect(() => {
     localStorage.setItem("locale", locale());

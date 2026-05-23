@@ -62,7 +62,7 @@ export class PrismaUserRepository implements UserRepository {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
         deletedAt: row.deleted_at ?? undefined,
-        language: row.language ?? undefined,
+        locale: row.locale ?? undefined,
       }).withRoles(
         row.userRoles.map((userRole) =>
           Role.hydrate({
@@ -105,7 +105,7 @@ export class PrismaUserRepository implements UserRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       deletedAt: row.deleted_at ?? undefined,
-      language: row.language ?? undefined,
+      locale: row.locale ?? undefined,
     });
   }
 
@@ -161,7 +161,7 @@ export class PrismaUserRepository implements UserRepository {
           createdAt: row.created_at,
           updatedAt: row.updated_at,
           deletedAt: row.deleted_at ?? undefined,
-          language: row.language ?? undefined,
+          locale: row.locale ?? undefined,
         }),
       ),
     };
@@ -183,7 +183,7 @@ export class PrismaUserRepository implements UserRepository {
         id: record.id,
         email: record.email,
         is_active: record.active,
-        language: record.language,
+        locale: record.locale,
         created_at: record.createdAt,
         updated_at: record.updatedAt,
         deleted_at: record.deletedAt,
@@ -203,7 +203,7 @@ export class PrismaUserRepository implements UserRepository {
       update: {
         email: record.email,
         is_active: record.active,
-        language: record.language,
+        locale: record.locale,
         updated_at: record.updatedAt,
         deleted_at: record.deletedAt,
         ...(user.isEnrichedWithRoles()
@@ -229,7 +229,7 @@ export class PrismaUserRepository implements UserRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       deletedAt: row.deleted_at ?? undefined,
-      language: row.language ?? undefined,
+      locale: row.locale ?? undefined,
     });
   }
 

@@ -18,7 +18,7 @@ export class SubscriptionPlan {
     billingInterval: Interval;
     billingIntervalCount?: SubscriptionPlanRecord['billingIntervalCount'];
     trialDays?: SubscriptionPlanRecord['trialDays'];
-    active?: SubscriptionPlanRecord['active'];
+    isPublic?: SubscriptionPlanRecord['isPublic'];
     createdAt?: SubscriptionPlanRecord['createdAt'];
     updatedAt?: SubscriptionPlanRecord['updatedAt'];
     translations?: SubscriptionPlanTranslation[];
@@ -32,7 +32,7 @@ export class SubscriptionPlan {
         billingInterval: props.billingInterval,
         billingIntervalCount: props.billingIntervalCount ?? 1,
         trialDays: props.trialDays,
-        active: props.active ?? true,
+        isPublic: props.isPublic ?? true,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
@@ -79,8 +79,8 @@ export class SubscriptionPlan {
     return this.props.trialDays;
   }
 
-  get active(): SubscriptionPlanRecord['active'] {
-    return this.props.active;
+  get isPublic(): SubscriptionPlanRecord['isPublic'] {
+    return this.props.isPublic;
   }
 
   get createdAt(): SubscriptionPlanRecord['createdAt'] {
@@ -96,15 +96,15 @@ export class SubscriptionPlan {
   }
 
   getTranslation(
-    language?: string,
+    locale?: string,
   ): SubscriptionPlanTranslation | null {
-    if (!language) {
+    if (!locale) {
       return null;
     }
 
     return (
       this.translations?.find(
-        (translation) => translation.language === language,
+        (translation) => translation.locale === locale,
       ) ?? null
     );
   }
@@ -140,13 +140,13 @@ export class SubscriptionPlan {
   }
 
   getActivePrice(
-    countryCode?: string,
+    locale?: string,
   ): SubscriptionPrice | null {
     return (
       this.prices?.find(
         (price) =>
           price.active &&
-          (!countryCode || price.countryCode === countryCode),
+          (!locale || price.locale === locale),
       ) ?? null
     );
   }

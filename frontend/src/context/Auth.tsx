@@ -6,29 +6,32 @@ import {
   type ParentProps,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { userControllerHandleGetMe } from "~/api/generated";
+import {
+  type GetCurrentUserResponseDtoPermissionsItem,
+  userControllerHandleGetMe,
+} from "~/api/generated";
 
 export const Permission = {
-  PlanViewAny: "plan.view.any",
-  PlanAddAny: "plan.add.any",
+  SubscriptionPlanViewAny: "subscription-plan.view.any",
+  SubscriptionPlanAddAny: "subscription-plan.add.any",
   SubscriptionViewOwn: "subscription.view.own",
   SubscriptionViewAny: "subscription.view.any",
-  SubscriptionInvoiceViewOwn: "subscription-invoice.view.own",
-  SubscriptionInvoiceViewAny: "subscription-invoice.view.any",
+  PaymentViewOwn: "payment.view.own",
+  PaymentViewAny: "payment.view.any",
   UserRoleViewOwn: "user-role.view.own",
   UserRoleViewAny: "user-role.view.any",
   UserRoleUpdateAny: "user-role.update.any",
   UserRoleDeleteAny: "user-role.delete.any",
   UserViewOwn: "user.view.own",
-} as const;
+} as const satisfies Record<string, GetCurrentUserResponseDtoPermissionsItem>;
 
-export type Permission = (typeof Permission)[keyof typeof Permission];
+export type Permission = GetCurrentUserResponseDtoPermissionsItem;
 
 export interface User {
   id: string;
   displayName: string;
   email: string;
-  language: string;
+  locale: string;
   permissions: Permission[] | null;
 }
 
@@ -50,7 +53,7 @@ async function fetchMe(): Promise<User> {
     id: user.id,
     displayName: user.displayName,
     email: user.email,
-    language: user.language,
+    locale: user.locale,
     permissions: user.permissions,
   };
 }

@@ -19,7 +19,7 @@ export class GetCurrentUserResponseDto {
   @Expose()
   @ApiProperty()
   @Optional()
-  language?: string;
+  locale?: string;
 
   @Expose()
   @ApiProperty({

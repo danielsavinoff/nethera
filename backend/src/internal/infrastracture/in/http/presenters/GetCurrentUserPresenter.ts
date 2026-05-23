@@ -22,7 +22,7 @@ export class GetCurrentUserPresenter {
       displayName: result.user.displayName,
       email: result.user.email,
       id: result.user.id,
-      language: result.user.language,
+      locale: result.user.locale,
       permissions,
     });
   }

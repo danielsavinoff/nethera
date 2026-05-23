@@ -38,7 +38,7 @@ export class CreateSubscriptionPlanRequestDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsBoolean()
-  active?: boolean;
+  isPublic?: boolean;
 
   @ApiProperty({
     required: false,

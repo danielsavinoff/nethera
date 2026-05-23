@@ -5,7 +5,7 @@ export class GetSubscriptionPlanTranslationResponseDto {
   id!: string;
 
   @ApiProperty()
-  language!: string;
+  locale!: string;
 
   @ApiProperty()
   name!: string;

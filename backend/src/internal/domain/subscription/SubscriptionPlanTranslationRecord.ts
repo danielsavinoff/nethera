@@ -1,7 +1,7 @@
 export interface SubscriptionPlanTranslationRecord {
   id: string;
   subscriptionPlanId: string;
-  language: string;
+  locale: string;
   name: string;
   description?: string;
   createdAt: Date;

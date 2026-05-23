@@ -1,7 +1,7 @@
 export interface UserRecord {
   id: string;
   email: string;
-  language?: string;
+  locale?: string;
   active: boolean;
   createdAt: Date;
   updatedAt: Date;

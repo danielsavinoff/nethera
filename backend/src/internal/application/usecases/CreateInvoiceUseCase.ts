@@ -14,6 +14,7 @@ import type { UserRepository } from '../ports/UserRepository.js';
 import { Money } from '../../domain/money/Money.js';
 import { InvoiceLine } from '../../domain/subscription/InvoiceLine.js';
 import { InvoiceLineType } from '../../domain/subscription/InvoiceLineType.js';
+import { FilterOperator } from '../models/Filter.js';
 
 export interface CreateInvoiceCommand {
   initiatorUserId: string;
@@ -49,8 +50,41 @@ export class CreateInvoiceUseCase {
 
     const subscriptionPlan =
       await this.subscriptionPlanRepository.loadOrThrow({
-        filters: {
-          id: command.subscriptionPlanId,
+        filter: {
+          field: 'id',
+          operator: FilterOperator.Equals,
+          value: command.subscriptionPlanId,
+        },
+        with: {
+          subscriptionPlanTranslations: {
+            filter: {
+              field: 'locale',
+              operator: FilterOperator.Equals,
+              value: customer.locale,
+            },
+          },
+          subscriptionPrices: {
+            filter: customer.locale
+              ? {
+                  and: [
+                    {
+                      field: 'active',
+                      operator: FilterOperator.Equals,
+                      value: true,
+                    },
+                    {
+                      field: 'locale',
+                      operator: FilterOperator.Equals,
+                      value: customer.locale,
+                    },
+                  ],
+                }
+              : {
+                  field: 'active',
+                  operator: FilterOperator.Equals,
+                  value: true,
+                },
+          },
         },
       });
 
@@ -62,13 +96,15 @@ export class CreateInvoiceUseCase {
     const invoiceId = this.idGenerator.generate();
 
     const planTranslation = subscriptionPlan.getTranslation(
-      customer.language,
+      customer.locale,
     );
 
     const planName =
       planTranslation?.name ?? subscriptionPlan.code;
 
-    const subscriptionPrice = subscriptionPlan.getActivePrice();
+    const subscriptionPrice = subscriptionPlan.getActivePrice(
+      customer.locale,
+    );
 
     if (!subscriptionPrice) {
       throw new SubscriptionPriceNotFoundException();

@@ -1,11 +1,10 @@
 import { LucideBadgeCheck } from "lucide-solid";
 import { createResource, createSignal, For, Show } from "solid-js";
 import {
-  CreateSubscriptionInvoiceRequestDtoProvider,
-  type GetPlanFeatureResponseDto,
-  type GetPlanResponseDto,
-  planControllerHandleGetPlans,
-  subscriptionInvoiceControllerHandleCreateSubscriptionInvoice,
+  CreateInvoiceRequestDtoProvider,
+  type GetSubscriptionPlanResponseDto,
+  invoiceControllerCreateInvoice,
+  subscriptionPlanControllerGetSubscriptionPlans,
 } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
@@ -21,41 +20,22 @@ import {
   SwitchThumb,
 } from "~/components/ui/Switch";
 
-type Plan = GetPlanResponseDto;
-type PlanFeature = GetPlanFeatureResponseDto;
+type Plan = GetSubscriptionPlanResponseDto;
 
 function Plans() {
   const { locale, t } = useLocale();
 
   const [isLoading, setIsLoading] = createSignal(false);
 
-  const [plans] = createResource(async () => {
-    const response = await planControllerHandleGetPlans();
+  const [plans] = createResource(locale, async (requestLocale) => {
+    const response = await subscriptionPlanControllerGetSubscriptionPlans({
+      headers: {
+        "Accept-Language": requestLocale,
+      },
+    });
 
-    return response.data.plans;
+    return response.data.subscriptionPlans;
   });
-
-  const getPlanTranslation = (plan: Plan) =>
-    plan.translations.find(
-      (translation) => translation.language === locale(),
-    ) ?? plan.translations[0];
-
-  const getFeatureTranslation = (feature: PlanFeature) =>
-    feature.translations.find(
-      (translation) => translation.language === locale(),
-    ) ?? feature.translations[0];
-
-  const formatMoney = (amount: string, currency: string) => {
-    try {
-      return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency,
-        maximumFractionDigits: Number(amount) % 1 === 0 ? 0 : 2,
-      }).format(Number(amount));
-    } catch {
-      return `${amount} ${currency.toUpperCase()}`;
-    }
-  };
 
   const formatBillingInterval = (plan: Plan) => {
     const interval = plan.billingInterval.toLowerCase();
@@ -74,13 +54,19 @@ function Plans() {
     setIsLoading(true);
 
     try {
-      const response =
-        await subscriptionInvoiceControllerHandleCreateSubscriptionInvoice({
-          planId: plan.id,
-          provider: CreateSubscriptionInvoiceRequestDtoProvider.NOWPAYMENTS,
-        });
+      const response = await invoiceControllerCreateInvoice(
+        {
+          subscriptionPlanId: plan.id,
+          provider: CreateInvoiceRequestDtoProvider.NOWPAYMENTS,
+        },
+        {
+          headers: {
+            "Accept-Language": locale(),
+          },
+        },
+      );
 
-      if (!response.data.checkoutUrl) {
+      if (!response.data.externalCheckoutUrl) {
         showToast({
           title: t("plansPage.errors.checkoutUrlMissing"),
           variant: "error",
@@ -89,7 +75,7 @@ function Plans() {
         return;
       }
 
-      window.location.assign(response.data.checkoutUrl);
+      window.location.assign(response.data.externalCheckoutUrl);
     } catch {
       showToast({
         title: t("plansPage.errors.checkoutCreateFailed"),
@@ -117,23 +103,25 @@ function Plans() {
             {(plan) => (
               <Card class="w-full flex-1">
                 <CardHeader>
-                  <CardTitle>
-                    {getPlanTranslation(plan)?.name ?? plan.code}
-                  </CardTitle>
+                  <CardTitle>{plan.name ?? plan.code}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Grid class="gap-12">
                     <Grid>
-                      <p class="text-5xl font-semibold tracking-tight">
-                        {formatMoney(plan.priceAmount, plan.priceCurrency)}
-                      </p>
+                      <Show when={plan.price}>
+                        {(price) => (
+                          <p class="text-5xl font-semibold tracking-tight">
+                            {price().formatted}
+                          </p>
+                        )}
+                      </Show>
                       <p class="text-xs text-muted-foreground">
                         {formatBillingInterval(plan)}
                       </p>
                     </Grid>
                     <Grid class="gap-4">
                       <p class="text-sm text-muted-foreground">
-                        {getPlanTranslation(plan)?.description ??
+                        {plan.description ??
                           t("plansPage.descriptionFallback")}
                       </p>
                       <Button
@@ -155,7 +143,6 @@ function Plans() {
                       <ul class="space-y-4">
                         <For
                           each={plan.features
-                            .filter((feature) => feature.active)
                             .sort(
                               (first, second) =>
                                 first.sortOrder - second.sortOrder,
@@ -165,8 +152,7 @@ function Plans() {
                             <li class="flex items-center gap-3">
                               <LucideBadgeCheck class="size-5 shrink-0 text-muted-foreground" />
                               <span class="text-sm text-muted-foreground">
-                                {getFeatureTranslation(feature)?.description ??
-                                  feature.code}
+                                {feature.description ?? feature.title}
                               </span>
                             </li>
                           )}
@@ -178,13 +164,13 @@ function Plans() {
               </Card>
             )}
           </For>
-          <Show when={plans.length < 1}>
+          <Show when={(plans()?.length ?? 0) < 1}>
             <Card class="bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
           </Show>
-          <Show when={plans.length < 2}>
+          <Show when={(plans()?.length ?? 0) < 2}>
             <Card class="hidden md:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
           </Show>
-          <Show when={plans.length < 3}>
+          <Show when={(plans()?.length ?? 0) < 3}>
             <Card class="hidden lg:block bg-[repeating-linear-gradient(45deg,color-mix(in_oklab,var(--card-foreground)10%,transparent),color-mix(in_oklab,var(--card-foreground)10%,transparent)_1px,var(--card)_2px,var(--card)_15px)]" />
           </Show>
         </Grid>

@@ -4,7 +4,7 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateSubscriptionPlanTranslationRequestDto {
   @ApiProperty()
   @IsString()
-  language!: string;
+  locale!: string;
 
   @ApiProperty()
   @IsString()
