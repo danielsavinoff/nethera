@@ -28,7 +28,7 @@ import {
 import { Skeleton } from "~/components/ui/Skeleton";
 import { showToast } from "~/components/ui/Toast";
 
-function App() {
+function Subscription() {
   const { locale, t } = useLocale();
 
   const [currentSubscription] = createResource(
@@ -207,6 +207,7 @@ function App() {
                     type="url"
                     value={getSubscriptionUrl()}
                     onClick={handleCopy}
+                    class="cursor-copy select-none"
                     readonly
                   />
                 </TextField>
@@ -298,4 +299,4 @@ function App() {
   );
 }
 
-export default App;
+export default Subscription;
