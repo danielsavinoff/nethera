@@ -13,6 +13,7 @@ import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
 import { GetUsersPresenter } from './presenters/GetUsersPresenter.js';
 import { GetUserRolesPresenter } from './presenters/GetUserRolesPresenter.js';
+import { DeleteAccountPresenter } from './presenters/DeleteAccountPresenter.js';
 import { AddUserRolePresenter } from './presenters/AddUserRolePresenter.js';
 import { DeleteUserRolePresenter } from './presenters/DeleteUserRolePresenter.js';
 import { GetRolesPresenter } from './presenters/GetRolesPresenter.js';
@@ -45,6 +46,7 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     GetUsersPresenter,
     GetCurrentUserPresenter,
     GetUserRolesPresenter,
+    DeleteAccountPresenter,
     AddUserRolePresenter,
     DeleteUserRolePresenter,
     GetRolesPresenter,

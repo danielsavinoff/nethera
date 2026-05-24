@@ -239,7 +239,7 @@ export interface GetVpnUsageResponseDto {
 export interface GetUserResponseDto {
   id: string;
   displayName: string;
-  active: boolean;
+  isDeleted: boolean;
 }
 
 export interface GetUsersResponseDto {
@@ -269,6 +269,9 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   'user-roleupdateany': 'user-role.update.any',
   'user-roledeleteany': 'user-role.delete.any',
   userviewown: 'user.view.own',
+  userviewany: 'user.view.any',
+  userdeleteown: 'user.delete.own',
+  userdeleteany: 'user.delete.any',
 } as const;
 
 export interface GetCurrentUserResponseDto {
@@ -277,6 +280,12 @@ export interface GetCurrentUserResponseDto {
   email: string;
   locale: string;
   permissions: GetCurrentUserResponseDtoPermissionsItem[];
+}
+
+export interface DeleteAccountResponseDto {
+  id: string;
+  isDeleted: boolean;
+  deletedAt?: string;
 }
 
 export interface GetUserRoleResponseDto {
@@ -307,7 +316,7 @@ token: string;
 };
 
 export type UserControllerHandleGetUsersParams = {
-active?: boolean;
+isDeleted?: boolean;
 q?: string;
 /**
  * @minimum 1
@@ -522,6 +531,15 @@ export const userControllerHandleGetMe = (
       options);
     }
 
+export const userControllerHandleDeleteMe = (
+
+ options?: SecondParameter<typeof api<DeleteAccountResponseDto>>,) => {
+      return api<DeleteAccountResponseDto>(
+      {url: `/users/me`, method: 'DELETE'
+    },
+      options);
+    }
+
 export const userControllerHandleGetRoles = (
     id: string,
  options?: SecondParameter<typeof api<GetUserRolesResponseDto>>,) => {
@@ -574,6 +592,7 @@ export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsageResult 
 export type NowPaymentsWebhookControllerHandlePaymentStatusResult = NonNullable<Awaited<ReturnType<typeof nowPaymentsWebhookControllerHandlePaymentStatus>>>
 export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
 export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
+export type UserControllerHandleDeleteMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleDeleteMe>>>
 export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>
 export type UserControllerHandleAddRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleAddRole>>>
 export type UserControllerHandleDeleteRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleDeleteRole>>>

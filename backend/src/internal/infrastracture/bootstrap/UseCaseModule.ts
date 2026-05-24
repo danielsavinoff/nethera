@@ -7,6 +7,7 @@ import { RefreshAccessTokenUseCase } from '../../application/usecases/RefreshAcc
 import { SendMagicLinkUseCase } from '../../application/usecases/SendMagicLinkUseCase.js';
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
+import { DeleteAccountUseCase } from '../../application/usecases/DeleteAccountUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
@@ -68,6 +69,7 @@ import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPl
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
 import { PaymentPolicy } from '../../domain/subscription/PaymentPolicy.js';
 import { VpnSubscriptionPolicy } from '../../domain/subscription/VpnSubscriptionPolicy.js';
+import { UserPolicy } from '../../domain/user/UserPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
 import { DefaultNotificationComposerSelector } from '../out/notification/selectors/DefaultNotificationComposerSelector.js';
 import { PaymentRepository } from '../../application/ports/PaymentRepository.js';
@@ -192,10 +194,13 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 
     {
       provide: GetUsersUseCase,
-      useFactory: (userRepository: UserRepository) => {
-        return new GetUsersUseCase(userRepository);
+      useFactory: (
+        userRepository: UserRepository,
+        userPolicy: UserPolicy,
+      ) => {
+        return new GetUsersUseCase(userRepository, userPolicy);
       },
-      inject: [PrismaUserRepository],
+      inject: [PrismaUserRepository, UserPolicy],
     },
 
     {
@@ -204,6 +209,19 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         return new GetCurrentUserUseCase(userRepository);
       },
       inject: [PrismaUserRepository],
+    },
+    {
+      provide: DeleteAccountUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userPolicy: UserPolicy,
+      ) => {
+        return new DeleteAccountUseCase(
+          userRepository,
+          userPolicy,
+        );
+      },
+      inject: [PrismaUserRepository, UserPolicy],
     },
     {
       provide: GetRolesUseCase,
@@ -600,6 +618,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     SubscriptionPolicy,
     PaymentPolicy,
     VpnSubscriptionPolicy,
+    UserPolicy,
     {
       provide: NOTIFICATION_CHANNELS,
       useFactory: () => ({}),
@@ -613,6 +632,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     LogoutUseCase,
     GetUsersUseCase,
     GetCurrentUserUseCase,
+    DeleteAccountUseCase,
     GetRolesUseCase,
     GetUserRolesUseCase,
     AddUserRoleUseCase,

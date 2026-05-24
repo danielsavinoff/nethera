@@ -34,7 +34,7 @@ export class GetUsersQueryDto {
 
     return rawValue;
   })
-  active?: boolean;
+  isDeleted?: boolean;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()

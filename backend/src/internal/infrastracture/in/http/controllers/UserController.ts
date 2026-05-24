@@ -14,11 +14,14 @@ import { Claims } from '../decorators/Claims.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { GetUsersUseCase } from '../../../../application/usecases/GetUsersUseCase.js';
 import { GetCurrentUserUseCase } from '../../../../application/usecases/GetCurrentUserUseCase.js';
+import { DeleteAccountUseCase } from '../../../../application/usecases/DeleteAccountUseCase.js';
 import { GetUsersQueryDto } from '../dtos/GetUsersQueryDto.js';
 import { GetUsersResponseDto } from '../dtos/GetUsersResponseDto.js';
 import { GetCurrentUserResponseDto } from '../dtos/GetCurrentUserResponseDto.js';
+import { DeleteAccountResponseDto } from '../dtos/DeleteAccountResponseDto.js';
 import { GetUsersPresenter } from '../presenters/GetUsersPresenter.js';
 import { GetCurrentUserPresenter } from '../presenters/GetCurrentUserPresenter.js';
+import { DeleteAccountPresenter } from '../presenters/DeleteAccountPresenter.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import { GetUserRolesUseCase } from '../../../../application/usecases/GetUserRolesUseCase.js';
 import { GetUserRolesResponseDto } from '../dtos/GetUserRolesResponseDto.js';
@@ -33,6 +36,7 @@ import { DeleteUserRoleResponseDto } from '../dtos/DeleteUserRoleResponseDto.js'
 import { RoleNotFoundException } from '../../../../application/exceptions/RoleNotFoundException.js';
 import { UserRoleAssignmentNotFoundException } from '../../../../application/exceptions/UserRoleAssignmentNotFoundException.js';
 import { RoleActionForbiddenException } from '../../../../domain/authorization/RoleActionForbiddenException.js';
+import { UserActionForbiddenException } from '../../../../domain/user/UserActionForbiddenException.js';
 
 @Controller('users')
 export class UserController {
@@ -41,6 +45,8 @@ export class UserController {
     private readonly getUsersPresenter: GetUsersPresenter,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly getCurrentUserPresenter: GetCurrentUserPresenter,
+    private readonly deleteAccountUseCase: DeleteAccountUseCase,
+    private readonly deleteAccountPresenter: DeleteAccountPresenter,
     private readonly getUserRolesUseCase: GetUserRolesUseCase,
     private readonly getUserRolesPresenter: GetUserRolesPresenter,
     private readonly addUserRoleUseCase: AddUserRoleUseCase,
@@ -51,7 +57,7 @@ export class UserController {
 
   @ApiOkResponse({ type: GetUsersResponseDto })
   @ApiQuery({
-    name: 'active',
+    name: 'isDeleted',
     required: false,
     type: Boolean,
   })
@@ -71,15 +77,31 @@ export class UserController {
     type: Number,
   })
   @Get()
-  async handleGetUsers(@Query() query: GetUsersQueryDto) {
-    const result = await this.getUsersUseCase.execute({
-      active: query.active,
-      q: query.q,
-      page: query.page,
-      limit: query.limit,
-    });
+  async handleGetUsers(
+    @Query() query: GetUsersQueryDto,
+    @Claims() claims: AuthClaim,
+  ) {
+    try {
+      const result = await this.getUsersUseCase.execute({
+        initiatorUserId: claims.sub,
+        isDeleted: query.isDeleted,
+        q: query.q,
+        page: query.page,
+        limit: query.limit,
+      });
 
-    return this.getUsersPresenter.present(result);
+      return this.getUsersPresenter.present(result);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof UserActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOkResponse({ type: GetCurrentUserResponseDto })
@@ -90,6 +112,29 @@ export class UserController {
     });
 
     return this.getCurrentUserPresenter.present(result);
+  }
+
+  @ApiOkResponse({ type: DeleteAccountResponseDto })
+  @Delete('me')
+  async handleDeleteMe(@Claims() claims: AuthClaim) {
+    try {
+      const result = await this.deleteAccountUseCase.execute({
+        initiatorUserId: claims.sub,
+        targetUserId: claims.sub,
+      });
+
+      return this.deleteAccountPresenter.present(result);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof UserActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOkResponse({ type: GetUserRolesResponseDto })

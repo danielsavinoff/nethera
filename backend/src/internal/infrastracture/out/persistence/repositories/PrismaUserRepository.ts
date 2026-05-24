@@ -25,14 +25,16 @@ export class PrismaUserRepository implements UserRepository {
     const client = this.getClient(transactionContext);
 
     if (query.with?.roles) {
-      const row = await client.user.findUnique({
+      const row = await client.user.findFirst({
         where:
           'id' in query.filters
             ? {
                 id: query.filters.id,
+                is_deleted: false,
               }
             : {
                 email: query.filters.email,
+                is_deleted: false,
               },
         include: {
           userRoles: {
@@ -58,7 +60,7 @@ export class PrismaUserRepository implements UserRepository {
       return User.hydrate({
         id: row.id,
         email: row.email,
-        active: row.is_active,
+        isDeleted: row.is_deleted,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
         deletedAt: row.deleted_at ?? undefined,
@@ -83,14 +85,16 @@ export class PrismaUserRepository implements UserRepository {
       );
     }
 
-    const row = await client.user.findUnique({
+    const row = await client.user.findFirst({
       where:
         'id' in query.filters
           ? {
               id: query.filters.id,
+              is_deleted: false,
             }
           : {
               email: query.filters.email,
+              is_deleted: false,
             },
     });
 
@@ -101,7 +105,7 @@ export class PrismaUserRepository implements UserRepository {
     return User.hydrate({
       id: row.id,
       email: row.email,
-      active: row.is_active,
+      isDeleted: row.is_deleted,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       deletedAt: row.deleted_at ?? undefined,
@@ -126,8 +130,8 @@ export class PrismaUserRepository implements UserRepository {
     query: LoadUsersPageQuery,
   ): Promise<Page<User>> {
     const where: Prisma.UserWhereInput = {
-      ...(typeof query.filters?.active === 'boolean'
-        ? { is_active: query.filters.active }
+      ...(typeof query.filters?.isDeleted === 'boolean'
+        ? { is_deleted: query.filters.isDeleted }
         : {}),
       ...(query.filters?.q
         ? {
@@ -157,7 +161,7 @@ export class PrismaUserRepository implements UserRepository {
         User.hydrate({
           id: row.id,
           email: row.email,
-          active: row.is_active,
+          isDeleted: row.is_deleted,
           createdAt: row.created_at,
           updatedAt: row.updated_at,
           deletedAt: row.deleted_at ?? undefined,
@@ -182,7 +186,7 @@ export class PrismaUserRepository implements UserRepository {
       create: {
         id: record.id,
         email: record.email,
-        is_active: record.active,
+        is_deleted: record.isDeleted,
         locale: record.locale,
         created_at: record.createdAt,
         updated_at: record.updatedAt,
@@ -202,7 +206,7 @@ export class PrismaUserRepository implements UserRepository {
       },
       update: {
         email: record.email,
-        is_active: record.active,
+        is_deleted: record.isDeleted,
         locale: record.locale,
         updated_at: record.updatedAt,
         deleted_at: record.deletedAt,
@@ -225,7 +229,7 @@ export class PrismaUserRepository implements UserRepository {
     return User.hydrate({
       id: row.id,
       email: row.email,
-      active: row.is_active,
+      isDeleted: row.is_deleted,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       deletedAt: row.deleted_at ?? undefined,

@@ -35,6 +35,7 @@ async function main() {
     Permission.PaymentViewOwn,
     Permission.UserRoleViewOwn,
     Permission.UserViewOwn,
+    Permission.UserDeleteOwn,
   ];
 
   const adminPermissionNames = [
@@ -47,6 +48,8 @@ async function main() {
     Permission.UserRoleViewAny,
     Permission.UserRoleUpdateAny,
     Permission.UserRoleDeleteAny,
+    Permission.UserViewAny,
+    Permission.UserDeleteAny,
   ];
 
   await prisma.role.upsert({

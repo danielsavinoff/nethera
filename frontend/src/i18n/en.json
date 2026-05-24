@@ -167,7 +167,14 @@
     "deleteAccount": {
       "title": "Delete account",
       "description": "Permanently remove your Personal Account and all of its contents from the platform. This action is not reversible, so please continue with caution.",
-      "action": "Delete Personal Account"
+      "action": "Delete Personal Account",
+      "error": "Could not delete your account. Please try again.",
+      "dialog": {
+        "title": "Delete Personal Account",
+        "description": "This will permanently delete your account. You will lose access immediately and this action cannot be undone.",
+        "cancel": "Cancel",
+        "continue": "Continue"
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ export class User {
     id?: string;
     email: string;
     locale?: string;
-    active?: boolean;
+    isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
@@ -21,7 +21,7 @@ export class User {
       id: props.id ?? crypto.randomUUID(),
       email: props.email,
       locale: props.locale,
-      active: props.active ?? true,
+      isDeleted: props.isDeleted ?? false,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
       deletedAt: props.deletedAt ?? undefined,
@@ -41,8 +41,8 @@ export class User {
     return this.props.email;
   }
 
-  get active(): UserRecord['active'] {
-    return this.props.active;
+  get isDeleted(): UserRecord['isDeleted'] {
+    return this.props.isDeleted;
   }
 
   get displayName(): string {
@@ -51,6 +51,10 @@ export class User {
 
   get locale(): UserRecord['locale'] {
     return this.props.locale;
+  }
+
+  get deletedAt(): UserRecord['deletedAt'] {
+    return this.props.deletedAt;
   }
 
   setLocalePreference(locale: string): User {
@@ -76,13 +80,28 @@ export class User {
       role
         .getAllPermissions()
         .some(
-          (rolePermission) => rolePermission.name === permission,
+          (rolePermission) =>
+            rolePermission.name === String(permission),
         ),
     );
   }
 
   withRoles(roles: Role[]): User {
     return new User(this.props, roles);
+  }
+
+  delete(): User {
+    const now = new Date();
+
+    return new User(
+      {
+        ...this.props,
+        isDeleted: true,
+        deletedAt: now,
+        updatedAt: now,
+      },
+      this.roles,
+    );
   }
 
   toRecord(): UserRecord {

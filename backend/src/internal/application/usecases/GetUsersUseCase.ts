@@ -1,7 +1,10 @@
+import { Permission } from '../../domain/authorization/Permission.js';
+import { UserPolicy } from '../../domain/user/UserPolicy.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
 export interface GetUsersCommand {
-  active?: boolean;
+  initiatorUserId: string;
+  isDeleted?: boolean;
   q?: string;
   page?: number;
   limit?: number;
@@ -10,7 +13,7 @@ export interface GetUsersCommand {
 export interface GetUsersResultUser {
   id: string;
   displayName: string;
-  active: boolean;
+  isDeleted: boolean;
 }
 
 export interface GetUsersResult {
@@ -21,17 +24,50 @@ export interface GetUsersResult {
 }
 
 export class GetUsersUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userPolicy: UserPolicy,
+  ) {}
 
   async execute(
     command: GetUsersCommand,
   ): Promise<GetUsersResult> {
+    const initiator = await this.userRepository.loadOrThrow({
+      filters: {
+        id: command.initiatorUserId,
+      },
+      with: {
+        roles: true,
+      },
+    });
+
+    const initiatorPermissions = [
+      ...new Set(
+        (initiator.roles ?? []).flatMap((role) =>
+          role
+            .getAllPermissions()
+            .map((permission) => permission.name),
+        ),
+      ),
+    ] as Permission[];
+
+    this.userPolicy.assertCanView(
+      {
+        userId: initiator.id,
+        permissions: initiatorPermissions,
+      },
+      {
+        all: true,
+      },
+    );
+
     const page = command.page ?? 1;
+
     const limit = command.limit ?? 100;
 
     const usersPage = await this.userRepository.loadPage({
       filters: {
-        active: command.active,
+        isDeleted: command.isDeleted,
         q: command.q,
       },
       page: {
@@ -47,7 +83,7 @@ export class GetUsersUseCase {
       users: usersPage.items.map((user) => ({
         id: user.id,
         displayName: user.displayName,
-        active: user.active,
+        isDeleted: user.isDeleted,
       })),
     };
   }

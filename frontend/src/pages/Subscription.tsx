@@ -1,6 +1,6 @@
 import { A } from "@solidjs/router";
 import axios from "axios";
-import { CircleQuestionMark, PlusIcon, Trash2 } from "lucide-solid";
+import { CircleQuestionMark, PlusIcon } from "lucide-solid";
 import { createMemo, createResource, createSignal, Show } from "solid-js";
 import {
   ExtendSubscriptionRequestDtoProvider,

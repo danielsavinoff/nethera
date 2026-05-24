@@ -15,7 +15,7 @@ export class GetUsersPresenter {
           new GetUserResponseDto({
             id: user.id,
             displayName: user.displayName,
-            active: user.active,
+            isDeleted: user.isDeleted,
           }),
       ),
     });

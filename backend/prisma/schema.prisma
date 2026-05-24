@@ -10,9 +10,9 @@ datasource db {
 model User {
   id String @id @db.Uuid
 
-  email     String  @unique
-  is_active Boolean @default(true)
-  locale    String? @db.VarChar(10)
+  email      String
+  is_deleted Boolean @default(false)
+  locale     String? @db.VarChar(10)
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -25,6 +25,7 @@ model User {
   payments        Payment[]
   invoices        Invoice[]
 
+  @@unique([email], where: { is_deleted: false })
   @@map("users")
 }
 

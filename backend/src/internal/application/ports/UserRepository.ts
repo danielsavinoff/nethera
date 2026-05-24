@@ -14,7 +14,7 @@ export interface LoadUserQuery {
 
 export interface LoadUsersPageQuery {
   filters?: {
-    active?: boolean;
+    isDeleted?: boolean;
     q?: string;
   };
   page: {

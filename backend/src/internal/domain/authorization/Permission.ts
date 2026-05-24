@@ -15,4 +15,7 @@ export enum Permission {
   UserRoleUpdateAny = 'user-role.update.any',
   UserRoleDeleteAny = 'user-role.delete.any',
   UserViewOwn = 'user.view.own',
+  UserViewAny = 'user.view.any',
+  UserDeleteOwn = 'user.delete.own',
+  UserDeleteAny = 'user.delete.any',
 }

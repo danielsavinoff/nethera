@@ -8,7 +8,7 @@ export class GetUserResponseDto {
   displayName!: string;
 
   @ApiProperty()
-  active!: boolean;
+  isDeleted!: boolean;
 
   constructor(data: GetUserResponseDto) {
     Object.assign(this, data);

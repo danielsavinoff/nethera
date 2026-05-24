@@ -1,5 +1,6 @@
 import { useColorMode, type ConfigColorMode } from "@kobalte/core";
 import { createSignal } from "solid-js";
+import { userControllerHandleDeleteMe } from "~/api/generated";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -20,6 +21,17 @@ import {
 import { useLocale } from "~/context/Locale";
 import { TextField, TextFieldInput } from "~/components/ui/TextField";
 import { useAuth } from "~/context/Auth";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/Dialog";
+import { showToast } from "~/components/ui/Toast";
 
 type ThemeOption = {
   label: string;
@@ -51,6 +63,25 @@ function Settings() {
   const [theme, setTheme] = createSignal<ThemeOption>(
     themeOptions.find((theme) => theme.key === colorMode())!,
   );
+
+  const [isDeletingAccount, setIsDeletingAccount] = createSignal(false);
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+
+    try {
+      await userControllerHandleDeleteMe();
+
+      window.location.href = "/login";
+    } catch {
+      showToast({
+        title: t("settingsPage.deleteAccount.error"),
+        variant: "error",
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
 
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
@@ -134,9 +165,33 @@ function Settings() {
             </CardHeader>
 
             <CardFooter class="justify-end border-t border-destructive/20 p-6  bg-destructive/10">
-              <Button variant={"destructive"}>
-                {t("settingsPage.deleteAccount.action")}
-              </Button>
+              <Dialog>
+                <DialogTrigger as={Button} variant="destructive">
+                  {t("settingsPage.deleteAccount.action")}
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {t("settingsPage.deleteAccount.dialog.title")}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {t("settingsPage.deleteAccount.dialog.description")}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose as={Button} variant="outline">
+                      {t("settingsPage.deleteAccount.dialog.cancel")}
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      disabled={isDeletingAccount()}
+                      onClick={handleDeleteAccount}
+                    >
+                      {t("settingsPage.deleteAccount.dialog.continue")}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardFooter>
           </Card>
         </Grid>
