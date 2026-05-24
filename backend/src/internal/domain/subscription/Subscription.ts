@@ -1,5 +1,6 @@
 import { Duration } from '../time/Duration.js';
 import { InvalidSubscriptionStatusException } from './InvalidSubscriptionStatusException.js';
+import { SubscriptionCannotBeCanceledException } from './SubscriptionCannotBeCanceledException.js';
 import { SubscriptionPlan } from './SubscriptionPlan.js';
 import { SubscriptionRecord } from './SubscriptionRecord.js';
 import { SubscriptionStatus } from './SubscriptionStatus.js';
@@ -119,7 +120,7 @@ export class Subscription {
   }
 
   isActive(): boolean {
-    return this.props.status === SubscriptionStatus.Active;
+    return this.status === SubscriptionStatus.Active;
   }
 
   isActivated(): boolean {
@@ -227,6 +228,28 @@ export class Subscription {
     }
 
     return this.limit(duration);
+  }
+
+  cancel(): Subscription {
+    if (!this.isActive()) {
+      throw new SubscriptionCannotBeCanceledException();
+    }
+
+    const now = new Date();
+
+    return new Subscription(
+      {
+        ...this.props,
+        status: SubscriptionStatus.Canceled,
+        expiresAt: now,
+        canceledAt: now,
+        endedAt: now,
+        autoRenew: false,
+        cancelAtPeriodEnd: false,
+        updatedAt: now,
+      },
+      this.subscriptionPlan,
+    );
   }
 
   getPlan(): SubscriptionPlan | null {

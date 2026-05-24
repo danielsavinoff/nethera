@@ -16,4 +16,8 @@ export interface VpnSubscriptionRepository {
     vpnSubscription: VpnSubscription,
     transactionContext?: TransactionContext,
   ): Promise<VpnSubscription>;
+  delete(
+    query: RepositoryQuery<VpnSubscriptionRecord>,
+    transactionContext?: TransactionContext,
+  ): Promise<void>;
 }

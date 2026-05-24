@@ -1,8 +1,9 @@
 import { A } from "@solidjs/router";
 import axios from "axios";
-import { CircleQuestionMark, PlusIcon } from "lucide-solid";
-import { createMemo, createResource, Show } from "solid-js";
+import { CircleQuestionMark, PlusIcon, Trash2 } from "lucide-solid";
+import { createMemo, createResource, createSignal, Show } from "solid-js";
 import {
+  subscriptionControllerHandleCancelCurrentSubscription,
   subscriptionControllerHandleGetCurrentSubscription,
   vpnSubscriptionControllerHandleGetCurrentVpnSubscription,
   vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage,
@@ -21,6 +22,16 @@ import { BarChart } from "~/components/ui/Charts";
 import { Col, Grid } from "~/components/ui/Grid";
 import { TextField, TextFieldInput } from "~/components/ui/TextField";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/Dialog";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -31,7 +42,9 @@ import { showToast } from "~/components/ui/Toast";
 function Subscription() {
   const { locale, t } = useLocale();
 
-  const [currentSubscription] = createResource(
+  const [isCanceling, setIsCanceling] = createSignal(false);
+
+  const [currentSubscription, currentSubscriptionActions] = createResource(
     locale,
     async (requestLocale) => {
       try {
@@ -53,7 +66,7 @@ function Subscription() {
     },
   );
 
-  const [vpnSubscription] = createResource(
+  const [vpnSubscription, vpnSubscriptionActions] = createResource(
     () => currentSubscription()?.id,
     async () => {
       try {
@@ -71,7 +84,7 @@ function Subscription() {
     },
   );
 
-  const [vpnUsage] = createResource(
+  const [vpnUsage, vpnUsageActions] = createResource(
     () => currentSubscription()?.id,
     async (subscriptionId) => {
       if (!subscriptionId) {
@@ -112,6 +125,30 @@ function Subscription() {
         title: t("subscriptionPage.linkCard.copyError"),
         variant: "error",
       });
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    setIsCanceling(true);
+
+    try {
+      await subscriptionControllerHandleCancelCurrentSubscription();
+
+      currentSubscriptionActions.mutate(null);
+      vpnSubscriptionActions.mutate(null);
+      vpnUsageActions.mutate(null);
+
+      showToast({
+        title: t("subscriptionPage.cancelDialog.success"),
+        variant: "success",
+      });
+    } catch {
+      showToast({
+        title: t("subscriptionPage.cancelDialog.error"),
+        variant: "error",
+      });
+    } finally {
+      setIsCanceling(false);
     }
   };
 
@@ -245,9 +282,33 @@ function Subscription() {
                 </p>
               </CardContent>
               <CardFooter class="gap-4">
-                <Button variant="outline" class="w-full">
-                  {t("subscriptionPage.planCard.action")}
-                </Button>
+                <Dialog>
+                  <DialogTrigger as={Button} variant="outline" class="w-full">
+                    {t("subscriptionPage.planCard.action")}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {t("subscriptionPage.cancelDialog.title")}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {t("subscriptionPage.cancelDialog.description")}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose as={Button} variant="outline">
+                        {t("subscriptionPage.cancelDialog.cancel")}
+                      </DialogClose>
+                      <Button
+                        variant="destructive"
+                        disabled={isCanceling()}
+                        onClick={handleCancelSubscription}
+                      >
+                        {t("subscriptionPage.cancelDialog.continue")}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardFooter>
             </Card>
           </Col>

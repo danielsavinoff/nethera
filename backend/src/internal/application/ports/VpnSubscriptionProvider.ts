@@ -11,6 +11,10 @@ export interface CreateVpnSubscriptionInput {
   expiresAt?: Date;
 }
 
+export interface DeleteVpnSubscriptionInput {
+  externalId: string;
+}
+
 export interface VpnSubscriptionProvider {
   fetch(
     query: ProviderQuery<VpnSubscriptionFilter>,
@@ -18,4 +22,5 @@ export interface VpnSubscriptionProvider {
   create(
     input: CreateVpnSubscriptionInput,
   ): Promise<ExternalVpnSubscription>;
+  delete(input: DeleteVpnSubscriptionInput): Promise<void>;
 }

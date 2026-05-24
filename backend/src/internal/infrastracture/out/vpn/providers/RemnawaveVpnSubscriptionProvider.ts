@@ -7,6 +7,7 @@ import type { ExternalVpnSubscription } from '../../../../application/models/Ext
 import type { ProviderQuery } from '../../../../application/models/ProviderQuery.js';
 import type {
   CreateVpnSubscriptionInput,
+  DeleteVpnSubscriptionInput,
   VpnSubscriptionProvider,
   VpnSubscriptionFilter,
 } from '../../../../application/ports/VpnSubscriptionProvider.js';
@@ -113,5 +114,31 @@ export class RemnawaveVpnSubscriptionProvider
       provider: this.provider,
       subscriptionUrl: data.subscriptionUrl,
     };
+  }
+
+  async delete(
+    input: DeleteVpnSubscriptionInput,
+  ): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.httpService.delete(
+          this.buildUrl(
+            `/api/users/${encodeURIComponent(input.externalId)}`,
+          ),
+          {
+            headers: this.getHeaders(),
+          },
+        ),
+      );
+    } catch (error) {
+      if (
+        isAxiosError(error) &&
+        error.response?.status === 404
+      ) {
+        return;
+      }
+
+      throw error;
+    }
   }
 }

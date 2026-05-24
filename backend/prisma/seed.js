@@ -30,6 +30,7 @@ async function main() {
   const userPermissionNames = [
     Permission.SubscriptionPlanViewPublic,
     Permission.SubscriptionViewOwn,
+    Permission.SubscriptionCancelOwn,
     Permission.VpnSubscriptionViewOwn,
     Permission.PaymentViewOwn,
     Permission.UserRoleViewOwn,
@@ -40,6 +41,7 @@ async function main() {
     Permission.SubscriptionPlanViewAny,
     Permission.SubscriptionPlanAddAny,
     Permission.SubscriptionViewAny,
+    Permission.SubscriptionCancelAny,
     Permission.VpnSubscriptionViewAny,
     Permission.PaymentViewAny,
     Permission.UserRoleViewAny,

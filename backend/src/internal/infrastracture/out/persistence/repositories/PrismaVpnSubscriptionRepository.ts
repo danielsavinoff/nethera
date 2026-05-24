@@ -113,4 +113,20 @@ export class PrismaVpnSubscriptionRepository
       updatedAt: row.updated_at,
     });
   }
+
+  async delete(
+    query: RepositoryQuery<VpnSubscriptionRecord>,
+    transactionContext?: TransactionContext,
+  ): Promise<void> {
+    const client = this.getClient(transactionContext);
+
+    await client.vpnSubscription.deleteMany({
+      where: query.filter
+        ? this.buildWhere<
+            VpnSubscriptionRecord,
+            Prisma.VpnSubscriptionWhereInput
+          >(query.filter, this.fieldMaps.vpnSubscriptions)
+        : undefined,
+    });
+  }
 }

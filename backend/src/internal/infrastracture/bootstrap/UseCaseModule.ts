@@ -23,6 +23,7 @@ import { GrantSubscriptionUseCase } from '../../application/usecases/GrantSubscr
 import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCurrentSubscriptionUseCase.js';
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
+import { CancelSubscriptionUseCase } from '../../application/usecases/CancelSubscriptionUseCase.js';
 import { GetPaymentsUseCase } from '../../application/usecases/GetPaymentsUseCase.js';
 import { HandlePaymentStatusChangeUseCase } from '../../application/usecases/HandlePaymentStatusChangeUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
@@ -487,6 +488,34 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       ],
     },
     {
+      provide: CancelSubscriptionUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        subscriptionRepository: SubscriptionRepository,
+        vpnSubscriptionRepository: VpnSubscriptionRepository,
+        vpnSubscriptionProvider: VpnSubscriptionProvider,
+        subscriptionPolicy: SubscriptionPolicy,
+        transactionRunner: TransactionRunner,
+      ) => {
+        return new CancelSubscriptionUseCase(
+          userRepository,
+          subscriptionRepository,
+          vpnSubscriptionRepository,
+          vpnSubscriptionProvider,
+          subscriptionPolicy,
+          transactionRunner,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaSubscriptionRepository,
+        PrismaVpnSubscriptionRepository,
+        RemnawaveVpnSubscriptionProvider,
+        SubscriptionPolicy,
+        PrismaTransactionRunner,
+      ],
+    },
+    {
       provide: GetPaymentsUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -579,6 +608,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionsUseCase,
     GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,
+    CancelSubscriptionUseCase,
     GetPaymentsUseCase,
     GetCurrentVpnSubscriptionUseCase,
     GetCurrentVpnSubscriptionUsageUseCase,

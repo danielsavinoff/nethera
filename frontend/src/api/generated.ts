@@ -162,6 +162,13 @@ export interface GetSubscriptionResponseDto {
   createdAt: string;
 }
 
+export interface CancelSubscriptionResponseDto {
+  id: string;
+  status: string;
+  canceledAt?: string;
+  endedAt?: string;
+}
+
 export interface GetSubscriptionsResponseDto {
   subscriptions: GetSubscriptionResponseDto[];
 }
@@ -232,6 +239,8 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   'subscription-planaddany': 'subscription-plan.add.any',
   subscriptionviewown: 'subscription.view.own',
   subscriptionviewany: 'subscription.view.any',
+  subscriptioncancelown: 'subscription.cancel.own',
+  subscriptioncancelany: 'subscription.cancel.any',
   'vpn-subscriptionviewown': 'vpn-subscription.view.own',
   'vpn-subscriptionviewany': 'vpn-subscription.view.any',
   paymentviewown: 'payment.view.own',
@@ -399,6 +408,15 @@ export const subscriptionControllerHandleGetCurrentSubscription = (
       options);
     }
 
+export const subscriptionControllerHandleCancelCurrentSubscription = (
+
+ options?: SecondParameter<typeof api<CancelSubscriptionResponseDto>>,) => {
+      return api<CancelSubscriptionResponseDto>(
+      {url: `/subscriptions/current`, method: 'DELETE'
+    },
+      options);
+    }
+
 export const subscriptionControllerHandleGetSubscription = (
     id: string,
  options?: SecondParameter<typeof api<GetSubscriptionResponseDto>>,) => {
@@ -516,6 +534,7 @@ export type SubscriptionPlanControllerCreateSubscriptionPlanResult = NonNullable
 export type SubscriptionPlanControllerGetSubscriptionPlanResult = NonNullable<Awaited<ReturnType<typeof subscriptionPlanControllerGetSubscriptionPlan>>>
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
 export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetCurrentSubscription>>>
+export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleCancelCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
 export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
 export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>

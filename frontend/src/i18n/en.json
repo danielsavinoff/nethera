@@ -69,6 +69,14 @@
       "title": "Plan",
       "action": "Cancel"
     },
+    "cancelDialog": {
+      "title": "Cancel subscription",
+      "description": "The subscription will be terminated before the paid period expires. You will not be able to recover the subscription or the money paid.",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "success": "Subscription canceled.",
+      "error": "Could not cancel the subscription. Please try again."
+    },
     "validCard": {
       "title": "Valid",
       "unlimited": "Unlimited",
