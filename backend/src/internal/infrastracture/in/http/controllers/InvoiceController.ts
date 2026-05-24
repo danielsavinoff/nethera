@@ -74,8 +74,8 @@ export class InvoiceController {
     try {
       const result = await this.createInvoiceUseCase.execute({
         initiatorUserId: claims.sub,
-        subscriptionPlanId:
-          createInvoiceRequestDto.subscriptionPlanId,
+        type: createInvoiceRequestDto.type,
+        referenceId: createInvoiceRequestDto.referenceId,
         provider: createInvoiceRequestDto.provider,
         locale: acceptLanguage ?? this.fallbackLanguage,
       });

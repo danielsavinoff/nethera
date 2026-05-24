@@ -35,9 +35,10 @@ export class FulfillInvoiceUseCase {
     });
 
     for (const line of invoice.lines) {
-      if (line.type === InvoiceLineType.Subscription) {
+      if (line.type === InvoiceLineType.SubscriptionPlan) {
         await this.grantSubscriptionUseCase.execute({
-          subscriptionId: line.referenceId,
+          userId: invoice.userId,
+          subscriptionPlanId: line.referenceId,
         });
       }
     }

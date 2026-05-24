@@ -1,25 +1,23 @@
 import { BillingProvider } from '../../domain/subscription/BillingProvider.js';
 import { Invoice } from '../../domain/subscription/Invoice.js';
 import { InvoiceStatus } from '../../domain/subscription/InvoiceStatus.js';
-import { Subscription } from '../../domain/subscription/Subscription.js';
-import { SubscriptionStatus } from '../../domain/subscription/SubscriptionStatus.js';
+import { InvoiceLine } from '../../domain/subscription/InvoiceLine.js';
+import { InvoiceLineType } from '../../domain/subscription/InvoiceLineType.js';
 import { SubscriptionPriceNotFoundException } from '../exceptions/SubscriptionPriceNotFoundException.js';
 import type { IdGenerator } from '../ports/IdGenerator.js';
 import type { InvoiceLineRepository } from '../ports/InvoiceLineRepository.js';
 import type { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import type { InvoiceProviderResolver } from '../ports/InvoiceProviderResolver.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
-import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { Money } from '../../domain/money/Money.js';
-import { InvoiceLine } from '../../domain/subscription/InvoiceLine.js';
-import { InvoiceLineType } from '../../domain/subscription/InvoiceLineType.js';
 import { FilterOperator } from '../models/Filter.js';
 
 export interface CreateInvoiceCommand {
   initiatorUserId: string;
-  subscriptionPlanId: string;
+  type: InvoiceLineType;
+  referenceId: string;
   provider: BillingProvider;
   locale: string;
 }
@@ -35,7 +33,6 @@ export class CreateInvoiceUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly subscriptionPlanRepository: SubscriptionPlanRepository,
-    private readonly subscriptionRepository: SubscriptionRepository,
     private readonly invoiceRepository: InvoiceRepository,
     private readonly invoiceLineRepository: InvoiceLineRepository,
     private readonly invoiceProviderResolver: InvoiceProviderResolver,
@@ -57,7 +54,7 @@ export class CreateInvoiceUseCase {
         filter: {
           field: 'id',
           operator: FilterOperator.Equals,
-          value: command.subscriptionPlanId,
+          value: command.referenceId,
         },
         with: {
           subscriptionPlanTranslations: {
@@ -96,7 +93,6 @@ export class CreateInvoiceUseCase {
       command.provider,
     );
 
-    const subscriptionId = this.idGenerator.generate();
     const invoiceId = this.idGenerator.generate();
 
     const planTranslation = subscriptionPlan.getTranslation(
@@ -124,13 +120,6 @@ export class CreateInvoiceUseCase {
       currency: subscriptionPrice.currency,
     });
 
-    const preparedSubscription = Subscription.create({
-      id: subscriptionId,
-      userId: customer.id,
-      subscriptionPlanId: subscriptionPlan.id,
-      status: SubscriptionStatus.Incomplete,
-    });
-
     const preparedInvoice = Invoice.create({
       id: invoiceId,
       externalId: externalInvoice.externalId,
@@ -151,19 +140,14 @@ export class CreateInvoiceUseCase {
       InvoiceLine.create({
         id: this.idGenerator.generate(),
         invoiceId,
-        referenceId: subscriptionId,
-        type: InvoiceLineType.Subscription,
+        referenceId: command.referenceId,
+        type: command.type,
         amount: subscriptionPrice.amountMinor,
       }),
     ];
 
     const savedInvoice = await this.transactionRunner.run(
       async (transactionContext) => {
-        await this.subscriptionRepository.save(
-          preparedSubscription,
-          transactionContext,
-        );
-
         const invoice = await this.invoiceRepository.save(
           preparedInvoice,
           transactionContext,

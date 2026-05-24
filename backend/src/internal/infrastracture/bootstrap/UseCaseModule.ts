@@ -24,6 +24,7 @@ import { GetCurrentSubscriptionUseCase } from '../../application/usecases/GetCur
 import { GetSubscriptionUseCase } from '../../application/usecases/GetSubscriptionUseCase.js';
 import { GetSubscriptionsUseCase } from '../../application/usecases/GetSubscriptionsUseCase.js';
 import { CancelSubscriptionUseCase } from '../../application/usecases/CancelSubscriptionUseCase.js';
+import { ExtendSubscriptionUseCase } from '../../application/usecases/ExtendSubscriptionUseCase.js';
 import { GetPaymentsUseCase } from '../../application/usecases/GetPaymentsUseCase.js';
 import { HandlePaymentStatusChangeUseCase } from '../../application/usecases/HandlePaymentStatusChangeUseCase.js';
 import type { NotificationService } from '../../application/ports/NotificationService.js';
@@ -325,7 +326,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       useFactory: (
         userRepository: UserRepository,
         subscriptionPlanRepository: SubscriptionPlanRepository,
-        subscriptionRepository: SubscriptionRepository,
         invoiceRepository: InvoiceRepository,
         invoiceLineRepository: InvoiceLineRepository,
         invoiceProviderResolver: InvoiceProviderResolver,
@@ -335,7 +335,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         return new CreateInvoiceUseCase(
           userRepository,
           subscriptionPlanRepository,
-          subscriptionRepository,
           invoiceRepository,
           invoiceLineRepository,
           invoiceProviderResolver,
@@ -346,7 +345,6 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       inject: [
         PrismaUserRepository,
         PrismaSubscriptionPlanRepository,
-        PrismaSubscriptionRepository,
         PrismaInvoiceRepository,
         PrismaInvoiceLineRepository,
         DefaultInvoiceProviderResolver,
@@ -371,6 +369,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       provide: GrantSubscriptionUseCase,
       useFactory: (
         subscriptionRepository: SubscriptionRepository,
+        subscriptionPlanRepository: SubscriptionPlanRepository,
         vpnSubscriptionProvider: VpnSubscriptionProvider,
         vpnSubscriptionRepository: VpnSubscriptionRepository,
         idGenerator: CryptoIdGenerator,
@@ -378,6 +377,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       ) => {
         return new GrantSubscriptionUseCase(
           subscriptionRepository,
+          subscriptionPlanRepository,
           vpnSubscriptionProvider,
           vpnSubscriptionRepository,
           idGenerator,
@@ -386,6 +386,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       },
       inject: [
         PrismaSubscriptionRepository,
+        PrismaSubscriptionPlanRepository,
         RemnawaveVpnSubscriptionProvider,
         PrismaVpnSubscriptionRepository,
         CryptoIdGenerator,
@@ -516,6 +517,25 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       ],
     },
     {
+      provide: ExtendSubscriptionUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        subscriptionRepository: SubscriptionRepository,
+        createInvoiceUseCase: CreateInvoiceUseCase,
+      ) => {
+        return new ExtendSubscriptionUseCase(
+          userRepository,
+          subscriptionRepository,
+          createInvoiceUseCase,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaSubscriptionRepository,
+        CreateInvoiceUseCase,
+      ],
+    },
+    {
       provide: GetPaymentsUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -609,6 +629,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetCurrentSubscriptionUseCase,
     GetSubscriptionUseCase,
     CancelSubscriptionUseCase,
+    ExtendSubscriptionUseCase,
     GetPaymentsUseCase,
     GetCurrentVpnSubscriptionUseCase,
     GetCurrentVpnSubscriptionUsageUseCase,

@@ -2,14 +2,18 @@ import { VpnSubscription } from '../../domain/subscription/VpnSubscription.js';
 import { SubscriptionPlanNotLoadedException } from '../exceptions/SubscriptionPlanNotLoadedException.js';
 import { FilterOperator } from '../models/Filter.js';
 import type { IdGenerator } from '../ports/IdGenerator.js';
+import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
 import type { SubscriptionRepository } from '../ports/SubscriptionRepository.js';
 import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { VpnSubscriptionProvider } from '../ports/VpnSubscriptionProvider.js';
 import type { VpnSubscriptionRepository } from '../ports/VpnSubscriptionRepository.js';
 import { Duration } from '../../domain/time/Duration.js';
+import { SubscriptionStatus } from '../../domain/subscription/SubscriptionStatus.js';
+import { Subscription } from '../../domain/subscription/Subscription.js';
 
 export interface GrantSubscriptionCommand {
-  subscriptionId: string;
+  userId: string;
+  subscriptionPlanId: string;
 }
 
 export type GrantSubscriptionResult = void;
@@ -17,6 +21,7 @@ export type GrantSubscriptionResult = void;
 export class GrantSubscriptionUseCase {
   constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
+    private readonly subscriptionPlanRepository: SubscriptionPlanRepository,
     private readonly vpnSubscriptionProvider: VpnSubscriptionProvider,
     private readonly vpnSubscriptionRepository: VpnSubscriptionRepository,
     private readonly idGenerator: IdGenerator,
@@ -26,31 +31,62 @@ export class GrantSubscriptionUseCase {
   async execute(
     command: GrantSubscriptionCommand,
   ): Promise<GrantSubscriptionResult> {
-    const subscription =
-      await this.subscriptionRepository.loadOrThrow({
+    const subscriptionPlan =
+      await this.subscriptionPlanRepository.loadOrThrow({
         filter: {
           field: 'id',
           operator: FilterOperator.Equals,
-          value: command.subscriptionId,
-        },
-        with: {
-          subscriptionPlans: true,
+          value: command.subscriptionPlanId,
         },
       });
+
+    let subscription = await this.subscriptionRepository.load({
+      filter: {
+        and: [
+          {
+            field: 'userId',
+            operator: FilterOperator.Equals,
+            value: command.userId,
+          },
+          {
+            field: 'subscriptionPlanId',
+            operator: FilterOperator.Equals,
+            value: command.subscriptionPlanId,
+          },
+          {
+            field: 'status',
+            operator: FilterOperator.Equals,
+            value: SubscriptionStatus.Active,
+          },
+        ],
+      },
+      with: {
+        subscriptionPlans: true,
+      },
+    });
+
+    if (!subscription) {
+      subscription = Subscription.create({
+        userId: command.userId,
+        subscriptionPlanId: subscriptionPlan.id,
+        status: SubscriptionStatus.Incomplete,
+        subscriptionPlan,
+      });
+    }
 
     if (!subscription.isPlanLoaded()) {
       throw new SubscriptionPlanNotLoadedException();
     }
 
-    const subscriptionPlan = subscription.getPlan();
+    const loadedSubscriptionPlan = subscription.getPlan();
 
-    if (!subscriptionPlan) {
+    if (!loadedSubscriptionPlan) {
       throw new SubscriptionPlanNotLoadedException();
     }
 
     const period = Duration.interval(
-      subscriptionPlan.billingInterval,
-      subscriptionPlan.billingIntervalCount,
+      loadedSubscriptionPlan.billingInterval,
+      loadedSubscriptionPlan.billingIntervalCount,
     );
 
     const renewedSubscription = subscription.renew(period);
@@ -60,7 +96,7 @@ export class GrantSubscriptionUseCase {
         filter: {
           field: 'userId',
           operator: FilterOperator.Equals,
-          value: subscription.userId,
+          value: command.userId,
         },
       });
 
@@ -81,7 +117,10 @@ export class GrantSubscriptionUseCase {
         subscriptionUrl: externalVpnSubscription.subscriptionUrl,
       });
     } else {
-      // TODO: Extend in VPN provider
+      await this.vpnSubscriptionProvider.extendByExternalId(
+        vpnSubscription.externalId,
+        period,
+      );
     }
 
     await this.transactionRunner.run(

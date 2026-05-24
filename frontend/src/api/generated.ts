@@ -200,13 +200,32 @@ export interface GetInvoicesResponseDto {
 export type CreateInvoiceRequestDtoProvider = typeof CreateInvoiceRequestDtoProvider[keyof typeof CreateInvoiceRequestDtoProvider];
 
 
+export type CreateInvoiceRequestDtoType = typeof CreateInvoiceRequestDtoType[keyof typeof CreateInvoiceRequestDtoType];
+
+
+export const CreateInvoiceRequestDtoType = {
+  SUBSCRIPTION_PLAN: 'SUBSCRIPTION_PLAN',
+} as const;
+
 export const CreateInvoiceRequestDtoProvider = {
   NOWPAYMENTS: 'NOWPAYMENTS',
 } as const;
 
 export interface CreateInvoiceRequestDto {
-  subscriptionPlanId: string;
+  type: CreateInvoiceRequestDtoType;
+  referenceId: string;
   provider: CreateInvoiceRequestDtoProvider;
+}
+
+export type ExtendSubscriptionRequestDtoProvider = typeof ExtendSubscriptionRequestDtoProvider[keyof typeof ExtendSubscriptionRequestDtoProvider];
+
+
+export const ExtendSubscriptionRequestDtoProvider = {
+  NOWPAYMENTS: 'NOWPAYMENTS',
+} as const;
+
+export interface ExtendSubscriptionRequestDto {
+  provider: ExtendSubscriptionRequestDtoProvider;
 }
 
 export interface GetVpnSubscriptionResponseDto {
@@ -417,6 +436,17 @@ export const subscriptionControllerHandleCancelCurrentSubscription = (
       options);
     }
 
+export const subscriptionControllerHandleExtendCurrentSubscription = (
+    extendSubscriptionRequestDto: ExtendSubscriptionRequestDto,
+ options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
+      return api<GetInvoiceResponseDto>(
+      {url: `/subscriptions/current/extend`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: extendSubscriptionRequestDto
+    },
+      options);
+    }
+
 export const subscriptionControllerHandleGetSubscription = (
     id: string,
  options?: SecondParameter<typeof api<GetSubscriptionResponseDto>>,) => {
@@ -535,6 +565,7 @@ export type SubscriptionPlanControllerGetSubscriptionPlanResult = NonNullable<Aw
 export type SubscriptionControllerHandleGetSubscriptionsResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscriptions>>>
 export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetCurrentSubscription>>>
 export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleCancelCurrentSubscription>>>
+export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
 export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
 export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>

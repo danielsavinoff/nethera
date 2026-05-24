@@ -1,4 +1,5 @@
 import type { ExternalVpnSubscription } from '../models/ExternalVpnSubscription.js';
+import type { Duration } from '../../domain/time/Duration.js';
 import type {
   Eq,
   ProviderQuery,
@@ -22,5 +23,9 @@ export interface VpnSubscriptionProvider {
   create(
     input: CreateVpnSubscriptionInput,
   ): Promise<ExternalVpnSubscription>;
+  extendByExternalId(
+    externalId: string,
+    duration: Duration,
+  ): Promise<void>;
   delete(input: DeleteVpnSubscriptionInput): Promise<void>;
 }

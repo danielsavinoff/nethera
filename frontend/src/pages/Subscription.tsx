@@ -3,7 +3,9 @@ import axios from "axios";
 import { CircleQuestionMark, PlusIcon, Trash2 } from "lucide-solid";
 import { createMemo, createResource, createSignal, Show } from "solid-js";
 import {
+  ExtendSubscriptionRequestDtoProvider,
   subscriptionControllerHandleCancelCurrentSubscription,
+  subscriptionControllerHandleExtendCurrentSubscription,
   subscriptionControllerHandleGetCurrentSubscription,
   vpnSubscriptionControllerHandleGetCurrentVpnSubscription,
   vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage,
@@ -43,6 +45,7 @@ function Subscription() {
   const { locale, t } = useLocale();
 
   const [isCanceling, setIsCanceling] = createSignal(false);
+  const [isExtending, setIsExtending] = createSignal(false);
 
   const [currentSubscription, currentSubscriptionActions] = createResource(
     locale,
@@ -149,6 +152,42 @@ function Subscription() {
       });
     } finally {
       setIsCanceling(false);
+    }
+  };
+
+  const handleExtendSubscription = async () => {
+    setIsExtending(true);
+
+    try {
+      const response =
+        await subscriptionControllerHandleExtendCurrentSubscription(
+          {
+            provider: ExtendSubscriptionRequestDtoProvider.NOWPAYMENTS,
+          },
+          {
+            headers: {
+              "Accept-Language": locale(),
+            },
+          },
+        );
+
+      if (!response.data.externalCheckoutUrl) {
+        showToast({
+          title: t("subscriptionPage.extend.errors.checkoutUrlMissing"),
+          variant: "error",
+        });
+
+        return;
+      }
+
+      window.location.assign(response.data.externalCheckoutUrl);
+    } catch {
+      showToast({
+        title: t("subscriptionPage.extend.errors.checkoutCreateFailed"),
+        variant: "error",
+      });
+    } finally {
+      setIsExtending(false);
     }
   };
 
@@ -331,7 +370,8 @@ function Subscription() {
                 <Button
                   variant="outline"
                   class="w-full"
-                  disabled={!getSubscriptionValidUntil()}
+                  disabled={!getSubscriptionValidUntil() || isExtending()}
+                  onClick={handleExtendSubscription}
                 >
                   {t("subscriptionPage.validCard.action")}
                 </Button>

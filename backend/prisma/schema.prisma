@@ -226,7 +226,7 @@ model InvoiceLine {
 
   invoice Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
 
-  @@unique([reference_id, type])
+  @@index([reference_id, type])
   @@index([invoice_id])
   @@map("invoice_lines")
 }

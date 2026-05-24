@@ -2,6 +2,7 @@ import { LucideBadgeCheck } from "lucide-solid";
 import { createResource, createSignal, For, Show } from "solid-js";
 import {
   CreateInvoiceRequestDtoProvider,
+  CreateInvoiceRequestDtoType,
   type GetSubscriptionPlanResponseDto,
   invoiceControllerHandleCreateInvoice,
   subscriptionPlanControllerGetSubscriptionPlans,
@@ -56,7 +57,8 @@ function Plans() {
     try {
       const response = await invoiceControllerHandleCreateInvoice(
         {
-          subscriptionPlanId: plan.id,
+          type: CreateInvoiceRequestDtoType.SUBSCRIPTION_PLAN,
+          referenceId: plan.id,
           provider: CreateInvoiceRequestDtoProvider.NOWPAYMENTS,
         },
         {

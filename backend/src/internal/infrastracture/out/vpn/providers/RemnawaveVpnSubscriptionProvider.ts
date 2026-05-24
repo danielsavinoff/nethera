@@ -116,6 +116,24 @@ export class RemnawaveVpnSubscriptionProvider
     };
   }
 
+  async extendByExternalId(
+    externalId: string,
+    duration: Duration,
+  ): Promise<void> {
+    await firstValueFrom(
+      this.httpService.post(
+        this.buildUrl('/api/users/bulk/extend-expiration-date'),
+        {
+          uuids: [externalId],
+          extendDays: duration.toDays(),
+        },
+        {
+          headers: this.getHeaders(),
+        },
+      ),
+    );
+  }
+
   async delete(
     input: DeleteVpnSubscriptionInput,
   ): Promise<void> {

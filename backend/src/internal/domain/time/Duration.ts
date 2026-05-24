@@ -36,6 +36,8 @@ export class Duration {
     switch (interval) {
       case Interval.Day:
         return Duration.days(count);
+      case Interval.Week:
+        return Duration.days(count * 7);
       case Interval.Month:
         return Duration.months(count);
       case Interval.Year:
@@ -86,5 +88,16 @@ export class Duration {
     }
 
     return result;
+  }
+
+  toDays(): number {
+    const days =
+      (this.value.years ?? 0) * 365 +
+      (this.value.months ?? 0) * 30 +
+      (this.value.days ?? 0) +
+      (this.value.hours ?? 0) / 24 +
+      (this.value.seconds ?? 0) / 86_400;
+
+    return Math.ceil(days);
   }
 }

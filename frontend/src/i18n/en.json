@@ -83,6 +83,12 @@
       "until": "Until {date}",
       "action": "Extend"
     },
+    "extend": {
+      "errors": {
+        "checkoutCreateFailed": "Could not start checkout. Please try again.",
+        "checkoutUrlMissing": "Checkout link is unavailable. Please try again."
+      }
+    },
     "trafficCard": {
       "title": "Traffic usage",
       "description": "Showing daily traffic for the current month",
