@@ -6,6 +6,7 @@ import {
   type GetSubscriptionPlanResponseDto,
   invoiceControllerHandleCreateInvoice,
   subscriptionPlanControllerGetSubscriptionPlans,
+  SubscriptionPlanControllerGetSubscriptionPlansInterval,
 } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
@@ -27,16 +28,31 @@ function Plans() {
   const { locale, t } = useLocale();
 
   const [isLoading, setIsLoading] = createSignal(false);
+  const [isAnnualBilling, setIsAnnualBilling] = createSignal(false);
 
-  const [plans] = createResource(locale, async (requestLocale) => {
-    const response = await subscriptionPlanControllerGetSubscriptionPlans({
-      headers: {
-        "Accept-Language": requestLocale,
-      },
-    });
+  const [plans] = createResource(
+    () => ({
+      locale: locale(),
+      interval: isAnnualBilling()
+        ? SubscriptionPlanControllerGetSubscriptionPlansInterval.YEAR
+        : SubscriptionPlanControllerGetSubscriptionPlansInterval.MONTH,
+    }),
+    async (query) => {
+      const response = await subscriptionPlanControllerGetSubscriptionPlans(
+        {
+          interval: query.interval,
+          count: 1,
+        },
+        {
+          headers: {
+            "Accept-Language": query.locale,
+          },
+        },
+      );
 
-    return response.data.subscriptionPlans;
-  });
+      return response.data.subscriptionPlans;
+    },
+  );
 
   const formatBillingInterval = (plan: Plan) => {
     const interval = plan.billingInterval.toLowerCase();
@@ -92,7 +108,11 @@ function Plans() {
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
         <h1 class="text-3xl font-semibold">{t("plansPage.title")}</h1>
-        <Switch class="flex items-center space-x-2">
+        <Switch
+          checked={isAnnualBilling()}
+          onChange={setIsAnnualBilling}
+          class="flex items-center space-x-2"
+        >
           <SwitchControl>
             <SwitchThumb />
           </SwitchControl>

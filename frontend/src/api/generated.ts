@@ -162,15 +162,19 @@ export interface GetSubscriptionResponseDto {
   createdAt: string;
 }
 
-export interface CancelSubscriptionResponseDto {
-  id: string;
-  status: string;
-  canceledAt?: string;
-  endedAt?: string;
-}
-
 export interface GetSubscriptionsResponseDto {
   subscriptions: GetSubscriptionResponseDto[];
+}
+
+export type ExtendSubscriptionRequestDtoProvider = typeof ExtendSubscriptionRequestDtoProvider[keyof typeof ExtendSubscriptionRequestDtoProvider];
+
+
+export const ExtendSubscriptionRequestDtoProvider = {
+  NOWPAYMENTS: 'NOWPAYMENTS',
+} as const;
+
+export interface ExtendSubscriptionRequestDto {
+  provider: ExtendSubscriptionRequestDtoProvider;
 }
 
 export interface GetInvoiceAmountResponseDto {
@@ -193,12 +197,16 @@ export interface GetInvoiceResponseDto {
   createdAt: string;
 }
 
+export interface CancelSubscriptionResponseDto {
+  id: string;
+  status: string;
+  canceledAt?: string;
+  endedAt?: string;
+}
+
 export interface GetInvoicesResponseDto {
   invoices: GetInvoiceResponseDto[];
 }
-
-export type CreateInvoiceRequestDtoProvider = typeof CreateInvoiceRequestDtoProvider[keyof typeof CreateInvoiceRequestDtoProvider];
-
 
 export type CreateInvoiceRequestDtoType = typeof CreateInvoiceRequestDtoType[keyof typeof CreateInvoiceRequestDtoType];
 
@@ -206,6 +214,9 @@ export type CreateInvoiceRequestDtoType = typeof CreateInvoiceRequestDtoType[key
 export const CreateInvoiceRequestDtoType = {
   SUBSCRIPTION_PLAN: 'SUBSCRIPTION_PLAN',
 } as const;
+
+export type CreateInvoiceRequestDtoProvider = typeof CreateInvoiceRequestDtoProvider[keyof typeof CreateInvoiceRequestDtoProvider];
+
 
 export const CreateInvoiceRequestDtoProvider = {
   NOWPAYMENTS: 'NOWPAYMENTS',
@@ -217,23 +228,14 @@ export interface CreateInvoiceRequestDto {
   provider: CreateInvoiceRequestDtoProvider;
 }
 
-export type ExtendSubscriptionRequestDtoProvider = typeof ExtendSubscriptionRequestDtoProvider[keyof typeof ExtendSubscriptionRequestDtoProvider];
-
-
-export const ExtendSubscriptionRequestDtoProvider = {
-  NOWPAYMENTS: 'NOWPAYMENTS',
-} as const;
-
-export interface ExtendSubscriptionRequestDto {
-  provider: ExtendSubscriptionRequestDtoProvider;
-}
-
 export interface GetVpnSubscriptionResponseDto {
   subscriptionUrl: string;
 }
 
+export type GetVpnUsageResponseDtoUsage = {[key: string]: number};
+
 export interface GetVpnUsageResponseDto {
-  usage: Record<string, number>;
+  usage: GetVpnUsageResponseDtoUsage;
 }
 
 export interface GetUserResponseDto {
@@ -315,6 +317,24 @@ export type AuthControllerHandleVerifyMagicLinkParams = {
 token: string;
 };
 
+export type SubscriptionPlanControllerGetSubscriptionPlansParams = {
+interval?: SubscriptionPlanControllerGetSubscriptionPlansInterval;
+/**
+ * @minimum 1
+ */
+count?: number;
+};
+
+export type SubscriptionPlanControllerGetSubscriptionPlansInterval = typeof SubscriptionPlanControllerGetSubscriptionPlansInterval[keyof typeof SubscriptionPlanControllerGetSubscriptionPlansInterval];
+
+
+export const SubscriptionPlanControllerGetSubscriptionPlansInterval = {
+  DAY: 'DAY',
+  WEEK: 'WEEK',
+  MONTH: 'MONTH',
+  YEAR: 'YEAR',
+} as const;
+
 export type UserControllerHandleGetUsersParams = {
 isDeleted?: boolean;
 q?: string;
@@ -390,10 +410,11 @@ export const roleControllerHandleGetRoles = (
     }
 
 export const subscriptionPlanControllerGetSubscriptionPlans = (
-
+    params?: SubscriptionPlanControllerGetSubscriptionPlansParams,
  options?: SecondParameter<typeof api<GetSubscriptionPlansResponseDto>>,) => {
       return api<GetSubscriptionPlansResponseDto>(
-      {url: `/subscription-plans`, method: 'GET'
+      {url: `/subscription-plans`, method: 'GET',
+        params
     },
       options);
     }

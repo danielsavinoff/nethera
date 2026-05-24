@@ -1,7 +1,9 @@
 import { Permission } from '../../domain/authorization/Permission.js';
 import { SubscriptionPlan } from '../../domain/subscription/SubscriptionPlan.js';
+import type { SubscriptionPlanRecord } from '../../domain/subscription/SubscriptionPlanRecord.js';
 import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
-import { FilterOperator } from '../models/Filter.js';
+import { Interval } from '../../domain/time/Interval.js';
+import { Filter, FilterOperator } from '../models/Filter.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 
@@ -9,6 +11,8 @@ export interface GetSubscriptionPlansCommand {
   initiatorUserId: string;
   locale: string;
   onlyPublic?: boolean;
+  billingInterval?: Interval;
+  billingIntervalCount?: number;
 }
 
 export interface GetSubscriptionPlansResult {
@@ -58,15 +62,40 @@ export class GetSubscriptionPlansUseCase {
       },
     );
 
+    const filters: Filter<SubscriptionPlanRecord>[] = [];
+
+    if (onlyPublic) {
+      filters.push({
+        field: 'isPublic',
+        operator: FilterOperator.Equals,
+        value: true,
+      });
+    }
+
+    if (command.billingInterval) {
+      filters.push({
+        field: 'billingInterval',
+        operator: FilterOperator.Equals,
+        value: command.billingInterval,
+      });
+    }
+
+    if (typeof command.billingIntervalCount !== 'undefined') {
+      filters.push({
+        field: 'billingIntervalCount',
+        operator: FilterOperator.Equals,
+        value: command.billingIntervalCount,
+      });
+    }
+
     const subscriptionPlans =
       await this.subscriptionPlanRepository.loadMany({
-        filter: onlyPublic
-          ? {
-              field: 'isPublic',
-              operator: FilterOperator.Equals,
-              value: true,
-            }
-          : undefined,
+        filter:
+          filters.length > 0
+            ? {
+                and: filters,
+              }
+            : undefined,
         with: {
           subscriptionPlanTranslations: {
             filter: {

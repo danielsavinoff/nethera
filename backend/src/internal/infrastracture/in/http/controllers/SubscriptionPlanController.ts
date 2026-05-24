@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ import { UserNotFoundException } from '../../../../application/exceptions/UserNo
 import { Claims } from '../decorators/Claims.js';
 import { CreateSubscriptionPlanRequestDto } from '../dtos/CreateSubscriptionPlanRequestDto.js';
 import { CreateSubscriptionPlanResponseDto } from '../dtos/CreateSubscriptionPlanResponseDto.js';
+import { GetSubscriptionPlansQueryDto } from '../dtos/GetSubscriptionPlansQueryDto.js';
 import { GetSubscriptionPlanResponseDto } from '../dtos/GetSubscriptionPlanResponseDto.js';
 import { GetSubscriptionPlansResponseDto } from '../dtos/GetSubscriptionPlansResponseDto.js';
 import { CreateSubscriptionPlanPresenter } from '../presenters/CreateSubscriptionPlanPresenter.js';
@@ -49,14 +51,21 @@ export class SubscriptionPlanController {
   @Get()
   async getSubscriptionPlans(
     @Claims() claims: AuthClaim,
-    @Headers('accept-language') acceptLanguage: string,
+    @Headers('Accept-Language') acceptLanguage: string,
+    @Query() query: GetSubscriptionPlansQueryDto,
   ) {
     try {
+      const billingIntervalCount = query.count
+        ? Number(query.count)
+        : undefined;
+
       const result =
         await this.getSubscriptionPlansUseCase.execute({
           initiatorUserId: claims.sub,
-          locale: this.getLocale(acceptLanguage),
+          locale: acceptLanguage,
           onlyPublic: true,
+          billingInterval: query.interval,
+          billingIntervalCount: billingIntervalCount,
         });
 
       return this.getSubscriptionPlansPresenter.present(result);
@@ -80,14 +89,14 @@ export class SubscriptionPlanController {
   async getSubscriptionPlan(
     @Param('id') subscriptionPlanId: string,
     @Claims() claims: AuthClaim,
-    @Headers('accept-language') acceptLanguage: string,
+    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result =
         await this.getSubscriptionPlanUseCase.execute({
           initiatorUserId: claims.sub,
           subscriptionPlanId,
-          locale: this.getLocale(acceptLanguage),
+          locale: acceptLanguage,
         });
 
       return this.getSubscriptionPlanPresenter.present(result);
@@ -152,12 +161,5 @@ export class SubscriptionPlanController {
 
       throw error;
     }
-  }
-
-  private getLocale(acceptLanguage?: string): string {
-    return (
-      acceptLanguage?.split(',')[0]?.trim() ||
-      this.fallbackLocale
-    );
   }
 }
