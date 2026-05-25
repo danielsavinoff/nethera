@@ -109,15 +109,15 @@ function Invoice() {
           </button>
         </h1>
       </Grid>
-      <div class="grid flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div class="min-w-0 flex flex-col gap-8">
+      <Grid class="w-full flex-1 gap-4 content-start items-start lg:grid-cols-[minmax(0,1fr)_24rem]">
+        <div class="h-fit min-w-0 flex flex-col">
           <DataTable<InvoiceLine, unknown>
             columns={lineColumns()}
             data={lines() ?? []}
             emptyMessage={t("invoicePage.lines.emptyState")}
           />
         </div>
-        <Flex class="flex-col gap-4 w-full justify-baseline">
+        <Flex class="min-w-0 flex-col gap-4 w-full justify-baseline">
           <Card class="w-full h-fit">
             <CardHeader>
               <CardTitle>Shipping & Billing info</CardTitle>
@@ -127,12 +127,16 @@ function Invoice() {
                 <p class="text-muted-foreground">Email Address</p>
                 <p class="font-semibold">christine@gmail.com</p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card class="w-full h-fit">
+            <CardHeader>
+              <CardTitle>Payment method</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-5">
               <div class="space-y-1 text-base">
-                <p class="text-muted-foreground">Name</p>
-                <p class="font-semibold">Customer</p>
-              </div>
-              <div class="space-y-1 text-base">
-                <p class="text-muted-foreground">Payment method</p>
+                <p class="text-muted-foreground">Payment</p>
                 <p class="font-semibold">NOWPayments</p>
               </div>
             </CardContent>
@@ -143,7 +147,7 @@ function Invoice() {
             </CardFooter>
           </Card>
         </Flex>
-      </div>
+      </Grid>
     </div>
   );
 }
