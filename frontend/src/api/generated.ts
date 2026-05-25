@@ -204,6 +204,21 @@ export interface CancelSubscriptionResponseDto {
   endedAt?: string;
 }
 
+export interface GetInvoiceLineAmountResponseDto {
+  minor: number;
+  currency: string;
+  formatted: string;
+}
+
+export interface GetInvoiceLineResponseDto {
+  title: string;
+  amount: GetInvoiceLineAmountResponseDto;
+}
+
+export interface GetInvoiceLinesResponseDto {
+  lines: GetInvoiceLineResponseDto[];
+}
+
 export interface GetInvoicesResponseDto {
   invoices: GetInvoiceResponseDto[];
 }
@@ -264,6 +279,8 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   subscriptioncancelany: 'subscription.cancel.any',
   'vpn-subscriptionviewown': 'vpn-subscription.view.own',
   'vpn-subscriptionviewany': 'vpn-subscription.view.any',
+  invoiceviewown: 'invoice.view.own',
+  invoiceviewany: 'invoice.view.any',
   paymentviewown: 'payment.view.own',
   paymentviewany: 'payment.view.any',
   'user-roleviewown': 'user-role.view.own',
@@ -486,6 +503,15 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
+export const invoiceControllerHandleGetInvoiceLines = (
+    id: string,
+ options?: SecondParameter<typeof api<GetInvoiceLinesResponseDto>>,) => {
+      return api<GetInvoiceLinesResponseDto>(
+      {url: `/invoices/${id}/lines`, method: 'GET'
+    },
+      options);
+    }
+
 export const invoiceControllerHandleGetInvoices = (
 
  options?: SecondParameter<typeof api<GetInvoicesResponseDto>>,) => {
@@ -606,6 +632,7 @@ export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullab
 export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleCancelCurrentSubscription>>>
 export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
+export type InvoiceControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoiceLines>>>
 export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
 export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>
 export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscription>>>

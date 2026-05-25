@@ -25,6 +25,7 @@ import { GetSubscriptionsPresenter } from './presenters/GetSubscriptionsPresente
 import { CancelSubscriptionPresenter } from './presenters/CancelSubscriptionPresenter.js';
 import { ExtendSubscriptionPresenter } from './presenters/ExtendSubscriptionPresenter.js';
 import { GetInvoicesPresenter } from './presenters/GetInvoicesPresenter.js';
+import { GetInvoiceLinesPresenter } from './presenters/GetInvoiceLinesPresenter.js';
 import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
 import { GetVpnSubscriptionPresenter } from './presenters/GetVpnSubscriptionPresenter.js';
 import { GetVpnUsagePresenter } from './presenters/GetVpnUsagePresenter.js';
@@ -58,6 +59,7 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     CancelSubscriptionPresenter,
     ExtendSubscriptionPresenter,
     GetInvoicesPresenter,
+    GetInvoiceLinesPresenter,
     CreateInvoicePresenter,
     GetVpnSubscriptionPresenter,
     GetVpnUsagePresenter,

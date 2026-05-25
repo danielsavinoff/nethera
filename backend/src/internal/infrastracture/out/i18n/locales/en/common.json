@@ -1,15 +1,22 @@
 {
-  "smartProcess": {
-    "fields": {
-      "id": "ID",
-      "groupId": "Group",
-      "taskId": "Task",
-      "hours": "Hours",
-      "isApproved": "Approved",
-      "weekNumber": "Week Number",
-      "year": "Year",
-      "assigneeId": "Assignee",
-      "assignerId": "Assigner"
+  "invoice": {
+    "subscriptionPlanLineTitle": {
+      "day": {
+        "one": "VPN {planTitle} Subscription — for {count} Day",
+        "other": "VPN {planTitle} Subscription — for {count} Days"
+      },
+      "week": {
+        "one": "VPN {planTitle} Subscription — for {count} Week",
+        "other": "VPN {planTitle} Subscription — for {count} Weeks"
+      },
+      "month": {
+        "one": "VPN {planTitle} Subscription — for {count} Month",
+        "other": "VPN {planTitle} Subscription — for {count} Months"
+      },
+      "year": {
+        "one": "VPN {planTitle} Subscription — for {count} Year",
+        "other": "VPN {planTitle} Subscription — for {count} Years"
+      }
     }
   }
 }

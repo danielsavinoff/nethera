@@ -11,6 +11,7 @@ export class InvoiceLine {
     id?: InvoiceLineRecord['id'];
     referenceId: InvoiceLineRecord['referenceId'];
     type: InvoiceLineType;
+    title?: InvoiceLineRecord['title'];
     amount: InvoiceLineRecord['amount'];
     invoiceId: InvoiceLineRecord['invoiceId'];
   }): InvoiceLine {
@@ -18,6 +19,7 @@ export class InvoiceLine {
       id: props.id ?? crypto.randomUUID(),
       referenceId: props.referenceId,
       type: props.type,
+      title: props.title,
       amount: props.amount,
       invoiceId: props.invoiceId,
     });
@@ -45,6 +47,10 @@ export class InvoiceLine {
     }
 
     return this.props.type as InvoiceLineType;
+  }
+
+  get title(): InvoiceLineRecord['title'] {
+    return this.props.title;
   }
 
   get amount(): InvoiceLineRecord['amount'] {

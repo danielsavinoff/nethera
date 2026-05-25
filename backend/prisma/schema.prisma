@@ -221,6 +221,7 @@ model InvoiceLine {
 
   reference_id String @db.VarChar(255)
   type         String @db.VarChar(64)
+  title        String?
   amount       Int
 
   invoice_id String @db.Uuid

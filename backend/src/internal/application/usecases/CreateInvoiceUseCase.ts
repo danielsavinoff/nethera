@@ -9,6 +9,10 @@ import type { InvoiceLineRepository } from '../ports/InvoiceLineRepository.js';
 import type { InvoiceRepository } from '../ports/InvoiceRepository.js';
 import type { InvoiceProviderResolver } from '../ports/InvoiceProviderResolver.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
+import {
+  TranslationKey,
+  type TranslatorFactory,
+} from '../ports/Translator.js';
 import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { Money } from '../../domain/money/Money.js';
@@ -38,6 +42,7 @@ export class CreateInvoiceUseCase {
     private readonly invoiceProviderResolver: InvoiceProviderResolver,
     private readonly idGenerator: IdGenerator,
     private readonly transactionRunner: TransactionRunner,
+    private readonly translatorFactory: TranslatorFactory,
   ) {}
 
   async execute(
@@ -91,14 +96,25 @@ export class CreateInvoiceUseCase {
 
     const invoiceId = this.idGenerator.generate();
 
-    const planTranslation = subscriptionPlan.getTranslation(locale);
+    const planTranslation =
+      subscriptionPlan.getTranslation(locale);
 
     const planName =
       planTranslation?.name ?? subscriptionPlan.code;
 
-    const subscriptionPrice = subscriptionPlan.getActivePrice(
-      locale,
+    const translator = this.translatorFactory.forLocale(locale);
+
+    const invoiceLineTitle = translator.translate(
+      TranslationKey.SubscriptionPlanInvoiceLineTitle,
+      {
+        planTitle: planName,
+        interval: subscriptionPlan.billingInterval.toLowerCase(),
+        count: subscriptionPlan.billingIntervalCount,
+      },
     );
+
+    const subscriptionPrice =
+      subscriptionPlan.getActivePrice(locale);
 
     if (!subscriptionPrice) {
       throw new SubscriptionPriceNotFoundException();
@@ -136,6 +152,7 @@ export class CreateInvoiceUseCase {
         invoiceId,
         referenceId: command.referenceId,
         type: command.type,
+        title: invoiceLineTitle,
         amount: subscriptionPrice.amountMinor,
       }),
     ];

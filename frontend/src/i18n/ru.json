@@ -2,7 +2,7 @@
   "header": {
     "nav": {
       "subscription": "Подписка",
-      "billing": "Биллинг",
+      "invoices": "Счета",
       "plans": "Тарифы"
     },
     "actions": {
@@ -118,8 +118,8 @@
       }
     }
   },
-  "billingPage": {
-    "title": "Биллинг",
+  "invoicesPage": {
+    "title": "Счета",
     "emptyState": "Счетов пока нет.",
     "unknownDueDate": "Бессрочно",
     "columns": {
@@ -133,6 +133,7 @@
     "actions": {
       "openMenu": "Открыть действия со счётом",
       "label": "Действия",
+      "viewInvoice": "Открыть счёт",
       "payInvoice": "Оплатить счёт",
       "copyInvoiceId": "Скопировать ID счёта",
       "copyInvoiceIdSuccess": "ID счёта скопирован.",
@@ -143,6 +144,31 @@
       "paid": "Оплачен",
       "expired": "Истёк",
       "canceled": "Отменён"
+    }
+  },
+  "invoicePage": {
+    "title": "Счёт",
+    "summary": {
+      "title": "Сводка"
+    },
+    "lines": {
+      "emptyState": "Строк счёта пока нет.",
+      "columns": {
+        "title": "Название",
+        "amount": "Сумма"
+      }
+    },
+    "actions": {
+      "backToInvoices": "Назад к счетам",
+      "copyInvoiceIdSuccess": "ID счёта скопирован.",
+      "copyInvoiceIdError": "Не удалось скопировать ID счёта. Попробуйте ещё раз."
+    }
+  },
+  "notFoundPage": {
+    "title": "Страница не найдена",
+    "description": "Запрошенная страница не существует или больше недоступна.",
+    "actions": {
+      "home": "Перейти к подписке"
     }
   },
   "settingsPage": {

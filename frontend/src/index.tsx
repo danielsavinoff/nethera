@@ -18,7 +18,9 @@ const Login = lazy(() => import("./pages/Login"));
 const Subscription = lazy(() => import("./pages/Subscription"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Settings = lazy(() => import("./pages/Settings"));
-const Billing = lazy(() => import("./pages/Billing"));
+const Invoices = lazy(() => import("./pages/Invoices"));
+const Invoice = lazy(() => import("./pages/Invoice"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const Protected = lazy(() => import("./layouts/Protected"));
 const Default = lazy(() => import("./layouts/Default"));
@@ -47,7 +49,9 @@ render(
                 </Route>
                 <Route component={Scrollable}>
                   <Route path={"/settings"} component={Settings} />
-                  <Route path={"/billing"} component={Billing} />
+                  <Route path={"/invoices"} component={Invoices} />
+                  <Route path={"/invoices/:id"} component={Invoice} />
+                  <Route path={"/not-found"} component={NotFound} />
                 </Route>
               </Route>
             </Router>

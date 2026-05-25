@@ -1,15 +1,30 @@
 {
-  "smartProcess": {
-    "fields": {
-      "id": "ID",
-      "groupId": "Группа",
-      "taskId": "Задача",
-      "hours": "Часы",
-      "isApproved": "Одобрено",
-      "weekNumber": "Номер недели",
-      "year": "Год",
-      "assigneeId": "Исполнитель",
-      "assignerId": "Постановщик"
+  "invoice": {
+    "subscriptionPlanLineTitle": {
+      "day": {
+        "one": "VPN {planTitle} Подписка — на {count} день",
+        "few": "VPN {planTitle} Подписка — на {count} дня",
+        "many": "VPN {planTitle} Подписка — на {count} дней",
+        "other": "VPN {planTitle} Подписка — на {count} дней"
+      },
+      "week": {
+        "one": "VPN {planTitle} Подписка — на {count} неделю",
+        "few": "VPN {planTitle} Подписка — на {count} недели",
+        "many": "VPN {planTitle} Подписка — на {count} недель",
+        "other": "VPN {planTitle} Подписка — на {count} недель"
+      },
+      "month": {
+        "one": "VPN {planTitle} Подписка — на {count} месяц",
+        "few": "VPN {planTitle} Подписка — на {count} месяца",
+        "many": "VPN {planTitle} Подписка — на {count} месяцев",
+        "other": "VPN {planTitle} Подписка — на {count} месяцев"
+      },
+      "year": {
+        "one": "VPN {planTitle} Подписка — на {count} год",
+        "few": "VPN {planTitle} Подписка — на {count} года",
+        "many": "VPN {planTitle} Подписка — на {count} лет",
+        "other": "VPN {planTitle} Подписка — на {count} лет"
+      }
     }
   }
 }

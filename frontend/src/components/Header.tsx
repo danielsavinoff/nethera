@@ -75,8 +75,8 @@ export function Header(props: HeaderProps) {
               <NavigationMenuTrigger as="a" href="/subscription">
                 {t("header.nav.subscription")}
               </NavigationMenuTrigger>
-              <NavigationMenuTrigger as="a" href="/billing">
-                {t("header.nav.billing")}
+              <NavigationMenuTrigger as="a" href="/invoices">
+                {t("header.nav.invoices")}
               </NavigationMenuTrigger>
               <NavigationMenuTrigger as="a" href="/plans">
                 {t("header.nav.plans")}

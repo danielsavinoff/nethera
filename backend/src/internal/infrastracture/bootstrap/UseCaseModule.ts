@@ -16,6 +16,7 @@ import { CreateSubscriptionPlanUseCase } from '../../application/usecases/Create
 import { GetSubscriptionPlanUseCase } from '../../application/usecases/GetSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlansUseCase } from '../../application/usecases/GetSubscriptionPlansUseCase.js';
 import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUseCase.js';
+import { GetInvoiceLinesUseCase } from '../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../application/usecases/GetInvoicesUseCase.js';
 import { GetCurrentVpnSubscriptionUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUseCase.js';
 import { GetCurrentVpnSubscriptionUsageUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUsageUseCase.js';
@@ -68,6 +69,7 @@ import { DefaultInvoiceProviderResolver } from '../out/payment/resolvers/Default
 import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
 import { SubscriptionPolicy } from '../../domain/subscription/SubscriptionPolicy.js';
 import { PaymentPolicy } from '../../domain/subscription/PaymentPolicy.js';
+import { InvoicePolicy } from '../../domain/subscription/InvoicePolicy.js';
 import { VpnSubscriptionPolicy } from '../../domain/subscription/VpnSubscriptionPolicy.js';
 import { UserPolicy } from '../../domain/user/UserPolicy.js';
 import { NotificationComposerSelector } from '../../application/ports/NotificationComposerSelector.js';
@@ -84,6 +86,8 @@ import { VpnModule } from '../out/vpn/VpnModule.js';
 import { RemnawaveVpnSubscriptionProvider } from '../out/vpn/providers/RemnawaveVpnSubscriptionProvider.js';
 import { RemnawaveVpnUsageProvider } from '../out/vpn/providers/RemnawaveVpnUsageProvider.js';
 import { PrismaVpnSubscriptionRepository } from '../out/persistence/repositories/PrismaVpnSubscriptionRepository.js';
+import { DefaultTranslatorFactory } from '../out/i18n/translators/DefaultTranslatorFactory.js';
+import type { TranslatorFactory } from '../../application/ports/Translator.js';
 
 const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
 
@@ -349,6 +353,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         invoiceProviderResolver: InvoiceProviderResolver,
         idGenerator: CryptoIdGenerator,
         transactionRunner: TransactionRunner,
+        translatorFactory: TranslatorFactory,
       ) => {
         return new CreateInvoiceUseCase(
           userRepository,
@@ -358,6 +363,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
           invoiceProviderResolver,
           idGenerator,
           transactionRunner,
+          translatorFactory,
         );
       },
       inject: [
@@ -368,6 +374,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         DefaultInvoiceProviderResolver,
         CryptoIdGenerator,
         PrismaTransactionRunner,
+        DefaultTranslatorFactory,
       ],
     },
     {
@@ -382,6 +389,25 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         );
       },
       inject: [PrismaUserRepository, PrismaInvoiceRepository],
+    },
+    {
+      provide: GetInvoiceLinesUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        invoiceRepository: InvoiceRepository,
+        invoicePolicy: InvoicePolicy,
+      ) => {
+        return new GetInvoiceLinesUseCase(
+          userRepository,
+          invoiceRepository,
+          invoicePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaInvoiceRepository,
+        InvoicePolicy,
+      ],
     },
     {
       provide: GrantSubscriptionUseCase,
@@ -617,6 +643,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     SubscriptionPlanPolicy,
     SubscriptionPolicy,
     PaymentPolicy,
+    InvoicePolicy,
     VpnSubscriptionPolicy,
     UserPolicy,
     {
@@ -642,6 +669,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
     GetInvoicesUseCase,
+    GetInvoiceLinesUseCase,
     GrantSubscriptionUseCase,
     FulfillInvoiceUseCase,
     HandlePaymentStatusChangeUseCase,

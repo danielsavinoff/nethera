@@ -6,6 +6,7 @@ import {
 } from 'nestjs-i18n';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { DefaultTranslatorFactory } from './translators/DefaultTranslatorFactory.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
       }),
     }),
   ],
-  exports: [NestI18nModule],
+  providers: [DefaultTranslatorFactory],
+  exports: [NestI18nModule, DefaultTranslatorFactory],
 })
 export class I18Module {}

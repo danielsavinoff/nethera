@@ -30,12 +30,14 @@ export class PrismaInvoiceLineRepository
         id: record.id,
         reference_id: record.referenceId,
         type: record.type,
+        title: record.title,
         amount: record.amount,
         invoice_id: record.invoiceId,
       },
       update: {
         reference_id: record.referenceId,
         type: record.type,
+        title: record.title,
         amount: record.amount,
         invoice_id: record.invoiceId,
       },
@@ -45,6 +47,7 @@ export class PrismaInvoiceLineRepository
       id: row.id,
       referenceId: row.reference_id,
       type: row.type,
+      title: row.title ?? undefined,
       amount: row.amount,
       invoiceId: row.invoice_id,
     });

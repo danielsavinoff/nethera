@@ -3,26 +3,34 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Headers,
   NotFoundException,
+  Param,
+  ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
 import { InvoiceCreationFailedException } from '../../../../application/exceptions/InvoiceCreationFailedException.js';
+import { InvoiceNotFoundException } from '../../../../application/exceptions/InvoiceNotFoundException.js';
 import { BillingProviderNotSupportedException } from '../../../../application/exceptions/BillingProviderNotSupportedException.js';
 import { SubscriptionPriceNotFoundException } from '../../../../application/exceptions/SubscriptionPriceNotFoundException.js';
 import { SubscriptionPlanNotFoundException } from '../../../../application/exceptions/SubscriptionPlanNotFoundException.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { CreateInvoiceUseCase } from '../../../../application/usecases/CreateInvoiceUseCase.js';
+import { GetInvoiceLinesUseCase } from '../../../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../../../application/usecases/GetInvoicesUseCase.js';
+import { InvoiceActionForbiddenException } from '../../../../domain/subscription/InvoiceActionForbiddenException.js';
 import { Claims } from '../decorators/Claims.js';
 import { CreateInvoiceRequestDto } from '../dtos/CreateInvoiceRequestDto.js';
+import { GetInvoiceLinesResponseDto } from '../dtos/GetInvoiceLinesResponseDto.js';
 import { GetInvoiceResponseDto } from '../dtos/GetInvoiceResponseDto.js';
 import { GetInvoicesResponseDto } from '../dtos/GetInvoicesResponseDto.js';
 import { CreateInvoicePresenter } from '../presenters/CreateInvoicePresenter.js';
+import { GetInvoiceLinesPresenter } from '../presenters/GetInvoiceLinesPresenter.js';
 import { GetInvoicesPresenter } from '../presenters/GetInvoicesPresenter.js';
 
 @Controller('invoices')
@@ -35,10 +43,51 @@ export class InvoiceController {
     private readonly createInvoicePresenter: CreateInvoicePresenter,
     private readonly getInvoicesUseCase: GetInvoicesUseCase,
     private readonly getInvoicesPresenter: GetInvoicesPresenter,
+    private readonly getInvoiceLinesUseCase: GetInvoiceLinesUseCase,
+    private readonly getInvoiceLinesPresenter: GetInvoiceLinesPresenter,
     private readonly configService: ConfigService,
   ) {
     this.fallbackLanguage =
       this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
+  }
+
+  @ApiOkResponse({ type: GetInvoiceLinesResponseDto })
+  @Get(':id/lines')
+  async handleGetInvoiceLines(
+    @Claims() claims: AuthClaim,
+    @Param(
+      'id',
+      new ParseUUIDPipe({
+        exceptionFactory: () =>
+          new NotFoundException('Invoice does not exist.'),
+      }),
+    )
+    id: string,
+    @Headers('Accept-Language') acceptLanguage: string,
+  ) {
+    try {
+      const result = await this.getInvoiceLinesUseCase.execute({
+        initiatorUserId: claims.sub,
+        invoiceId: id,
+        locale: acceptLanguage ?? this.fallbackLanguage,
+      });
+
+      return this.getInvoiceLinesPresenter.present(result);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof InvoiceNotFoundException) {
+        throw new NotFoundException('Invoice does not exist.');
+      }
+
+      if (error instanceof InvoiceActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOkResponse({ type: GetInvoicesResponseDto })

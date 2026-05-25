@@ -2,7 +2,7 @@
   "header": {
     "nav": {
       "subscription": "Subscription",
-      "billing": "Billing",
+      "invoices": "Invoices",
       "plans": "Plans"
     },
     "actions": {
@@ -118,8 +118,8 @@
       }
     }
   },
-  "billingPage": {
-    "title": "Billing",
+  "invoicesPage": {
+    "title": "Invoices",
     "emptyState": "No invoices yet.",
     "unknownDueDate": "No due date",
     "columns": {
@@ -133,6 +133,7 @@
     "actions": {
       "openMenu": "Open invoice actions",
       "label": "Actions",
+      "viewInvoice": "View invoice",
       "payInvoice": "Pay the invoice",
       "copyInvoiceId": "Copy invoice ID",
       "copyInvoiceIdSuccess": "Invoice ID copied.",
@@ -143,6 +144,31 @@
       "paid": "Paid",
       "expired": "Expired",
       "canceled": "Canceled"
+    }
+  },
+  "invoicePage": {
+    "title": "Invoice",
+    "summary": {
+      "title": "Summary"
+    },
+    "lines": {
+      "emptyState": "No invoice lines yet.",
+      "columns": {
+        "title": "Title",
+        "amount": "Amount"
+      }
+    },
+    "actions": {
+      "backToInvoices": "Back to invoices",
+      "copyInvoiceIdSuccess": "Invoice ID copied.",
+      "copyInvoiceIdError": "Could not copy the invoice ID. Please try again."
+    }
+  },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page you requested does not exist or is no longer available.",
+    "actions": {
+      "home": "Go to subscription"
     }
   },
   "settingsPage": {

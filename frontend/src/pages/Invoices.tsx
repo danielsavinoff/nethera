@@ -1,14 +1,13 @@
-import { Grid } from "~/components/ui/Grid";
+import { A } from "@solidjs/router";
 import type { ColumnDef } from "@tanstack/solid-table";
-import { DataTable } from "~/components/DataTable";
-import { Badge } from "~/components/ui/Badge";
+import { Ellipsis } from "lucide-solid";
+import { createMemo, createResource } from "solid-js";
 import {
   type GetInvoiceResponseDto,
   invoiceControllerHandleGetInvoices,
 } from "~/api/generated";
-import { createMemo, createResource } from "solid-js";
-import { useLocale } from "~/context/Locale";
-
+import { DataTable } from "~/components/DataTable";
+import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
 import {
   DropdownMenu,
@@ -18,12 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/DropdownMenu";
-import { Ellipsis } from "lucide-solid";
+import { Grid } from "~/components/ui/Grid";
 import { showToast } from "~/components/ui/Toast";
+import { useLocale } from "~/context/Locale";
 
 type Invoice = GetInvoiceResponseDto;
 
-function Billing() {
+function Invoices() {
   const { locale, t } = useLocale();
 
   const [invoices] = createResource(locale, async (requestLocale) => {
@@ -38,7 +38,7 @@ function Billing() {
 
   const formatDate = (value?: string) => {
     if (!value) {
-      return t("billingPage.unknownDueDate");
+      return t("invoicesPage.unknownDueDate");
     }
 
     return new Intl.DateTimeFormat(locale(), {
@@ -48,19 +48,19 @@ function Billing() {
   };
 
   const formatStatus = (status: string) =>
-    t(`billingPage.status.${status.toLowerCase()}`);
+    t(`invoicesPage.status.${status.toLowerCase()}`);
 
   const handleCopyInvoiceId = async (invoiceId: string) => {
     try {
       await navigator.clipboard.writeText(invoiceId);
 
       showToast({
-        title: t("billingPage.actions.copyInvoiceIdSuccess"),
+        title: t("invoicesPage.actions.copyInvoiceIdSuccess"),
         variant: "success",
       });
     } catch {
       showToast({
-        title: t("billingPage.actions.copyInvoiceIdError"),
+        title: t("invoicesPage.actions.copyInvoiceIdError"),
         variant: "error",
       });
     }
@@ -87,7 +87,7 @@ function Billing() {
   const columns = createMemo<ColumnDef<Invoice>[]>(() => [
     {
       accessorKey: "status",
-      header: t("billingPage.columns.status"),
+      header: t("invoicesPage.columns.status"),
       cell: (row) => {
         const value = String(row.cell.getValue());
 
@@ -98,17 +98,17 @@ function Billing() {
     },
     {
       accessorKey: "createdAt",
-      header: t("billingPage.columns.issuedAt"),
+      header: t("invoicesPage.columns.issuedAt"),
       cell: (row) => formatDate(String(row.cell.getValue())),
     },
     {
       accessorKey: "expiresAt",
-      header: t("billingPage.columns.dueAt"),
+      header: t("invoicesPage.columns.dueAt"),
       cell: (row) => formatDate(row.cell.getValue() as string | undefined),
     },
     {
       accessorKey: "total.formatted",
-      header: t("billingPage.columns.totalAmount"),
+      header: t("invoicesPage.columns.totalAmount"),
       cell: (row) => row.row.original.total.formatted,
     },
     {
@@ -122,17 +122,23 @@ function Billing() {
               variant="ghost"
               class="size-8 p-0"
             >
-              <span class="sr-only">{t("billingPage.actions.openMenu")}</span>
+              <span class="sr-only">{t("invoicesPage.actions.openMenu")}</span>
               <Ellipsis />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="min-w-3xs">
               <DropdownMenuLabel>
-                {t("billingPage.actions.label")}
+                {t("invoicesPage.actions.label")}
               </DropdownMenuLabel>
+              <DropdownMenuItem
+                as={A}
+                href={`/invoices/${props.row.original.id}`}
+              >
+                {t("invoicesPage.actions.viewInvoice")}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleCopyInvoiceId(props.row.original.id)}
               >
-                {t("billingPage.actions.copyInvoiceId")}
+                {t("invoicesPage.actions.copyInvoiceId")}
               </DropdownMenuItem>
               {props.row.original.status === "pending" &&
                 props.row.original.externalCheckoutUrl && (
@@ -145,7 +151,7 @@ function Billing() {
                         )
                       }
                     >
-                      {t("billingPage.actions.payInvoice")}
+                      {t("invoicesPage.actions.payInvoice")}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -159,17 +165,17 @@ function Billing() {
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
-        <h1 class="text-3xl font-semibold">{t("billingPage.title")}</h1>
+        <h1 class="text-3xl font-semibold">{t("invoicesPage.title")}</h1>
       </Grid>
       <div class="flex-1">
         <DataTable<Invoice, unknown>
           columns={columns()}
           data={invoices() ?? []}
-          emptyMessage={t("billingPage.emptyState")}
+          emptyMessage={t("invoicesPage.emptyState")}
         />
       </div>
     </div>
   );
 }
 
-export default Billing;
+export default Invoices;
