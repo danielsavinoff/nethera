@@ -8,6 +8,7 @@ import {
   invoiceControllerHandleGetInvoiceLines,
 } from "~/api/generated";
 import { DataTable } from "~/components/DataTable";
+import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -150,19 +151,50 @@ function Invoice() {
     },
   ]);
 
+  const formatStatus = (status: string) =>
+    t(`invoicesPage.status.${status.toLowerCase()}`);
+
+  const getStatusVariant = (
+    status: string,
+  ): "success" | "warning" | "error" | "secondary" => {
+    if (status === "paid") {
+      return "success";
+    }
+
+    if (status === "pending") {
+      return "warning";
+    }
+
+    if (status === "expired" || status === "canceled") {
+      return "error";
+    }
+
+    return "secondary";
+  };
+
   return (
     <div class="w-full flex-1 flex flex-col gap-8">
       <Grid class="w-full gap-4">
-        <h1 class="flex gap-2 min-w-0 items-baseline text-3xl font-semibold">
-          <span>{t("invoicePage.title")}</span>
-          <button
-            type="button"
-            class="min-w-0 max-w-60 truncate text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            onClick={handleCopyInvoiceId}
-          >
-            #{invoiceId()}
-          </button>
-        </h1>
+        <Flex class="min-w-0 flex-wrap justify-baseline items-center gap-2">
+          <h1 class="flex min-w-0 items-baseline gap-2 text-3xl font-semibold">
+            <span class="shrink-0">{t("invoicePage.title")}</span>
+            <span
+              role="button"
+              tabindex="0"
+              title={invoiceId()}
+              class="block min-w-0 max-w-72 truncate text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              onClick={handleCopyInvoiceId}
+            >
+              #{invoiceId()}
+            </span>
+          </h1>
+
+          <Show when={!invoice.loading && Boolean(invoice())}>
+            <Badge variant={getStatusVariant(invoice()!.status)}>
+              {formatStatus(invoice()!.status)}
+            </Badge>
+          </Show>
+        </Flex>
       </Grid>
       <Grid class="w-full flex-1 gap-4 content-start items-start lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div class="h-fit min-w-0 flex flex-col">
