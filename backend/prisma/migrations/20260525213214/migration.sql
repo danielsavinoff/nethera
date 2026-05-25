@@ -2,7 +2,7 @@
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
-    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "locale" VARCHAR(10),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE "subscriptions" (
     "id" UUID NOT NULL,
     "status" VARCHAR(32) NOT NULL,
     "auto_renew" BOOLEAN NOT NULL DEFAULT false,
-    "started_at" TIMESTAMPTZ NOT NULL,
+    "started_at" TIMESTAMPTZ,
     "expires_at" TIMESTAMPTZ,
     "trial_started_at" TIMESTAMPTZ,
     "trial_ends_at" TIMESTAMPTZ,
@@ -134,6 +134,7 @@ CREATE TABLE "invoices" (
     "id" UUID NOT NULL,
     "external_id" VARCHAR(255) NOT NULL,
     "provider" VARCHAR(32) NOT NULL,
+    "billing_email" VARCHAR(255) NOT NULL,
     "status" VARCHAR(32) NOT NULL,
     "total_amount_minor" INTEGER NOT NULL,
     "amount_paid_minor" INTEGER NOT NULL,
@@ -152,6 +153,7 @@ CREATE TABLE "invoice_lines" (
     "id" UUID NOT NULL,
     "reference_id" VARCHAR(255) NOT NULL,
     "type" VARCHAR(64) NOT NULL,
+    "title" TEXT,
     "amount" INTEGER NOT NULL,
     "invoice_id" UUID NOT NULL,
 
@@ -225,7 +227,7 @@ CREATE TABLE "subscription_plan_feature_translations" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email") WHERE ("is_deleted" = false);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "auth_tokens_token_hash_key" ON "auth_tokens"("token_hash");
@@ -276,10 +278,10 @@ CREATE INDEX "invoices_status_idx" ON "invoices"("status");
 CREATE UNIQUE INDEX "invoices_provider_external_id_key" ON "invoices"("provider", "external_id");
 
 -- CreateIndex
-CREATE INDEX "invoice_lines_invoice_id_idx" ON "invoice_lines"("invoice_id");
+CREATE INDEX "invoice_lines_reference_id_type_idx" ON "invoice_lines"("reference_id", "type");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "invoice_lines_reference_id_type_key" ON "invoice_lines"("reference_id", "type");
+CREATE INDEX "invoice_lines_invoice_id_idx" ON "invoice_lines"("invoice_id");
 
 -- CreateIndex
 CREATE INDEX "subscription_plan_prices_subscription_plan_id_idx" ON "subscription_plan_prices"("subscription_plan_id");
