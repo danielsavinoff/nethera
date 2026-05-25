@@ -89,21 +89,21 @@ export function Header(props: HeaderProps) {
 
         <Col>
           <Flex class="justify-end gap-4">
-            <Flex class="w-fit items-center gap-4">
-              <A href="#" class="flex justify-center items-center h-10">
+            <Flex class="w-fit items-center gap-1">
+              <A
+                href="#"
+                class="flex justify-center items-center size-10 text-muted-foreground/50 hover:text-primary/80 transition-colors"
+              >
                 <span class="sr-only">Telegram</span>
-                <Icon
-                  icon="mingcute:telegram-fill"
-                  class="text-xl text-muted-foreground/50 hover:text-primary/80 transition-colors"
-                />
+                <Icon icon="mingcute:telegram-fill" class="text-xl" />
               </A>
 
-              <A href="#" class="flex justify-center items-center h-10">
-                <span class="sr-only">Telegram</span>
-                <Icon
-                  icon="simple-icons:signal"
-                  class="text-xl text-muted-foreground/50 hover:text-primary/80 transition-colors"
-                />
+              <A
+                href="#"
+                class="flex justify-center items-center size-10 text-muted-foreground/50 hover:text-primary/80 transition-colors"
+              >
+                <span class="sr-only">Signal</span>
+                <Icon icon="simple-icons:signal" class="text-xl" />
               </A>
             </Flex>
 
@@ -162,7 +162,7 @@ export function Header(props: HeaderProps) {
               <DropdownMenuTrigger as={Button} variant={"outline"}>
                 <Download />
                 {t("header.actions.download")}
-                <ChevronDown class="size-3!" />
+                {/* <ChevronDown class="size-3!" /> */}
               </DropdownMenuTrigger>
               <DropdownMenuContent class="min-w-3xs">
                 <DropdownMenuLabel>
