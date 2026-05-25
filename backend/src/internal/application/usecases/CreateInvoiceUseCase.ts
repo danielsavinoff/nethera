@@ -49,6 +49,8 @@ export class CreateInvoiceUseCase {
       },
     });
 
+    const locale = customer.locale ?? command.locale;
+
     const subscriptionPlan =
       await this.subscriptionPlanRepository.loadOrThrow({
         filter: {
@@ -61,30 +63,24 @@ export class CreateInvoiceUseCase {
             filter: {
               field: 'locale',
               operator: FilterOperator.Equals,
-              value: customer.locale,
+              value: locale,
             },
           },
           subscriptionPrices: {
-            filter: customer.locale
-              ? {
-                  and: [
-                    {
-                      field: 'active',
-                      operator: FilterOperator.Equals,
-                      value: true,
-                    },
-                    {
-                      field: 'locale',
-                      operator: FilterOperator.Equals,
-                      value: customer.locale,
-                    },
-                  ],
-                }
-              : {
+            filter: {
+              and: [
+                {
                   field: 'active',
                   operator: FilterOperator.Equals,
                   value: true,
                 },
+                {
+                  field: 'locale',
+                  operator: FilterOperator.Equals,
+                  value: locale,
+                },
+              ],
+            },
           },
         },
       });
@@ -95,15 +91,13 @@ export class CreateInvoiceUseCase {
 
     const invoiceId = this.idGenerator.generate();
 
-    const planTranslation = subscriptionPlan.getTranslation(
-      customer.locale,
-    );
+    const planTranslation = subscriptionPlan.getTranslation(locale);
 
     const planName =
       planTranslation?.name ?? subscriptionPlan.code;
 
     const subscriptionPrice = subscriptionPlan.getActivePrice(
-      customer.locale,
+      locale,
     );
 
     if (!subscriptionPrice) {
@@ -171,7 +165,7 @@ export class CreateInvoiceUseCase {
     return {
       data: {
         invoice: savedInvoice,
-        locale: customer.locale ?? command.locale,
+        locale,
       },
     };
   }
