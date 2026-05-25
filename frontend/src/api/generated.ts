@@ -512,6 +512,15 @@ export const invoiceControllerHandleGetInvoiceLines = (
       options);
     }
 
+export const invoiceControllerHandleGetInvoice = (
+    id: string,
+ options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
+      return api<GetInvoiceResponseDto>(
+      {url: `/invoices/${id}`, method: 'GET'
+    },
+      options);
+    }
+
 export const invoiceControllerHandleGetInvoices = (
 
  options?: SecondParameter<typeof api<GetInvoicesResponseDto>>,) => {
@@ -633,6 +642,7 @@ export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNul
 export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
 export type InvoiceControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoiceLines>>>
+export type InvoiceControllerHandleGetInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoice>>>
 export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
 export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>
 export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscription>>>

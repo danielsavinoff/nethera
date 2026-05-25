@@ -21,6 +21,7 @@ import { SubscriptionPlanNotFoundException } from '../../../../application/excep
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { CreateInvoiceUseCase } from '../../../../application/usecases/CreateInvoiceUseCase.js';
+import { GetInvoiceUseCase } from '../../../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../../../application/usecases/GetInvoicesUseCase.js';
 import { InvoiceActionForbiddenException } from '../../../../domain/subscription/InvoiceActionForbiddenException.js';
@@ -30,6 +31,7 @@ import { GetInvoiceLinesResponseDto } from '../dtos/GetInvoiceLinesResponseDto.j
 import { GetInvoiceResponseDto } from '../dtos/GetInvoiceResponseDto.js';
 import { GetInvoicesResponseDto } from '../dtos/GetInvoicesResponseDto.js';
 import { CreateInvoicePresenter } from '../presenters/CreateInvoicePresenter.js';
+import { GetInvoicePresenter } from '../presenters/GetInvoicePresenter.js';
 import { GetInvoiceLinesPresenter } from '../presenters/GetInvoiceLinesPresenter.js';
 import { GetInvoicesPresenter } from '../presenters/GetInvoicesPresenter.js';
 
@@ -43,12 +45,53 @@ export class InvoiceController {
     private readonly createInvoicePresenter: CreateInvoicePresenter,
     private readonly getInvoicesUseCase: GetInvoicesUseCase,
     private readonly getInvoicesPresenter: GetInvoicesPresenter,
+    private readonly getInvoiceUseCase: GetInvoiceUseCase,
+    private readonly getInvoicePresenter: GetInvoicePresenter,
     private readonly getInvoiceLinesUseCase: GetInvoiceLinesUseCase,
     private readonly getInvoiceLinesPresenter: GetInvoiceLinesPresenter,
     private readonly configService: ConfigService,
   ) {
     this.fallbackLanguage =
       this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
+  }
+
+  @ApiOkResponse({ type: GetInvoiceResponseDto })
+  @Get(':id')
+  async handleGetInvoice(
+    @Claims() claims: AuthClaim,
+    @Param(
+      'id',
+      new ParseUUIDPipe({
+        exceptionFactory: () =>
+          new NotFoundException('Invoice does not exist.'),
+      }),
+    )
+    id: string,
+    @Headers('Accept-Language') acceptLanguage: string,
+  ) {
+    try {
+      const result = await this.getInvoiceUseCase.execute({
+        initiatorUserId: claims.sub,
+        invoiceId: id,
+        locale: acceptLanguage ?? this.fallbackLanguage,
+      });
+
+      return this.getInvoicePresenter.present(result);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof InvoiceNotFoundException) {
+        throw new NotFoundException('Invoice does not exist.');
+      }
+
+      if (error instanceof InvoiceActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOkResponse({ type: GetInvoiceLinesResponseDto })

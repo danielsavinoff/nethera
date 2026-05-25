@@ -158,6 +158,17 @@
         "amount": "Сумма"
       }
     },
+    "billingInfo": {
+      "title": "Доставка и платёжные данные",
+      "emailAddress": "Электронная почта"
+    },
+    "paymentMethod": {
+      "title": "Способ оплаты",
+      "label": "Оплата",
+      "unknown": "Неизвестно",
+      "nowpayments": "NowPayments",
+      "pay": "Оплатить"
+    },
     "actions": {
       "backToInvoices": "Назад к счетам",
       "copyInvoiceIdSuccess": "ID счёта скопирован.",

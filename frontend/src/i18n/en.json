@@ -158,6 +158,17 @@
         "amount": "Amount"
       }
     },
+    "billingInfo": {
+      "title": "Shipping & Billing info",
+      "emailAddress": "Email Address"
+    },
+    "paymentMethod": {
+      "title": "Payment method",
+      "label": "Payment",
+      "unknown": "Unknown",
+      "nowpayments": "NowPayments",
+      "pay": "Pay"
+    },
     "actions": {
       "backToInvoices": "Back to invoices",
       "copyInvoiceIdSuccess": "Invoice ID copied.",

@@ -16,6 +16,7 @@ import { CreateSubscriptionPlanUseCase } from '../../application/usecases/Create
 import { GetSubscriptionPlanUseCase } from '../../application/usecases/GetSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlansUseCase } from '../../application/usecases/GetSubscriptionPlansUseCase.js';
 import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUseCase.js';
+import { GetInvoiceUseCase } from '../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../application/usecases/GetInvoicesUseCase.js';
 import { GetCurrentVpnSubscriptionUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUseCase.js';
@@ -391,6 +392,25 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       inject: [PrismaUserRepository, PrismaInvoiceRepository],
     },
     {
+      provide: GetInvoiceUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        invoiceRepository: InvoiceRepository,
+        invoicePolicy: InvoicePolicy,
+      ) => {
+        return new GetInvoiceUseCase(
+          userRepository,
+          invoiceRepository,
+          invoicePolicy,
+        );
+      },
+      inject: [
+        PrismaUserRepository,
+        PrismaInvoiceRepository,
+        InvoicePolicy,
+      ],
+    },
+    {
       provide: GetInvoiceLinesUseCase,
       useFactory: (
         userRepository: UserRepository,
@@ -668,6 +688,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionPlanUseCase,
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
+    GetInvoiceUseCase,
     GetInvoicesUseCase,
     GetInvoiceLinesUseCase,
     GrantSubscriptionUseCase,

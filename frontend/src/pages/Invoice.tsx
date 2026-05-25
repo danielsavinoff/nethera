@@ -4,6 +4,7 @@ import axios from "axios";
 import { createEffect, createMemo, createResource } from "solid-js";
 import {
   type GetInvoiceLineResponseDto,
+  invoiceControllerHandleGetInvoice,
   invoiceControllerHandleGetInvoiceLines,
 } from "~/api/generated";
 import { DataTable } from "~/components/DataTable";
@@ -83,6 +84,47 @@ function Invoice() {
     },
   );
 
+  const [invoice] = createResource(
+    () => ({
+      id: invoiceId(),
+      locale: locale(),
+    }),
+    async ({ id, locale: requestLocale }) => {
+      if (!id) {
+        return null;
+      }
+
+      try {
+        const response = await invoiceControllerHandleGetInvoice(id, {
+          headers: {
+            "Accept-Language": requestLocale,
+          },
+        });
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          navigate("/not-found", { replace: true });
+
+          return null;
+        }
+
+        throw error;
+      }
+    },
+  );
+
+  const formatPaymentMethod = (provider?: string) => {
+    if (!provider) {
+      return t("invoicePage.paymentMethod.unknown");
+    }
+
+    const key = `invoicePage.paymentMethod.${provider.toLowerCase()}`;
+    const translated = t(key);
+
+    return translated === key ? provider : translated;
+  };
+
   const lineColumns = createMemo<ColumnDef<InvoiceLine>[]>(() => [
     {
       accessorKey: "title",
@@ -120,11 +162,13 @@ function Invoice() {
         <Flex class="min-w-0 flex-col gap-4 w-full justify-baseline">
           <Card class="w-full h-fit">
             <CardHeader>
-              <CardTitle>Shipping & Billing info</CardTitle>
+              <CardTitle>{t("invoicePage.billingInfo.title")}</CardTitle>
             </CardHeader>
             <CardContent class="space-y-5">
               <div class="space-y-1 text-base">
-                <p class="text-muted-foreground">Email Address</p>
+                <p class="text-muted-foreground">
+                  {t("invoicePage.billingInfo.emailAddress")}
+                </p>
                 <p class="font-semibold">christine@gmail.com</p>
               </div>
             </CardContent>
@@ -132,17 +176,21 @@ function Invoice() {
 
           <Card class="w-full h-fit">
             <CardHeader>
-              <CardTitle>Payment method</CardTitle>
+              <CardTitle>{t("invoicePage.paymentMethod.title")}</CardTitle>
             </CardHeader>
             <CardContent class="space-y-5">
               <div class="space-y-1 text-base">
-                <p class="text-muted-foreground">Payment</p>
-                <p class="font-semibold">NOWPayments</p>
+                <p class="text-muted-foreground">
+                  {t("invoicePage.paymentMethod.label")}
+                </p>
+                <p class="font-semibold">
+                  {formatPaymentMethod(invoice()?.provider)}
+                </p>
               </div>
             </CardContent>
             <CardFooter>
               <Button class="w-full" size={"sm"}>
-                Pay
+                {t("invoicePage.paymentMethod.pay")}
               </Button>
             </CardFooter>
           </Card>
