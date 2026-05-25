@@ -134,6 +134,7 @@ export class CreateInvoiceUseCase {
       id: invoiceId,
       externalId: externalInvoice.externalId,
       provider: command.provider,
+      billingEmail: customer.email,
       userId: customer.id,
       status: externalInvoice.status ?? InvoiceStatus.Pending,
       totalAmountMinor: Money.toMinor(

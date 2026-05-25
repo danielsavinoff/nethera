@@ -195,6 +195,7 @@ model Invoice {
 
   external_id           String @db.VarChar(255)
   provider              String @db.VarChar(32)
+  billing_email         String @db.VarChar(255)
   status                String @db.VarChar(32)
   total_amount_minor    Int
   amount_paid_minor     Int

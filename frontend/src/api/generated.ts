@@ -503,20 +503,20 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
-export const invoiceControllerHandleGetInvoiceLines = (
-    id: string,
- options?: SecondParameter<typeof api<GetInvoiceLinesResponseDto>>,) => {
-      return api<GetInvoiceLinesResponseDto>(
-      {url: `/invoices/${id}/lines`, method: 'GET'
-    },
-      options);
-    }
-
 export const invoiceControllerHandleGetInvoice = (
     id: string,
  options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
       return api<GetInvoiceResponseDto>(
       {url: `/invoices/${id}`, method: 'GET'
+    },
+      options);
+    }
+
+export const invoiceControllerHandleGetInvoiceLines = (
+    id: string,
+ options?: SecondParameter<typeof api<GetInvoiceLinesResponseDto>>,) => {
+      return api<GetInvoiceLinesResponseDto>(
+      {url: `/invoices/${id}/lines`, method: 'GET'
     },
       options);
     }
@@ -641,8 +641,8 @@ export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullab
 export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleCancelCurrentSubscription>>>
 export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
-export type InvoiceControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoiceLines>>>
 export type InvoiceControllerHandleGetInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoice>>>
+export type InvoiceControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoiceLines>>>
 export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
 export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>
 export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscription>>>

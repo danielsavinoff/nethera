@@ -14,6 +14,7 @@ export class CreateInvoicePresenter {
       id: invoice.id,
       externalId: invoice.externalId,
       provider: invoice.provider,
+      billingEmail: invoice.billingEmail,
       userId: invoice.userId,
       status: invoice.status,
       total: this.getAmountDto(

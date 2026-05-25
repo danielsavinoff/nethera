@@ -2,6 +2,7 @@ export interface InvoiceRecord {
   id: string;
   externalId: string;
   provider: string;
+  billingEmail: string;
   userId: string;
   status: string;
   totalAmountMinor: number;

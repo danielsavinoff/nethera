@@ -13,6 +13,7 @@ export class Invoice {
     id?: InvoiceRecord['id'];
     externalId: InvoiceRecord['externalId'];
     provider: InvoiceRecord['provider'];
+    billingEmail: InvoiceRecord['billingEmail'];
     userId: InvoiceRecord['userId'];
     status: InvoiceStatus;
     totalAmountMinor: InvoiceRecord['totalAmountMinor'];
@@ -27,6 +28,7 @@ export class Invoice {
       id: props.id ?? crypto.randomUUID(),
       externalId: props.externalId,
       provider: props.provider,
+      billingEmail: props.billingEmail,
       userId: props.userId,
       status: props.status,
       totalAmountMinor: props.totalAmountMinor,
@@ -54,6 +56,10 @@ export class Invoice {
 
   get provider(): InvoiceRecord['provider'] {
     return this.props.provider;
+  }
+
+  get billingEmail(): InvoiceRecord['billingEmail'] {
+    return this.props.billingEmail;
   }
 
   get userId(): InvoiceRecord['userId'] {

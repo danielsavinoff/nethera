@@ -12,6 +12,9 @@ export class GetInvoiceResponseDto {
   provider!: string;
 
   @ApiProperty()
+  billingEmail!: string;
+
+  @ApiProperty()
   userId!: string;
 
   @ApiProperty()

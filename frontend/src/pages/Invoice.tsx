@@ -214,7 +214,7 @@ function Invoice() {
                 <p class="text-muted-foreground">
                   {t("invoicePage.billingInfo.emailAddress")}
                 </p>
-                <p class="font-semibold">christine@gmail.com</p>
+                <p class="font-semibold">{invoice()?.billingEmail}</p>
               </div>
             </CardContent>
           </Card>
