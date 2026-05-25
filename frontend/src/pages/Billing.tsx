@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/DropdownMenu";
 import { Ellipsis } from "lucide-solid";
@@ -135,15 +136,18 @@ function Billing() {
               </DropdownMenuItem>
               {props.row.original.status === "pending" &&
                 props.row.original.externalCheckoutUrl && (
-                  <DropdownMenuItem
-                    onClick={() =>
-                      window.location.assign(
-                        props.row.original.externalCheckoutUrl,
-                      )
-                    }
-                  >
-                    {t("billingPage.actions.payInvoice")}
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() =>
+                        window.location.assign(
+                          props.row.original.externalCheckoutUrl,
+                        )
+                      }
+                    >
+                      {t("billingPage.actions.payInvoice")}
+                    </DropdownMenuItem>
+                  </>
                 )}
             </DropdownMenuContent>
           </DropdownMenu>
