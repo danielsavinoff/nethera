@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import type { ColumnDef } from "@tanstack/solid-table";
 import axios from "axios";
-import { createEffect, createMemo, createResource } from "solid-js";
+import { createEffect, createMemo, createResource, Show } from "solid-js";
 import {
   type GetInvoiceLineResponseDto,
   invoiceControllerHandleGetInvoice,
@@ -125,6 +125,19 @@ function Invoice() {
     return translated === key ? provider : translated;
   };
 
+  const shouldShowPayButton = () =>
+    invoice()?.status !== "paid" && Boolean(invoice()?.externalCheckoutUrl);
+
+  const handlePay = () => {
+    const checkoutUrl = invoice()?.externalCheckoutUrl;
+
+    if (!checkoutUrl) {
+      return;
+    }
+
+    window.location.assign(checkoutUrl);
+  };
+
   const lineColumns = createMemo<ColumnDef<InvoiceLine>[]>(() => [
     {
       accessorKey: "title",
@@ -188,11 +201,13 @@ function Invoice() {
                 </p>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button class="w-full" size={"sm"}>
-                {t("invoicePage.paymentMethod.pay")}
-              </Button>
-            </CardFooter>
+            <Show when={shouldShowPayButton()}>
+              <CardFooter>
+                <Button class="w-full" size={"sm"} onClick={handlePay}>
+                  {t("invoicePage.paymentMethod.pay")}
+                </Button>
+              </CardFooter>
+            </Show>
           </Card>
         </Flex>
       </Grid>
