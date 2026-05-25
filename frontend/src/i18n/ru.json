@@ -169,6 +169,12 @@
       "nowpayments": "NowPayments",
       "pay": "Оплатить"
     },
+    "status": {
+      "pending": "Ожидает оплаты",
+      "paid": "Оплачен",
+      "expired": "Истёк",
+      "canceled": "Отменён"
+    },
     "actions": {
       "backToInvoices": "Назад к счетам",
       "copyInvoiceIdSuccess": "ID счёта скопирован.",

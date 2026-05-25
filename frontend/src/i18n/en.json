@@ -169,6 +169,12 @@
       "nowpayments": "NowPayments",
       "pay": "Pay"
     },
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "expired": "Expired",
+      "canceled": "Canceled"
+    },
     "actions": {
       "backToInvoices": "Back to invoices",
       "copyInvoiceIdSuccess": "Invoice ID copied.",

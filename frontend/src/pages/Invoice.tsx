@@ -152,7 +152,7 @@ function Invoice() {
   ]);
 
   const formatStatus = (status: string) =>
-    t(`invoicesPage.status.${status.toLowerCase()}`);
+    t(`invoicePage.status.${status.toLowerCase()}`);
 
   const getStatusVariant = (
     status: string,

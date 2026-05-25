@@ -7,7 +7,6 @@ import {
   invoiceControllerHandleGetInvoices,
 } from "~/api/generated";
 import { DataTable } from "~/components/DataTable";
-import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
 import {
   DropdownMenu,
@@ -47,9 +46,6 @@ function Invoices() {
     }).format(new Date(value));
   };
 
-  const formatStatus = (status: string) =>
-    t(`invoicesPage.status.${status.toLowerCase()}`);
-
   const handleCopyInvoiceId = async (invoiceId: string) => {
     try {
       await navigator.clipboard.writeText(invoiceId);
@@ -66,24 +62,6 @@ function Invoices() {
     }
   };
 
-  const getStatusVariant = (
-    status: string,
-  ): "success" | "warning" | "error" | "secondary" => {
-    if (status === "paid") {
-      return "success";
-    }
-
-    if (status === "pending") {
-      return "warning";
-    }
-
-    if (status === "expired" || status === "canceled") {
-      return "error";
-    }
-
-    return "secondary";
-  };
-
   const columns = createMemo<ColumnDef<Invoice>[]>(() => [
     {
       accessorKey: "status",
@@ -91,9 +69,7 @@ function Invoices() {
       cell: (row) => {
         const value = String(row.cell.getValue());
 
-        return (
-          <Badge variant={getStatusVariant(value)}>{formatStatus(value)}</Badge>
-        );
+        return t(`invoicesPage.status.${value}`);
       },
     },
     {
