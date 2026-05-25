@@ -89,9 +89,9 @@ export class CancelSubscriptionUseCase {
       });
 
     if (vpnSubscription) {
-      await this.vpnSubscriptionProvider.delete({
-        externalId: vpnSubscription.externalId,
-      });
+      await this.vpnSubscriptionProvider.expireByExternalId(
+        vpnSubscription.externalId,
+      );
     }
 
     const canceledSubscription = subscription.cancel();
@@ -102,19 +102,6 @@ export class CancelSubscriptionUseCase {
           canceledSubscription,
           transactionContext,
         );
-
-        if (vpnSubscription) {
-          await this.vpnSubscriptionRepository.delete(
-            {
-              filter: {
-                field: 'id',
-                operator: FilterOperator.Equals,
-                value: vpnSubscription.id,
-              },
-            },
-            transactionContext,
-          );
-        }
       },
     );
 

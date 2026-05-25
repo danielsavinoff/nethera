@@ -27,5 +27,6 @@ export interface VpnSubscriptionProvider {
     externalId: string,
     duration: Duration,
   ): Promise<void>;
+  expireByExternalId(externalId: string): Promise<void>;
   delete(input: DeleteVpnSubscriptionInput): Promise<void>;
 }
