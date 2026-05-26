@@ -65,7 +65,7 @@ export function Header(props: HeaderProps) {
             >
               <span class="text-sm font-semibold">N</span>
             </div>
-            <NavigationMenu class="flex-none">
+            <NavigationMenu class="flex-none hidden sm:flex">
               <NavigationMenuTrigger as="a" href="/subscription">
                 {t("header.nav.subscription")}
               </NavigationMenuTrigger>
@@ -83,7 +83,7 @@ export function Header(props: HeaderProps) {
 
         <Col>
           <Flex class="justify-end gap-4">
-            <Flex class="w-fit items-center gap-1">
+            <Flex class="w-fit items-center gap-1 hidden sm:flex">
               <A
                 href="#"
                 class="flex justify-center items-center size-10 text-muted-foreground/50 hover:text-primary/80 transition-colors"
@@ -101,7 +101,7 @@ export function Header(props: HeaderProps) {
               </A>
             </Flex>
 
-            <Separator orientation="vertical" class="h-6" />
+            <Separator orientation="vertical" class="h-6 hidden sm:block" />
 
             <DropdownMenu>
               <DropdownMenuTrigger>
