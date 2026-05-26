@@ -5,7 +5,7 @@ export class GetInvoiceLineAmountResponseDto {
   minor!: number;
 
   @ApiProperty()
-  currency!: string;
+  currencyCode!: string;
 
   @ApiProperty()
   formatted!: string;

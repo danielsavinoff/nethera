@@ -15,12 +15,7 @@ export class CreateSubscriptionPriceRequestDto {
   @ApiProperty()
   @IsString()
   @Length(3, 3)
-  currency!: string;
-
-  @ApiProperty()
-  @IsString()
-  @Length(2, 10)
-  locale!: string;
+  currencyCode!: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

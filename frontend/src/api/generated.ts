@@ -26,7 +26,7 @@ export interface GetSubscriptionPlanFeatureResponseDto {
 }
 
 export interface GetSubscriptionPlanPriceResponseDto {
-  currency: string;
+  currencyCode: string;
   amountMinor: number;
   formatted: string;
 }
@@ -70,8 +70,7 @@ export interface CreateSubscriptionPlanFeatureRequestDto {
 
 export interface CreateSubscriptionPriceRequestDto {
   amountMinor: number;
-  currency: string;
-  locale: string;
+  currencyCode: string;
   active?: boolean;
 }
 
@@ -123,8 +122,7 @@ export interface GetSubscriptionPriceResponseDto {
   id: string;
   subscriptionPlanId: string;
   amountMinor: number;
-  currency: string;
-  locale: string;
+  currencyCode: string;
   active: boolean;
   createdAt: string;
 }
@@ -192,7 +190,7 @@ export interface GetInvoiceResponseDto {
   total: GetInvoiceAmountResponseDto;
   paid: GetInvoiceAmountResponseDto;
   due: GetInvoiceAmountResponseDto;
-  currency: string;
+  currencyCode: string;
   externalCheckoutUrl: string;
   expiresAt?: string;
   createdAt: string;
@@ -220,7 +218,7 @@ export interface GetSupportedCurrenciesResponseDto {
 
 export interface GetInvoiceLineAmountResponseDto {
   minor: number;
-  currency: string;
+  currencyCode: string;
   formatted: string;
 }
 

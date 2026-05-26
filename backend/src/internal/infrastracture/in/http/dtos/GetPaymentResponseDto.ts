@@ -14,7 +14,7 @@ export class GetPaymentResponseDto {
   amountMinor!: number;
 
   @ApiProperty()
-  currency!: string;
+  currencyCode!: string;
 
   @ApiProperty({ required: false })
   dueAt?: Date;

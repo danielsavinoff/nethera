@@ -5,7 +5,7 @@ export interface CreateInvoiceInput {
   invoiceId: InvoiceRecord['id'];
   description: string;
   amount: number;
-  currency: InvoiceRecord['currency'];
+  currencyCode: InvoiceRecord['currencyCode'];
 }
 
 export interface InvoiceProvider {

@@ -31,8 +31,7 @@ export interface CreateSubscriptionPlanCommandTranslation {
 
 export interface CreateSubscriptionPlanCommandPrice {
   amountMinor: number;
-  currency: string;
-  locale: string;
+  currencyCode: string;
   active?: boolean;
 }
 
@@ -136,8 +135,7 @@ export class CreateSubscriptionPlanUseCase {
         SubscriptionPrice.create({
           subscriptionPlanId: subscriptionPlan.id,
           amountMinor: price.amountMinor,
-          currency: price.currency,
-          locale: price.locale,
+          currencyCode: price.currencyCode,
           active: price.active,
         }),
       ) ?? [];

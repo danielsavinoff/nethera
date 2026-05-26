@@ -34,7 +34,7 @@ export class ExtendSubscriptionPresenter {
         invoice,
         result.data.locale,
       ),
-      currency: invoice.currency,
+      currencyCode: invoice.currencyCode,
       externalCheckoutUrl: invoice.externalCheckoutUrl,
       expiresAt: invoice.expiresAt,
       createdAt: invoice.createdAt,
@@ -51,7 +51,7 @@ export class ExtendSubscriptionPresenter {
       formatted: MoneyFormatter.format(
         amountMinor,
         locale,
-        invoice.currency,
+        invoice.currencyCode,
       ),
     });
   }

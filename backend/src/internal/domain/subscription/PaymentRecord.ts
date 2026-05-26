@@ -3,7 +3,7 @@ export interface PaymentRecord {
   userId: string;
   status: string;
   amountMinor: number;
-  currency: string;
+  currencyCode: string;
   dueAt?: Date;
   paidAt?: Date;
   failedAt?: Date;

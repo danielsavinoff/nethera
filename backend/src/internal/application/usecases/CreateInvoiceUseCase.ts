@@ -17,6 +17,7 @@ import type { TransactionRunner } from '../ports/TransactionRunner.js';
 import type { UserRepository } from '../ports/UserRepository.js';
 import { Money } from '../../domain/money/Money.js';
 import { FilterOperator } from '../models/Filter.js';
+import { SupportedCurrency } from '../../domain/money/SupportedCurrency.js';
 
 export interface CreateInvoiceCommand {
   initiatorUserId: string;
@@ -56,6 +57,9 @@ export class CreateInvoiceUseCase {
 
     const locale = customer.locale ?? command.locale;
 
+    const currencyCode =
+      customer.preferredCurrencyCode ?? SupportedCurrency.USD;
+
     const subscriptionPlan =
       await this.subscriptionPlanRepository.loadOrThrow({
         filter: {
@@ -80,9 +84,9 @@ export class CreateInvoiceUseCase {
                   value: true,
                 },
                 {
-                  field: 'locale',
+                  field: 'currencyCode',
                   operator: FilterOperator.Equals,
-                  value: locale,
+                  value: currencyCode,
                 },
               ],
             },
@@ -114,7 +118,7 @@ export class CreateInvoiceUseCase {
     );
 
     const subscriptionPrice =
-      subscriptionPlan.getActivePrice(locale);
+      subscriptionPlan.getActivePrice(currencyCode);
 
     if (!subscriptionPrice) {
       throw new SubscriptionPriceNotFoundException();
@@ -125,9 +129,9 @@ export class CreateInvoiceUseCase {
       description: planName,
       amount: Money.fromMinor(
         subscriptionPrice.amountMinor,
-        subscriptionPrice.currency,
+        subscriptionPrice.currencyCode,
       ),
-      currency: subscriptionPrice.currency,
+      currencyCode: subscriptionPrice.currencyCode,
     });
 
     const preparedInvoice = Invoice.create({
@@ -139,10 +143,10 @@ export class CreateInvoiceUseCase {
       status: externalInvoice.status ?? InvoiceStatus.Pending,
       totalAmountMinor: Money.toMinor(
         externalInvoice.amount,
-        externalInvoice.currency,
+        externalInvoice.currencyCode,
       ),
       amountPaidMinor: 0,
-      currency: externalInvoice.currency,
+      currencyCode: externalInvoice.currencyCode,
       externalCheckoutUrl: externalInvoice.externalCheckoutUrl,
       expiresAt: externalInvoice.expiresAt,
     });

@@ -30,7 +30,7 @@ export class GetInvoiceResponseDto {
   due!: GetInvoiceAmountResponseDto;
 
   @ApiProperty()
-  currency!: string;
+  currencyCode!: string;
 
   @ApiProperty()
   externalCheckoutUrl!: string;

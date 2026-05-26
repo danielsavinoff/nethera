@@ -20,6 +20,7 @@ export class GetSubscriptionPlanPresenter {
     const price = this.getPrice(
       result.data.subscriptionPlan,
       result.data.locale,
+      result.data.currencyCode,
     );
 
     return new GetSubscriptionPlanResponseDto({
@@ -62,22 +63,24 @@ export class GetSubscriptionPlanPresenter {
   private getPrice(
     subscriptionPlan: SubscriptionPlan,
     locale: string,
+    currencyCode: string,
   ): GetSubscriptionPlanPriceResponseDto | undefined {
     const price = subscriptionPlan
       .getAllPrices()
       .find(
         (subscriptionPrice) =>
           subscriptionPrice.active &&
-          subscriptionPrice.locale === locale,
+          subscriptionPrice.currencyCode === currencyCode,
       );
 
     return price
       ? new GetSubscriptionPlanPriceResponseDto({
-          currency: price.currency,
+          currencyCode: price.currencyCode,
           amountMinor: price.amountMinor,
           formatted: MoneyFormatter.format(
             price.amountMinor,
             locale,
+            price.currencyCode,
           ),
         })
       : undefined;

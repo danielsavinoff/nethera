@@ -80,7 +80,7 @@ export class NowPaymentsWebhookController {
         handlePaymentStatusRequestBody.payment_status,
       ),
       amount: handlePaymentStatusRequestBody.price_amount,
-      currency: handlePaymentStatusRequestBody.price_currency,
+      currencyCode: handlePaymentStatusRequestBody.price_currency,
     });
   }
 }

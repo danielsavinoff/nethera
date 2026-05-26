@@ -32,7 +32,7 @@ export class GetInvoicePresenter {
         invoice,
         result.data.locale,
       ),
-      currency: invoice.currency,
+      currencyCode: invoice.currencyCode,
       externalCheckoutUrl: invoice.externalCheckoutUrl,
       expiresAt: invoice.expiresAt,
       createdAt: invoice.createdAt,
@@ -49,7 +49,7 @@ export class GetInvoicePresenter {
       formatted: MoneyFormatter.format(
         amountMinor,
         locale,
-        invoice.currency,
+        invoice.currencyCode,
       ),
     });
   }

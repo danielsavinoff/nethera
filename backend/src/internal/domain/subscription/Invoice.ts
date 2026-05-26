@@ -18,7 +18,7 @@ export class Invoice {
     status: InvoiceStatus;
     totalAmountMinor: InvoiceRecord['totalAmountMinor'];
     amountPaidMinor: InvoiceRecord['amountPaidMinor'];
-    currency: InvoiceRecord['currency'];
+    currencyCode: InvoiceRecord['currencyCode'];
     externalCheckoutUrl: InvoiceRecord['externalCheckoutUrl'];
     expiresAt?: InvoiceRecord['expiresAt'];
     createdAt?: InvoiceRecord['createdAt'];
@@ -33,7 +33,7 @@ export class Invoice {
       status: props.status,
       totalAmountMinor: props.totalAmountMinor,
       amountPaidMinor: props.amountPaidMinor,
-      currency: props.currency,
+      currencyCode: props.currencyCode,
       externalCheckoutUrl: props.externalCheckoutUrl,
       expiresAt: props.expiresAt,
       createdAt: props.createdAt ?? new Date(),
@@ -93,8 +93,8 @@ export class Invoice {
     );
   }
 
-  get currency(): InvoiceRecord['currency'] {
-    return this.props.currency;
+  get currencyCode(): InvoiceRecord['currencyCode'] {
+    return this.props.currencyCode;
   }
 
   get externalCheckoutUrl(): InvoiceRecord['externalCheckoutUrl'] {

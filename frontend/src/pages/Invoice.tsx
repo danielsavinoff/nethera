@@ -60,17 +60,13 @@ function Invoice() {
       id: invoiceId(),
       locale: locale(),
     }),
-    async ({ id, locale: requestLocale }) => {
+    async ({ id }) => {
       if (!id) {
         return [];
       }
 
       try {
-        const response = await billingControllerHandleGetInvoiceLines(id, {
-          headers: {
-            "Accept-Language": requestLocale,
-          },
-        });
+        const response = await billingControllerHandleGetInvoiceLines(id);
 
         return response.data.lines;
       } catch (error) {
@@ -90,17 +86,13 @@ function Invoice() {
       id: invoiceId(),
       locale: locale(),
     }),
-    async ({ id, locale: requestLocale }) => {
+    async ({ id }) => {
       if (!id) {
         return null;
       }
 
       try {
-        const response = await billingControllerHandleGetInvoice(id, {
-          headers: {
-            "Accept-Language": requestLocale,
-          },
-        });
+        const response = await billingControllerHandleGetInvoice(id);
 
         return response.data;
       } catch (error) {

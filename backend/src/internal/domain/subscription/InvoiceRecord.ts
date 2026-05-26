@@ -7,7 +7,7 @@ export interface InvoiceRecord {
   status: string;
   totalAmountMinor: number;
   amountPaidMinor: number;
-  currency: string;
+  currencyCode: string;
   externalCheckoutUrl: string;
   expiresAt?: Date;
   createdAt: Date;

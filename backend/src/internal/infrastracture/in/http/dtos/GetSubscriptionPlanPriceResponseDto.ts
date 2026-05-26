@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class GetSubscriptionPlanPriceResponseDto {
   @ApiProperty()
-  currency!: string;
+  currencyCode!: string;
 
   @ApiProperty()
   amountMinor!: number;

@@ -11,8 +11,7 @@ export class SubscriptionPrice {
     id?: SubscriptionPriceRecord['id'];
     subscriptionPlanId: SubscriptionPriceRecord['subscriptionPlanId'];
     amountMinor: SubscriptionPriceRecord['amountMinor'];
-    currency: SubscriptionPriceRecord['currency'];
-    locale: SubscriptionPriceRecord['locale'];
+    currencyCode: SubscriptionPriceRecord['currencyCode'];
     active?: SubscriptionPriceRecord['active'];
     createdAt?: SubscriptionPriceRecord['createdAt'];
   }): SubscriptionPrice {
@@ -20,8 +19,7 @@ export class SubscriptionPrice {
       id: props.id ?? crypto.randomUUID(),
       subscriptionPlanId: props.subscriptionPlanId,
       amountMinor: props.amountMinor,
-      currency: props.currency,
-      locale: props.locale,
+      currencyCode: props.currencyCode,
       active: props.active ?? true,
       createdAt: props.createdAt ?? new Date(),
     });
@@ -43,12 +41,8 @@ export class SubscriptionPrice {
     return this.props.amountMinor;
   }
 
-  get currency(): SubscriptionPriceRecord['currency'] {
-    return this.props.currency;
-  }
-
-  get locale(): SubscriptionPriceRecord['locale'] {
-    return this.props.locale;
+  get currencyCode(): SubscriptionPriceRecord['currencyCode'] {
+    return this.props.currencyCode;
   }
 
   get active(): SubscriptionPriceRecord['active'] {

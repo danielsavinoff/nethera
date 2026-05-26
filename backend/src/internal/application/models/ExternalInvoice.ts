@@ -8,7 +8,7 @@ export interface ExternalInvoice {
   status: InvoiceStatus;
   invoiceId: InvoiceRecord['id'];
   amount: number;
-  currency: InvoiceRecord['currency'];
+  currencyCode: InvoiceRecord['currencyCode'];
   externalCheckoutUrl: InvoiceRecord['externalCheckoutUrl'];
   expiresAt?: InvoiceRecord['expiresAt'];
 }

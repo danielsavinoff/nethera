@@ -1,6 +1,7 @@
 import { Permission } from '../../domain/authorization/Permission.js';
 import { SubscriptionPlan } from '../../domain/subscription/SubscriptionPlan.js';
 import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
+import { SupportedCurrency } from '../../domain/money/SupportedCurrency.js';
 import { FilterOperator } from '../models/Filter.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
@@ -14,6 +15,7 @@ export interface GetSubscriptionPlanCommand {
 export interface GetSubscriptionPlanResult {
   data: {
     locale: string;
+    currencyCode: string;
     subscriptionPlan: SubscriptionPlan;
   };
 }
@@ -47,6 +49,11 @@ export class GetSubscriptionPlanUseCase {
       ),
     ] as Permission[];
 
+    const locale = initiator.locale ?? command.locale;
+
+    const currencyCode =
+      initiator.preferredCurrencyCode ?? SupportedCurrency.USD;
+
     this.subscriptionPlanPolicy.assertCanView(
       {
         permissions: initiatorPermissions,
@@ -68,7 +75,7 @@ export class GetSubscriptionPlanUseCase {
             filter: {
               field: 'locale',
               operator: FilterOperator.Equals,
-              value: command.locale,
+              value: locale,
             },
           },
           subscriptionPlanFeatures: {
@@ -82,7 +89,7 @@ export class GetSubscriptionPlanUseCase {
                 filter: {
                   field: 'locale',
                   operator: FilterOperator.Equals,
-                  value: command.locale,
+                  value: locale,
                 },
               },
             },
@@ -96,9 +103,9 @@ export class GetSubscriptionPlanUseCase {
                   value: true,
                 },
                 {
-                  field: 'locale',
+                  field: 'currencyCode',
                   operator: FilterOperator.Equals,
-                  value: command.locale,
+                  value: currencyCode,
                 },
               ],
             },
@@ -108,7 +115,8 @@ export class GetSubscriptionPlanUseCase {
 
     return {
       data: {
-        locale: command.locale,
+        locale,
+        currencyCode,
         subscriptionPlan,
       },
     };

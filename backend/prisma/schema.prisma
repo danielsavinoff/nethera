@@ -10,8 +10,8 @@ datasource db {
 model User {
   id String @id @db.Uuid
 
-  email        String
-  is_deleted   Boolean @default(false)
+  email                   String
+  is_deleted              Boolean @default(false)
   locale                  String? @db.VarChar(10)
   preferred_currency_code String? @db.Char(3)
 
@@ -167,7 +167,7 @@ model Payment {
 
   status          String  @db.VarChar(32)
   amount_minor    Int
-  currency        String  @db.Char(3)
+  currency_code   String  @db.Char(3)
   provider        String  @db.VarChar(32)
   external_id     String  @db.VarChar(255)
   failure_code    String? @db.VarChar(64)
@@ -200,7 +200,7 @@ model Invoice {
   status                String @db.VarChar(32)
   total_amount_minor    Int
   amount_paid_minor     Int
-  currency              String
+  currency_code         String
   external_checkout_url String
 
   created_at DateTime  @default(now()) @db.Timestamptz
@@ -221,8 +221,8 @@ model Invoice {
 model InvoiceLine {
   id String @id @default(uuid()) @db.Uuid
 
-  reference_id String @db.VarChar(255)
-  type         String @db.VarChar(64)
+  reference_id String  @db.VarChar(255)
+  type         String  @db.VarChar(64)
   title        String?
   amount       Int
 
@@ -238,10 +238,9 @@ model InvoiceLine {
 model SubscriptionPlanPrice {
   id String @id @default(uuid()) @db.Uuid
 
-  amount_minor Int
-  currency     String  @db.Char(3)
-  locale       String  @db.VarChar(10)
-  is_active    Boolean @default(true)
+  amount_minor  Int
+  currency_code String  @db.Char(3)
+  is_active     Boolean @default(true)
 
   created_at DateTime @default(now()) @db.Timestamptz
 
@@ -249,9 +248,9 @@ model SubscriptionPlanPrice {
 
   subscriptionPlan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
 
-  @@unique([subscription_plan_id, locale], where: { is_active: true })
+  @@unique([subscription_plan_id, currency_code], where: { is_active: true })
   @@index([subscription_plan_id])
-  @@index([locale])
+  @@index([currency_code])
   @@map("subscription_plan_prices")
 }
 

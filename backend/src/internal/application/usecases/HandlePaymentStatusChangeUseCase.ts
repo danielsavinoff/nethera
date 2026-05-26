@@ -16,7 +16,7 @@ export interface HandlePaymentStatusChangeCommand {
   externalInvoiceId?: string;
   provider: BillingProvider;
   status: PaymentStatus;
-  currency: string;
+  currencyCode: string;
   amount: number;
 }
 
@@ -91,12 +91,12 @@ export class HandlePaymentStatusChangeUseCase {
               Payment.create({
                 provider: command.provider,
                 externalId: command.externalId,
-                currency: command.currency,
+                currencyCode: command.currencyCode,
                 status: command.status,
                 userId: invoice.userId,
                 amountMinor: Money.toMinor(
                   command.amount,
-                  command.currency,
+                  command.currencyCode,
                 ),
               }),
               transactionContext,

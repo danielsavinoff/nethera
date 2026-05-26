@@ -11,10 +11,7 @@ export class GetSubscriptionPriceResponseDto {
   amountMinor!: number;
 
   @ApiProperty()
-  currency!: string;
-
-  @ApiProperty()
-  locale!: string;
+  currencyCode!: string;
 
   @ApiProperty()
   active!: boolean;

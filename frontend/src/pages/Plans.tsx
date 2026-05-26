@@ -43,11 +43,6 @@ function Plans() {
           interval: query.interval,
           count: 1,
         },
-        {
-          headers: {
-            "Accept-Language": query.locale,
-          },
-        },
       );
 
       return response.data.subscriptionPlans;
@@ -76,11 +71,6 @@ function Plans() {
           type: CreateInvoiceRequestDtoType.SUBSCRIPTION_PLAN,
           referenceId: plan.id,
           provider: CreateInvoiceRequestDtoProvider.NOWPAYMENTS,
-        },
-        {
-          headers: {
-            "Accept-Language": locale(),
-          },
         },
       );
 

@@ -69,7 +69,7 @@ export class NowPaymentsInvoiceProvider implements InvoiceProvider {
           `${this.baseUrl}/invoice`,
           {
             price_amount: input.amount,
-            price_currency: input.currency.toLowerCase(),
+            price_currency: input.currencyCode.toLowerCase(),
             ipn_callback_url: this.ipnCallbackUrl,
             order_id: input.invoiceId,
             order_description: input.description,
@@ -90,7 +90,7 @@ export class NowPaymentsInvoiceProvider implements InvoiceProvider {
         externalId: data.id,
         invoiceId: data.order_id,
         amount: input.amount,
-        currency: data.price_currency,
+        currencyCode: data.price_currency,
         externalCheckoutUrl: data.invoice_url,
         status: InvoiceStatus.Pending,
       };
@@ -124,7 +124,7 @@ export class NowPaymentsInvoiceProvider implements InvoiceProvider {
   //     provider: InvoiceProvider.NowPayments,
   //     invoiceId: data.order_id,
   //     amount: data.price_amount,
-  //     currency: data.price_currency,
+  //     currencyCode: data.price_currency,
   //     externalCheckoutUrl: data.pay_address,
   //     status: this.mapInvoiceStatus(data.payment_status),
   //   };

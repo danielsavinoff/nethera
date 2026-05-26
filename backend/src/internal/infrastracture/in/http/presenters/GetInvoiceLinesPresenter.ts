@@ -19,11 +19,11 @@ export class GetInvoiceLinesPresenter {
               this.getUntitledInvoiceLineTitle(result.data.locale),
             amount: new GetInvoiceLineAmountResponseDto({
               minor: line.amount,
-              currency: result.data.currency,
+              currencyCode: result.data.currencyCode,
               formatted: MoneyFormatter.format(
                 line.amount,
                 result.data.locale,
-                result.data.currency,
+                result.data.currencyCode,
               ),
             }),
           }),

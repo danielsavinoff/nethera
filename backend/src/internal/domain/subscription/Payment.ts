@@ -20,7 +20,7 @@ export class Payment {
     userId: PaymentRecord['userId'];
     status: PaymentStatus;
     amountMinor: PaymentRecord['amountMinor'];
-    currency: PaymentRecord['currency'];
+    currencyCode: PaymentRecord['currencyCode'];
     dueAt?: PaymentRecord['dueAt'];
     paidAt?: PaymentRecord['paidAt'];
     failedAt?: PaymentRecord['failedAt'];
@@ -38,7 +38,7 @@ export class Payment {
       userId: props.userId,
       status: props.status,
       amountMinor: props.amountMinor,
-      currency: props.currency,
+      currencyCode: props.currencyCode,
       dueAt: props.dueAt,
       paidAt: props.paidAt,
       failedAt: props.failedAt,
@@ -79,8 +79,8 @@ export class Payment {
     return this.props.amountMinor;
   }
 
-  get currency(): PaymentRecord['currency'] {
-    return this.props.currency;
+  get currencyCode(): PaymentRecord['currencyCode'] {
+    return this.props.currencyCode;
   }
 
   get dueAt(): PaymentRecord['dueAt'] {

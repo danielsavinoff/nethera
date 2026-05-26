@@ -5,14 +5,13 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  Headers,
   NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { InvoiceCreationFailedException } from '../../../../application/exceptions/InvoiceCreationFailedException.js';
 import { InvoiceNotFoundException } from '../../../../application/exceptions/InvoiceNotFoundException.js';
 import { BillingProviderNotSupportedException } from '../../../../application/exceptions/BillingProviderNotSupportedException.js';
@@ -39,9 +38,8 @@ import { GetInvoicesPresenter } from '../presenters/GetInvoicesPresenter.js';
 import { GetSupportedCurrenciesPresenter } from '../presenters/GetSupportedCurrenciesPresenter.js';
 
 @Controller('billing')
-@ApiHeader({ name: 'Accept-Language', required: false })
 export class BillingController {
-  private readonly fallbackLanguage: string;
+  private readonly fallbackLocale: string;
 
   constructor(
     private readonly getSupportedCurrenciesUseCase: GetSupportedCurrenciesUseCase,
@@ -56,7 +54,7 @@ export class BillingController {
     private readonly getInvoiceLinesPresenter: GetInvoiceLinesPresenter,
     private readonly configService: ConfigService,
   ) {
-    this.fallbackLanguage =
+    this.fallbackLocale =
       this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
   }
 
@@ -80,13 +78,12 @@ export class BillingController {
       }),
     )
     id: string,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.getInvoiceUseCase.execute({
         initiatorUserId: claims.sub,
         invoiceId: id,
-        locale: acceptLanguage ?? this.fallbackLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.getInvoicePresenter.present(result);
@@ -119,13 +116,12 @@ export class BillingController {
       }),
     )
     id: string,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.getInvoiceLinesUseCase.execute({
         initiatorUserId: claims.sub,
         invoiceId: id,
-        locale: acceptLanguage ?? this.fallbackLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.getInvoiceLinesPresenter.present(result);
@@ -150,12 +146,11 @@ export class BillingController {
   @Get('invoices')
   async handleGetInvoices(
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.getInvoicesUseCase.execute({
         initiatorUserId: claims.sub,
-        locale: acceptLanguage ?? this.fallbackLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.getInvoicesPresenter.present(result);
@@ -174,7 +169,6 @@ export class BillingController {
     @Body()
     createInvoiceRequestDto: CreateInvoiceRequestDto,
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.createInvoiceUseCase.execute({
@@ -182,7 +176,7 @@ export class BillingController {
         type: createInvoiceRequestDto.type,
         referenceId: createInvoiceRequestDto.referenceId,
         provider: createInvoiceRequestDto.provider,
-        locale: acceptLanguage ?? this.fallbackLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.createInvoicePresenter.present(result);

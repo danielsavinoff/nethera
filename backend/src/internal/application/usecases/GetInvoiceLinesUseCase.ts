@@ -14,7 +14,7 @@ export interface GetInvoiceLinesCommand {
 export interface GetInvoiceLinesResult {
   data: {
     lines: InvoiceLine[];
-    currency: string;
+    currencyCode: string;
     locale: string;
   };
 }
@@ -72,7 +72,7 @@ export class GetInvoiceLinesUseCase {
     return {
       data: {
         lines: invoice.lines,
-        currency: invoice.currency,
+        currencyCode: invoice.currencyCode,
         locale: command.locale,
       },
     };

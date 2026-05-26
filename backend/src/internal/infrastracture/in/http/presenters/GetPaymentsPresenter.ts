@@ -14,7 +14,7 @@ export class GetPaymentsPresenter {
             userId: payment.userId,
             status: payment.status,
             amountMinor: payment.amountMinor,
-            currency: payment.currency,
+            currencyCode: payment.currencyCode,
             dueAt: payment.dueAt,
             paidAt: payment.paidAt,
             failedAt: payment.failedAt,

@@ -3,14 +3,13 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  Headers,
   NotFoundException,
   Param,
   Post,
   Query,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { CreateSubscriptionPlanUseCase } from '../../../../application/usecases/CreateSubscriptionPlanUseCase.js';
 import { GetSubscriptionPlanUseCase } from '../../../../application/usecases/GetSubscriptionPlanUseCase.js';
@@ -29,7 +28,6 @@ import { GetSubscriptionPlansPresenter } from '../presenters/GetSubscriptionPlan
 import { SubscriptionPlanActionForbiddenException } from '../../../../domain/subscription/SubscriptionPlanActionForbiddenException.js';
 
 @Controller('subscription-plans')
-@ApiHeader({ name: 'Accept-Language', required: false })
 export class SubscriptionPlanController {
   private readonly fallbackLocale: string;
 
@@ -51,7 +49,6 @@ export class SubscriptionPlanController {
   @Get()
   async getSubscriptionPlans(
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
     @Query() query: GetSubscriptionPlansQueryDto,
   ) {
     try {
@@ -62,7 +59,7 @@ export class SubscriptionPlanController {
       const result =
         await this.getSubscriptionPlansUseCase.execute({
           initiatorUserId: claims.sub,
-          locale: acceptLanguage,
+          locale: this.fallbackLocale,
           onlyPublic: true,
           billingInterval: query.interval,
           billingIntervalCount: billingIntervalCount,
@@ -89,14 +86,13 @@ export class SubscriptionPlanController {
   async getSubscriptionPlan(
     @Param('id') subscriptionPlanId: string,
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result =
         await this.getSubscriptionPlanUseCase.execute({
           initiatorUserId: claims.sub,
           subscriptionPlanId,
-          locale: acceptLanguage,
+          locale: this.fallbackLocale,
         });
 
       return this.getSubscriptionPlanPresenter.present(result);

@@ -3,6 +3,7 @@ import { SubscriptionPlan } from '../../domain/subscription/SubscriptionPlan.js'
 import type { SubscriptionPlanRecord } from '../../domain/subscription/SubscriptionPlanRecord.js';
 import { SubscriptionPlanPolicy } from '../../domain/subscription/SubscriptionPlanPolicy.js';
 import { Interval } from '../../domain/time/Interval.js';
+import { SupportedCurrency } from '../../domain/money/SupportedCurrency.js';
 import { Filter, FilterOperator } from '../models/Filter.js';
 import type { SubscriptionPlanRepository } from '../ports/SubscriptionPlanRepository.js';
 import type { UserRepository } from '../ports/UserRepository.js';
@@ -18,6 +19,7 @@ export interface GetSubscriptionPlansCommand {
 export interface GetSubscriptionPlansResult {
   data: {
     locale: string;
+    currencyCode: string;
     subscriptionPlans: SubscriptionPlan[];
   };
 }
@@ -52,6 +54,11 @@ export class GetSubscriptionPlansUseCase {
     ] as Permission[];
 
     const onlyPublic = command.onlyPublic ?? false;
+
+    const locale = initiator.locale ?? command.locale;
+
+    const currencyCode =
+      initiator.preferredCurrencyCode ?? SupportedCurrency.USD;
 
     this.subscriptionPlanPolicy.assertCanView(
       {
@@ -101,7 +108,7 @@ export class GetSubscriptionPlansUseCase {
             filter: {
               field: 'locale',
               operator: FilterOperator.Equals,
-              value: command.locale,
+              value: locale,
             },
           },
           subscriptionPlanFeatures: {
@@ -115,7 +122,7 @@ export class GetSubscriptionPlansUseCase {
                 filter: {
                   field: 'locale',
                   operator: FilterOperator.Equals,
-                  value: command.locale,
+                  value: locale,
                 },
               },
             },
@@ -129,9 +136,9 @@ export class GetSubscriptionPlansUseCase {
                   value: true,
                 },
                 {
-                  field: 'locale',
+                  field: 'currencyCode',
                   operator: FilterOperator.Equals,
-                  value: command.locale,
+                  value: currencyCode,
                 },
               ],
             },
@@ -141,7 +148,8 @@ export class GetSubscriptionPlansUseCase {
 
     return {
       data: {
-        locale: command.locale,
+        locale,
+        currencyCode,
         subscriptionPlans,
       },
     };

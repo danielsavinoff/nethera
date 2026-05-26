@@ -25,12 +25,8 @@ type Invoice = GetInvoiceResponseDto;
 function Invoices() {
   const { locale, t } = useLocale();
 
-  const [invoices] = createResource(locale, async (requestLocale) => {
-    const response = await billingControllerHandleGetInvoices({
-      headers: {
-        "Accept-Language": requestLocale,
-      },
-    });
+  const [invoices] = createResource(locale, async () => {
+    const response = await billingControllerHandleGetInvoices();
 
     return response.data.invoices;
   });

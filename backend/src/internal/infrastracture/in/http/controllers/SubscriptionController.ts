@@ -6,7 +6,6 @@ import {
   Delete,
   ForbiddenException,
   Get,
-  Headers,
   NotFoundException,
   Param,
   Post,
@@ -15,7 +14,7 @@ import { BillingProviderNotSupportedException } from '../../../../application/ex
 import { InvoiceCreationFailedException } from '../../../../application/exceptions/InvoiceCreationFailedException.js';
 import { SubscriptionPlanNotFoundException } from '../../../../application/exceptions/SubscriptionPlanNotFoundException.js';
 import { SubscriptionPriceNotFoundException } from '../../../../application/exceptions/SubscriptionPriceNotFoundException.js';
-import { ApiHeader, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import { SubscriptionNotFoundException } from '../../../../application/exceptions/SubscriptionNotFoundException.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
@@ -39,7 +38,6 @@ import { GetSubscriptionsPresenter } from '../presenters/GetSubscriptionsPresent
 import { ConfigService } from '@nestjs/config';
 
 @Controller('subscriptions')
-@ApiHeader({ name: 'Accept-Language', required: false })
 export class SubscriptionController {
   private readonly fallbackLocale: string;
 
@@ -64,12 +62,11 @@ export class SubscriptionController {
   @Get()
   async handleGetSubscriptions(
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.getSubscriptionsUseCase.execute({
         initiatorUserId: claims.sub,
-        locale: acceptLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.getSubscriptionsPresenter.present(result);
@@ -92,13 +89,12 @@ export class SubscriptionController {
   @Get('current')
   async handleGetCurrentSubscription(
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result =
         await this.getCurrentSubscriptionUseCase.execute({
           initiatorUserId: claims.sub,
-          locale: acceptLanguage,
+          locale: this.fallbackLocale,
         });
 
       return this.getSubscriptionPresenter.present(result);
@@ -129,14 +125,13 @@ export class SubscriptionController {
     @Body()
     extendSubscriptionRequestDto: ExtendSubscriptionRequestDto,
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result =
         await this.extendSubscriptionUseCase.execute({
           initiatorUserId: claims.sub,
           provider: extendSubscriptionRequestDto.provider,
-          locale: acceptLanguage,
+          locale: this.fallbackLocale,
         });
 
       return this.extendSubscriptionPresenter.present(result);
@@ -229,13 +224,12 @@ export class SubscriptionController {
   async handleGetSubscription(
     @Param('id') subscriptionId: string,
     @Claims() claims: AuthClaim,
-    @Headers('Accept-Language') acceptLanguage: string,
   ) {
     try {
       const result = await this.getSubscriptionUseCase.execute({
         initiatorUserId: claims.sub,
         subscriptionId,
-        locale: acceptLanguage,
+        locale: this.fallbackLocale,
       });
 
       return this.getSubscriptionPresenter.present(result);

@@ -79,8 +79,7 @@ export class PrismaSubscriptionPlanRepository
       id: 'id',
       subscriptionPlanId: 'subscription_plan_id',
       amountMinor: 'amount_minor',
-      currency: 'currency',
-      locale: 'locale',
+      currencyCode: 'currency_code',
       active: 'is_active',
       createdAt: 'created_at',
     } satisfies Record<keyof SubscriptionPriceRecord, string>,
@@ -204,7 +203,7 @@ export class PrismaSubscriptionPlanRepository
                   is_active: 'desc',
                 },
                 {
-                  locale: 'asc',
+                  currency_code: 'asc',
                 },
                 {
                   created_at: 'desc',
@@ -284,8 +283,7 @@ export class PrismaSubscriptionPlanRepository
             id: price.id,
             subscriptionPlanId: price.subscription_plan_id,
             amountMinor: price.amount_minor,
-            currency: price.currency,
-            locale: price.locale,
+            currencyCode: price.currency_code,
             active: price.is_active,
             createdAt: price.created_at,
           }),
@@ -409,7 +407,7 @@ export class PrismaSubscriptionPlanRepository
                   is_active: 'desc',
                 },
                 {
-                  locale: 'asc',
+                  currency_code: 'asc',
                 },
                 {
                   created_at: 'desc',
@@ -487,8 +485,7 @@ export class PrismaSubscriptionPlanRepository
               id: price.id,
               subscriptionPlanId: price.subscription_plan_id,
               amountMinor: price.amount_minor,
-              currency: price.currency,
-              locale: price.locale,
+              currencyCode: price.currency_code,
               active: price.is_active,
               createdAt: price.created_at,
             }),
@@ -591,8 +588,7 @@ export class PrismaSubscriptionPlanRepository
           create: prices.map((price) => ({
             id: price.id,
             amount_minor: price.amountMinor,
-            currency: price.currency,
-            locale: price.locale,
+            currency_code: price.currencyCode,
             is_active: price.active,
             created_at: price.createdAt,
           })),
@@ -645,8 +641,7 @@ export class PrismaSubscriptionPlanRepository
           create: prices.map((price) => ({
             id: price.id,
             amount_minor: price.amountMinor,
-            currency: price.currency,
-            locale: price.locale,
+            currency_code: price.currencyCode,
             is_active: price.active,
             created_at: price.createdAt,
           })),
@@ -681,7 +676,7 @@ export class PrismaSubscriptionPlanRepository
               is_active: 'desc',
             },
             {
-              locale: 'asc',
+              currency_code: 'asc',
             },
             {
               created_at: 'desc',
@@ -748,8 +743,7 @@ export class PrismaSubscriptionPlanRepository
             id: price.id,
             subscriptionPlanId: price.subscription_plan_id,
             amountMinor: price.amount_minor,
-            currency: price.currency,
-            locale: price.locale,
+            currencyCode: price.currency_code,
             active: price.is_active,
             createdAt: price.created_at,
           }),

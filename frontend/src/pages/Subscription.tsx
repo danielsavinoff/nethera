@@ -49,14 +49,10 @@ function Subscription() {
 
   const [currentSubscription, currentSubscriptionActions] = createResource(
     locale,
-    async (requestLocale) => {
+    async () => {
       try {
         const response =
-          await subscriptionControllerHandleGetCurrentSubscription({
-            headers: {
-              "Accept-Language": requestLocale,
-            },
-          });
+          await subscriptionControllerHandleGetCurrentSubscription();
 
         return response.data;
       } catch (error) {
@@ -163,11 +159,6 @@ function Subscription() {
         await subscriptionControllerHandleExtendCurrentSubscription(
           {
             provider: ExtendSubscriptionRequestDtoProvider.NOWPAYMENTS,
-          },
-          {
-            headers: {
-              "Accept-Language": locale(),
-            },
           },
         );
 

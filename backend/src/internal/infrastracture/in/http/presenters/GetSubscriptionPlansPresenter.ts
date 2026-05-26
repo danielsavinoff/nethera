@@ -19,6 +19,7 @@ export class GetSubscriptionPlansPresenter {
           this.presentSubscriptionPlan(
             subscriptionPlan,
             result.data.locale,
+            result.data.currencyCode,
           ),
       ),
     });
@@ -27,12 +28,17 @@ export class GetSubscriptionPlansPresenter {
   private presentSubscriptionPlan(
     subscriptionPlan: SubscriptionPlan,
     locale: string,
+    currencyCode: string,
   ): GetSubscriptionPlanResponseDto {
     const translation = this.getTranslation(
       subscriptionPlan,
       locale,
     );
-    const price = this.getPrice(subscriptionPlan, locale);
+    const price = this.getPrice(
+      subscriptionPlan,
+      locale,
+      currencyCode,
+    );
 
     return new GetSubscriptionPlanResponseDto({
       id: subscriptionPlan.id,
@@ -73,22 +79,24 @@ export class GetSubscriptionPlansPresenter {
   private getPrice(
     subscriptionPlan: SubscriptionPlan,
     locale: string,
+    currencyCode: string,
   ): GetSubscriptionPlanPriceResponseDto | undefined {
     const price = subscriptionPlan
       .getAllPrices()
       .find(
         (subscriptionPrice) =>
           subscriptionPrice.active &&
-          subscriptionPrice.locale === locale,
+          subscriptionPrice.currencyCode === currencyCode,
       );
 
     return price
       ? new GetSubscriptionPlanPriceResponseDto({
-          currency: price.currency,
+          currencyCode: price.currencyCode,
           amountMinor: price.amountMinor,
           formatted: MoneyFormatter.format(
             price.amountMinor,
             locale,
+            price.currencyCode,
           ),
         })
       : undefined;
