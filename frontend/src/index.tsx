@@ -51,9 +51,9 @@ render(
                   <Route path={"/settings"} component={Settings} />
                   <Route path={"/invoices"} component={Invoices} />
                   <Route path={"/invoices/:id"} component={Invoice} />
-                  <Route path={"/not-found"} component={NotFound} />
                 </Route>
               </Route>
+              <Route path={"/*"} component={NotFound} />
             </Router>
             <Toaster />
           </AuthProvider>

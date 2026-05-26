@@ -182,10 +182,10 @@
     }
   },
   "notFoundPage": {
-    "title": "Page not found",
-    "description": "The page you requested does not exist or is no longer available.",
+    "title": "Page Not Found️ ⚠️",
+    "description": "We couldn't find the page you are looking for",
     "actions": {
-      "home": "Go to subscription"
+      "home": "Back to home page"
     }
   },
   "settingsPage": {
