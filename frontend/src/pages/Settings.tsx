@@ -2,7 +2,7 @@ import { useColorMode, type ConfigColorMode } from "@kobalte/core";
 import { createMemo, createResource, createSignal } from "solid-js";
 import {
   billingControllerHandleGetCurrencies,
-  type UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+  UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
   userControllerHandleDeleteMe,
   userControllerHandleUpdateMeCurrency,
   userControllerHandleUpdateMeLocale,
@@ -52,6 +52,9 @@ type CurrencyOption = {
   label: string;
   code: UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode;
 };
+
+const DEFAULT_CURRENCY_CODE =
+  UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode.USD;
 
 function Settings() {
   const { locale, setLocale, t } = useLocale();
@@ -133,8 +136,8 @@ function Settings() {
     });
 
     const currencies = supportedCurrencies() ?? [
-      user()!
-        .preferredCurrencyCode as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+      (user()!.preferredCurrencyCode ??
+        DEFAULT_CURRENCY_CODE) as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
     ];
 
     return currencies.map((code) => ({
@@ -145,8 +148,8 @@ function Settings() {
 
   const [savedCurrency, setSavedCurrency] =
     createSignal<UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode>(
-      user()!
-        .preferredCurrencyCode as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+      (user()!.preferredCurrencyCode ??
+        DEFAULT_CURRENCY_CODE) as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
     );
 
   const selectedCurrency = createMemo(
