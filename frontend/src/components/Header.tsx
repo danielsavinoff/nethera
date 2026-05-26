@@ -68,7 +68,7 @@ export function Header(props: HeaderProps) {
             >
               <span class="text-sm font-semibold">N</span>
             </div>
-            <div class="sm:hidden ">
+            <div class="sm:hidden flex items-center gap-4">
               <Popover
                 overflowPadding={0}
                 gutter={12}
@@ -97,53 +97,60 @@ export function Header(props: HeaderProps) {
                     {t("header.menu.label")}
                   </span>
                 </PopoverTrigger>
-                <PopoverContent class="h-(--kb-popper-content-available-height) w-(--kb-popper-content-available-width) bg-background/90 p-6 shadow-none backdrop-blur duration-100 border-none">
-                  <Flex class="flex-col items-baseline gap-12">
-                    <div class="space-y-4">
-                      <div class="text-sm font-medium text-muted-foreground">
-                        {t("header.menu.label")}
+                <PopoverContent class="h-(--kb-popper-content-available-height) w-(--kb-popper-content-available-width) bg-background/90 shadow-none backdrop-blur duration-100 border-none p-0">
+                  <div class="p-6">
+                    <Flex class="flex-col items-baseline gap-12">
+                      <div class="space-y-4">
+                        <div class="text-sm font-medium text-muted-foreground">
+                          {t("header.menu.label")}
+                        </div>
+                        <div class="flex flex-col gap-3">
+                          <A
+                            class="flex items-center gap-2 text-2xl font-medium"
+                            href="/subscription"
+                          >
+                            {t("header.nav.subscription")}
+                          </A>
+                          <A
+                            class="flex items-center gap-2 text-2xl font-medium"
+                            href="/invoices"
+                          >
+                            {t("header.nav.invoices")}
+                          </A>
+                          <A
+                            class="flex items-center gap-2 text-2xl font-medium"
+                            href="/plans"
+                          >
+                            {t("header.nav.plans")}
+                          </A>
+                        </div>
                       </div>
-                      <div class="flex flex-col gap-3">
-                        <A
-                          class="flex items-center gap-2 text-2xl font-medium"
-                          href="/subscription"
-                        >
-                          {t("header.nav.subscription")}
-                        </A>
-                        <A
-                          class="flex items-center gap-2 text-2xl font-medium"
-                          href="/invoices"
-                        >
-                          {t("header.nav.invoices")}
-                        </A>
-                        <A
-                          class="flex items-center gap-2 text-2xl font-medium"
-                          href="/plans"
-                        >
-                          {t("header.nav.plans")}
-                        </A>
-                      </div>
-                    </div>
 
-                    <div class="space-y-4">
-                      <div class="text-sm font-medium text-muted-foreground">
-                        {t("header.contacts.label")}
+                      <div class="space-y-4">
+                        <div class="text-sm font-medium text-muted-foreground">
+                          {t("header.contacts.label")}
+                        </div>
+                        <div class="flex flex-col gap-3">
+                          <A
+                            class="flex items-center gap-2 text-2xl font-medium"
+                            href="#"
+                          >
+                            Telegram
+                          </A>
+                          <A
+                            class="flex items-center gap-2 text-2xl font-medium"
+                            href="#"
+                          >
+                            Signal
+                          </A>
+                        </div>
                       </div>
-                      <div class="flex flex-col gap-3">
-                        <A
-                          class="flex items-center gap-2 text-2xl font-medium"
-                          href="#"
-                        >
-                          Telegram
-                        </A>
-                        <A
-                          class="flex items-center gap-2 text-2xl font-medium"
-                          href="#"
-                        >
-                          Signal
-                        </A>
-                      </div>
-                    </div>
+                    </Flex>
+                  </div>
+                  <Flex class="fixed bottom-0 overflow-hidden whitespace-nowrap">
+                    <span class="w-full inline-block animate-[marquee_15s_linear_infinite] font-black text-9xl opacity-10 blur-xs">
+                      Nethera
+                    </span>
                   </Flex>
                 </PopoverContent>
               </Popover>
