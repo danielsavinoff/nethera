@@ -1,9 +1,19 @@
 {
   "header": {
+    "brand": {
+      "logo": "Логотип бренда"
+    },
+    "menu": {
+      "label": "Меню",
+      "toggle": "Открыть или закрыть меню"
+    },
     "nav": {
       "subscription": "Подписка",
       "invoices": "Счета",
       "plans": "Тарифы"
+    },
+    "contacts": {
+      "label": "Контакты"
     },
     "actions": {
       "download": "Скачать",

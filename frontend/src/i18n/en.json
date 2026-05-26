@@ -1,9 +1,19 @@
 {
   "header": {
+    "brand": {
+      "logo": "Brand logo"
+    },
+    "menu": {
+      "label": "Menu",
+      "toggle": "Toggle menu"
+    },
     "nav": {
       "subscription": "Subscription",
       "invoices": "Invoices",
       "plans": "Plans"
+    },
+    "contacts": {
+      "label": "Contacts"
     },
     "actions": {
       "download": "Download",

@@ -1,5 +1,5 @@
 import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import { createSignal, splitProps } from "solid-js";
 import { cn } from "~/lib/utils";
 import { useLocale } from "~/context/Locale";
 import { Flex } from "./ui/Flex";
@@ -29,6 +29,7 @@ import {
   IconDeviceTv,
 } from "@tabler/icons-solidjs";
 import { useAuth } from "~/context/Auth";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
@@ -47,10 +48,12 @@ export function Header(props: HeaderProps) {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = createSignal(false);
+
   return (
     <header
       class={cn(
-        "h-16 w-full flex justify-center border-b bg-card shadow-sm",
+        "relative top-0 h-16 w-full flex justify-center border-b bg-card shadow-sm ",
         local.class,
       )}
       {...others}
@@ -59,11 +62,91 @@ export function Header(props: HeaderProps) {
         <Col class="min-w-0">
           <Flex class="w-fit items-center gap-4">
             <div
-              class="flex size-10 items-center justify-center rounded-xl border border-foreground/10 bg-foreground text-background shadow-sm"
-              aria-label="Brand logo"
+              class="hidden sm:flex size-10 items-center justify-center rounded-xl border border-foreground/10 bg-foreground text-background shadow-sm"
+              aria-label={t("header.brand.logo")}
               role="img"
             >
               <span class="text-sm font-semibold">N</span>
+            </div>
+            <div class="sm:hidden ">
+              <Popover
+                overflowPadding={0}
+                gutter={12}
+                open={isMenuOpen()}
+                onOpenChange={setIsMenuOpen}
+              >
+                <PopoverTrigger class="flex items-center gap-2 ">
+                  <div class="relative flex h-8 w-4 items-center justify-center">
+                    <div class="relative size-4">
+                      <span
+                        class={cn(
+                          "absolute left-0 block h-0.5 w-4 bg-foreground transition-all duration-100 top-1",
+                          isMenuOpen() && "top-[0.4rem] -rotate-45",
+                        )}
+                      />
+                      <span
+                        class={cn(
+                          "absolute left-0 block h-0.5 w-4 bg-foreground transition-all duration-100 top-2.5",
+                          isMenuOpen() && "top-[0.4rem] rotate-45",
+                        )}
+                      />
+                    </div>
+                    <span class="sr-only">{t("header.menu.toggle")}</span>
+                  </div>
+                  <span class="flex h-8 items-center text-lg leading-none font-medium">
+                    {t("header.menu.label")}
+                  </span>
+                </PopoverTrigger>
+                <PopoverContent class="h-(--kb-popper-content-available-height) w-(--kb-popper-content-available-width) bg-background/90 p-6 shadow-none backdrop-blur duration-100 border-none">
+                  <Flex class="flex-col items-baseline gap-12">
+                    <div class="space-y-4">
+                      <div class="text-sm font-medium text-muted-foreground">
+                        {t("header.menu.label")}
+                      </div>
+                      <div class="flex flex-col gap-3">
+                        <A
+                          class="flex items-center gap-2 text-2xl font-medium"
+                          href="/subscription"
+                        >
+                          {t("header.nav.subscription")}
+                        </A>
+                        <A
+                          class="flex items-center gap-2 text-2xl font-medium"
+                          href="/invoices"
+                        >
+                          {t("header.nav.invoices")}
+                        </A>
+                        <A
+                          class="flex items-center gap-2 text-2xl font-medium"
+                          href="/plans"
+                        >
+                          {t("header.nav.plans")}
+                        </A>
+                      </div>
+                    </div>
+
+                    <div class="space-y-4">
+                      <div class="text-sm font-medium text-muted-foreground">
+                        {t("header.contacts.label")}
+                      </div>
+                      <div class="flex flex-col gap-3">
+                        <A
+                          class="flex items-center gap-2 text-2xl font-medium"
+                          href="#"
+                        >
+                          Telegram
+                        </A>
+                        <A
+                          class="flex items-center gap-2 text-2xl font-medium"
+                          href="#"
+                        >
+                          Signal
+                        </A>
+                      </div>
+                    </div>
+                  </Flex>
+                </PopoverContent>
+              </Popover>
             </div>
             <NavigationMenu class="flex-none hidden sm:flex">
               <NavigationMenuTrigger as="a" href="/subscription">
