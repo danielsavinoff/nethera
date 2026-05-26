@@ -232,7 +232,7 @@ function Settings() {
                 />
               </TextField>
             </CardContent>
-            <CardFooter class="justify-between border-t p-6 bg-muted/20">
+            <CardFooter class="justify-between items-center border-t p-6 gap-2 bg-muted/20">
               <p class="text-sm text-muted-foreground">
                 {t("settingsPage.email.footer")}
               </p>
