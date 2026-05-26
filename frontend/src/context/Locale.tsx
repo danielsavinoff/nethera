@@ -38,7 +38,19 @@ function getInitialLocale(): Locale {
 
   const storedLocale = localStorage.getItem("locale");
 
-  return isSupportedLocale(storedLocale) ? storedLocale : DEFAULT_LOCALE;
+  if (isSupportedLocale(storedLocale)) {
+    return storedLocale;
+  }
+
+  if (navigator.language) {
+    const browserLocale = navigator.language.split("-")[0];
+
+    if (isSupportedLocale(browserLocale)) {
+      return browserLocale;
+    }
+  }
+
+  return DEFAULT_LOCALE;
 }
 
 export const LocaleContext = createContext<LocaleContextValue>();
