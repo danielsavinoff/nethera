@@ -18,6 +18,10 @@ export enum Permission {
   UserRoleDeleteAny = 'user-role.delete.any',
   UserViewOwn = 'user.view.own',
   UserViewAny = 'user.view.any',
+  UserLocaleUpdateOwn = 'user.locale.update.own',
+  UserLocaleUpdateAny = 'user.locale.update.any',
+  UserCurrencyUpdateOwn = 'user.currency.update.own',
+  UserCurrencyUpdateAny = 'user.currency.update.any',
   UserDeleteOwn = 'user.delete.own',
   UserDeleteAny = 'user.delete.any',
 }

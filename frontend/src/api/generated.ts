@@ -186,6 +186,7 @@ export interface GetInvoiceResponseDto {
   id: string;
   externalId: string;
   provider: string;
+  billingEmail: string;
   userId: string;
   status: string;
   total: GetInvoiceAmountResponseDto;
@@ -202,6 +203,19 @@ export interface CancelSubscriptionResponseDto {
   status: string;
   canceledAt?: string;
   endedAt?: string;
+}
+
+export type GetSupportedCurrenciesResponseDtoCurrenciesItem = typeof GetSupportedCurrenciesResponseDtoCurrenciesItem[keyof typeof GetSupportedCurrenciesResponseDtoCurrenciesItem];
+
+
+export const GetSupportedCurrenciesResponseDtoCurrenciesItem = {
+  RUB: 'RUB',
+  EUR: 'EUR',
+  USD: 'USD',
+} as const;
+
+export interface GetSupportedCurrenciesResponseDto {
+  currencies: GetSupportedCurrenciesResponseDtoCurrenciesItem[];
 }
 
 export interface GetInvoiceLineAmountResponseDto {
@@ -289,6 +303,10 @@ export const GetCurrentUserResponseDtoPermissionsItem = {
   'user-roledeleteany': 'user-role.delete.any',
   userviewown: 'user.view.own',
   userviewany: 'user.view.any',
+  userlocaleupdateown: 'user.locale.update.own',
+  userlocaleupdateany: 'user.locale.update.any',
+  usercurrencyupdateown: 'user.currency.update.own',
+  usercurrencyupdateany: 'user.currency.update.any',
   userdeleteown: 'user.delete.own',
   userdeleteany: 'user.delete.any',
 } as const;
@@ -298,7 +316,33 @@ export interface GetCurrentUserResponseDto {
   displayName: string;
   email: string;
   locale: string;
+  preferredCurrencyCode: string;
   permissions: GetCurrentUserResponseDtoPermissionsItem[];
+}
+
+export interface UpdateCurrentUserLocaleRequestDto {
+  locale: string;
+}
+
+export interface UpdateCurrentUserLocaleResponseDto {
+  locale: string;
+}
+
+export type UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode = typeof UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode[keyof typeof UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode];
+
+
+export const UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode = {
+  RUB: 'RUB',
+  EUR: 'EUR',
+  USD: 'USD',
+} as const;
+
+export interface UpdateCurrentUserCurrencyRequestDto {
+  preferredCurrencyCode: UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode;
+}
+
+export interface UpdateCurrentUserCurrencyResponseDto {
+  preferredCurrencyCode: string;
 }
 
 export interface DeleteAccountResponseDto {
@@ -503,38 +547,47 @@ export const subscriptionControllerHandleGetSubscription = (
       options);
     }
 
-export const invoiceControllerHandleGetInvoice = (
-    id: string,
- options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
-      return api<GetInvoiceResponseDto>(
-      {url: `/invoices/${id}`, method: 'GET'
+export const billingControllerHandleGetCurrencies = (
+
+ options?: SecondParameter<typeof api<GetSupportedCurrenciesResponseDto>>,) => {
+      return api<GetSupportedCurrenciesResponseDto>(
+      {url: `/billing/currencies`, method: 'GET'
     },
       options);
     }
 
-export const invoiceControllerHandleGetInvoiceLines = (
+export const billingControllerHandleGetInvoice = (
+    id: string,
+ options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
+      return api<GetInvoiceResponseDto>(
+      {url: `/billing/invoices/${id}`, method: 'GET'
+    },
+      options);
+    }
+
+export const billingControllerHandleGetInvoiceLines = (
     id: string,
  options?: SecondParameter<typeof api<GetInvoiceLinesResponseDto>>,) => {
       return api<GetInvoiceLinesResponseDto>(
-      {url: `/invoices/${id}/lines`, method: 'GET'
+      {url: `/billing/invoices/${id}/lines`, method: 'GET'
     },
       options);
     }
 
-export const invoiceControllerHandleGetInvoices = (
+export const billingControllerHandleGetInvoices = (
 
  options?: SecondParameter<typeof api<GetInvoicesResponseDto>>,) => {
       return api<GetInvoicesResponseDto>(
-      {url: `/invoices`, method: 'GET'
+      {url: `/billing/invoices`, method: 'GET'
     },
       options);
     }
 
-export const invoiceControllerHandleCreateInvoice = (
+export const billingControllerHandleCreateInvoice = (
     createInvoiceRequestDto: CreateInvoiceRequestDto,
  options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
       return api<GetInvoiceResponseDto>(
-      {url: `/invoices`, method: 'POST',
+      {url: `/billing/invoices`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createInvoiceRequestDto
     },
@@ -596,6 +649,28 @@ export const userControllerHandleDeleteMe = (
       options);
     }
 
+export const userControllerHandleUpdateMeLocale = (
+    updateCurrentUserLocaleRequestDto: UpdateCurrentUserLocaleRequestDto,
+ options?: SecondParameter<typeof api<UpdateCurrentUserLocaleResponseDto>>,) => {
+      return api<UpdateCurrentUserLocaleResponseDto>(
+      {url: `/users/me/locale`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCurrentUserLocaleRequestDto
+    },
+      options);
+    }
+
+export const userControllerHandleUpdateMeCurrency = (
+    updateCurrentUserCurrencyRequestDto: UpdateCurrentUserCurrencyRequestDto,
+ options?: SecondParameter<typeof api<UpdateCurrentUserCurrencyResponseDto>>,) => {
+      return api<UpdateCurrentUserCurrencyResponseDto>(
+      {url: `/users/me/currency`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCurrentUserCurrencyRequestDto
+    },
+      options);
+    }
+
 export const userControllerHandleGetRoles = (
     id: string,
  options?: SecondParameter<typeof api<GetUserRolesResponseDto>>,) => {
@@ -641,16 +716,19 @@ export type SubscriptionControllerHandleGetCurrentSubscriptionResult = NonNullab
 export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleCancelCurrentSubscription>>>
 export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
-export type InvoiceControllerHandleGetInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoice>>>
-export type InvoiceControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoiceLines>>>
-export type InvoiceControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleGetInvoices>>>
-export type InvoiceControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerHandleCreateInvoice>>>
+export type BillingControllerHandleGetCurrenciesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetCurrencies>>>
+export type BillingControllerHandleGetInvoiceResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoice>>>
+export type BillingControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoiceLines>>>
+export type BillingControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoices>>>
+export type BillingControllerHandleCreateInvoiceResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleCreateInvoice>>>
 export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscription>>>
 export type VpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsageResult = NonNullable<Awaited<ReturnType<typeof vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage>>>
 export type NowPaymentsWebhookControllerHandlePaymentStatusResult = NonNullable<Awaited<ReturnType<typeof nowPaymentsWebhookControllerHandlePaymentStatus>>>
 export type UserControllerHandleGetUsersResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetUsers>>>
 export type UserControllerHandleGetMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetMe>>>
 export type UserControllerHandleDeleteMeResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleDeleteMe>>>
+export type UserControllerHandleUpdateMeLocaleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleUpdateMeLocale>>>
+export type UserControllerHandleUpdateMeCurrencyResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleUpdateMeCurrency>>>
 export type UserControllerHandleGetRolesResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleGetRoles>>>
 export type UserControllerHandleAddRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleAddRole>>>
 export type UserControllerHandleDeleteRoleResult = NonNullable<Awaited<ReturnType<typeof userControllerHandleDeleteRole>>>

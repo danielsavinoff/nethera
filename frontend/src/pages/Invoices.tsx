@@ -3,8 +3,8 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import { Ellipsis } from "lucide-solid";
 import { createMemo, createResource } from "solid-js";
 import {
+  billingControllerHandleGetInvoices,
   type GetInvoiceResponseDto,
-  invoiceControllerHandleGetInvoices,
 } from "~/api/generated";
 import { DataTable } from "~/components/DataTable";
 import { Button } from "~/components/ui/Button";
@@ -26,7 +26,7 @@ function Invoices() {
   const { locale, t } = useLocale();
 
   const [invoices] = createResource(locale, async (requestLocale) => {
-    const response = await invoiceControllerHandleGetInvoices({
+    const response = await billingControllerHandleGetInvoices({
       headers: {
         "Accept-Language": requestLocale,
       },

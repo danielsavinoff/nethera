@@ -3,9 +3,9 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import axios from "axios";
 import { createEffect, createMemo, createResource, Show } from "solid-js";
 import {
+  billingControllerHandleGetInvoice,
+  billingControllerHandleGetInvoiceLines,
   type GetInvoiceLineResponseDto,
-  invoiceControllerHandleGetInvoice,
-  invoiceControllerHandleGetInvoiceLines,
 } from "~/api/generated";
 import { DataTable } from "~/components/DataTable";
 import { Badge } from "~/components/ui/Badge";
@@ -66,7 +66,7 @@ function Invoice() {
       }
 
       try {
-        const response = await invoiceControllerHandleGetInvoiceLines(id, {
+        const response = await billingControllerHandleGetInvoiceLines(id, {
           headers: {
             "Accept-Language": requestLocale,
           },
@@ -96,7 +96,7 @@ function Invoice() {
       }
 
       try {
-        const response = await invoiceControllerHandleGetInvoice(id, {
+        const response = await billingControllerHandleGetInvoice(id, {
           headers: {
             "Accept-Language": requestLocale,
           },

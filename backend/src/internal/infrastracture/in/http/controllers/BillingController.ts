@@ -24,23 +24,28 @@ import { CreateInvoiceUseCase } from '../../../../application/usecases/CreateInv
 import { GetInvoiceUseCase } from '../../../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../../../application/usecases/GetInvoicesUseCase.js';
+import { GetSupportedCurrenciesUseCase } from '../../../../application/usecases/GetSupportedCurrenciesUseCase.js';
 import { InvoiceActionForbiddenException } from '../../../../domain/subscription/InvoiceActionForbiddenException.js';
 import { Claims } from '../decorators/Claims.js';
 import { CreateInvoiceRequestDto } from '../dtos/CreateInvoiceRequestDto.js';
 import { GetInvoiceLinesResponseDto } from '../dtos/GetInvoiceLinesResponseDto.js';
 import { GetInvoiceResponseDto } from '../dtos/GetInvoiceResponseDto.js';
 import { GetInvoicesResponseDto } from '../dtos/GetInvoicesResponseDto.js';
+import { GetSupportedCurrenciesResponseDto } from '../dtos/GetSupportedCurrenciesResponseDto.js';
 import { CreateInvoicePresenter } from '../presenters/CreateInvoicePresenter.js';
 import { GetInvoicePresenter } from '../presenters/GetInvoicePresenter.js';
 import { GetInvoiceLinesPresenter } from '../presenters/GetInvoiceLinesPresenter.js';
 import { GetInvoicesPresenter } from '../presenters/GetInvoicesPresenter.js';
+import { GetSupportedCurrenciesPresenter } from '../presenters/GetSupportedCurrenciesPresenter.js';
 
-@Controller('invoices')
+@Controller('billing')
 @ApiHeader({ name: 'Accept-Language', required: false })
-export class InvoiceController {
+export class BillingController {
   private readonly fallbackLanguage: string;
 
   constructor(
+    private readonly getSupportedCurrenciesUseCase: GetSupportedCurrenciesUseCase,
+    private readonly getSupportedCurrenciesPresenter: GetSupportedCurrenciesPresenter,
     private readonly createInvoiceUseCase: CreateInvoiceUseCase,
     private readonly createInvoicePresenter: CreateInvoicePresenter,
     private readonly getInvoicesUseCase: GetInvoicesUseCase,
@@ -55,8 +60,16 @@ export class InvoiceController {
       this.configService.getOrThrow<string>('FALLBACK_LANGUAGE');
   }
 
+  @ApiOkResponse({ type: GetSupportedCurrenciesResponseDto })
+  @Get('currencies')
+  handleGetCurrencies() {
+    const result = this.getSupportedCurrenciesUseCase.execute({});
+
+    return this.getSupportedCurrenciesPresenter.present(result);
+  }
+
   @ApiOkResponse({ type: GetInvoiceResponseDto })
-  @Get(':id')
+  @Get('invoices/:id')
   async handleGetInvoice(
     @Claims() claims: AuthClaim,
     @Param(
@@ -95,7 +108,7 @@ export class InvoiceController {
   }
 
   @ApiOkResponse({ type: GetInvoiceLinesResponseDto })
-  @Get(':id/lines')
+  @Get('invoices/:id/lines')
   async handleGetInvoiceLines(
     @Claims() claims: AuthClaim,
     @Param(
@@ -134,7 +147,7 @@ export class InvoiceController {
   }
 
   @ApiOkResponse({ type: GetInvoicesResponseDto })
-  @Get()
+  @Get('invoices')
   async handleGetInvoices(
     @Claims() claims: AuthClaim,
     @Headers('Accept-Language') acceptLanguage: string,
@@ -156,7 +169,7 @@ export class InvoiceController {
   }
 
   @ApiOkResponse({ type: GetInvoiceResponseDto })
-  @Post()
+  @Post('invoices')
   async handleCreateInvoice(
     @Body()
     createInvoiceRequestDto: CreateInvoiceRequestDto,

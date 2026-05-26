@@ -23,6 +23,7 @@ export class GetCurrentUserPresenter {
       email: result.user.email,
       id: result.user.id,
       locale: result.user.locale,
+      preferredCurrencyCode: result.user.preferredCurrencyCode,
       permissions,
     });
   }

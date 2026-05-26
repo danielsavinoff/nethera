@@ -12,6 +12,7 @@ export class User {
     id?: string;
     email: string;
     locale?: string;
+    preferredCurrencyCode?: string;
     isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
@@ -21,6 +22,7 @@ export class User {
       id: props.id ?? crypto.randomUUID(),
       email: props.email,
       locale: props.locale,
+      preferredCurrencyCode: props.preferredCurrencyCode,
       isDeleted: props.isDeleted ?? false,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
@@ -53,15 +55,35 @@ export class User {
     return this.props.locale;
   }
 
+  get preferredCurrencyCode(): UserRecord['preferredCurrencyCode'] {
+    return this.props.preferredCurrencyCode;
+  }
+
   get deletedAt(): UserRecord['deletedAt'] {
     return this.props.deletedAt;
   }
 
   setLocalePreference(locale: string): User {
+    const now = new Date();
+
     return new User(
       {
         ...this.props,
         locale: locale,
+        updatedAt: now,
+      },
+      this.roles,
+    );
+  }
+
+  setPreferredCurrencyCode(preferredCurrencyCode: string): User {
+    const now = new Date();
+
+    return new User(
+      {
+        ...this.props,
+        preferredCurrencyCode,
+        updatedAt: now,
       },
       this.roles,
     );

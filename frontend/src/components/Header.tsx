@@ -7,20 +7,14 @@ import { Col, Grid } from "./ui/Grid";
 import { Avatar, AvatarFallback } from "./ui/Avatar";
 import { NavigationMenu, NavigationMenuTrigger } from "./ui/NavigationMenu";
 import { Button } from "./ui/Button";
-import { ChevronDown, Cog, Download, Globe } from "lucide-solid";
+import { Cog, Download } from "lucide-solid";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSubContent,
-  DropdownMenuSub,
   DropdownMenuTrigger,
-  DropdownMenuSubTrigger,
-  DropdownMenuRadioItem,
-  DropdownMenuRadioGroup,
 } from "./ui/DropdownMenu";
 import { A } from "@solidjs/router";
 import { authControllerHandleLogout } from "~/api/generated";
@@ -41,7 +35,7 @@ type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 export function Header(props: HeaderProps) {
   const [local, others] = splitProps(props, ["class"]);
 
-  const { locale, setLocale, t } = useLocale();
+  const { t } = useLocale();
 
   const { user } = useAuth();
 
@@ -126,31 +120,6 @@ export function Header(props: HeaderProps) {
                   <Cog class="size-4" />
                   {t("header.account.settings")}
                 </DropdownMenuItem>
-                <DropdownMenuSub overlap>
-                  <DropdownMenuSubTrigger class="gap-2">
-                    <Globe class="size-4" />
-                    {t("header.language.label")}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent class="min-w-48">
-                      <DropdownMenuLabel>
-                        {t("header.language.select")}
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuRadioGroup
-                        value={locale()}
-                        onChange={setLocale}
-                      >
-                        <DropdownMenuRadioItem value="en">
-                          {t("header.language.options.en")}
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="ru">
-                          {t("header.language.options.ru")}
-                        </DropdownMenuRadioItem>
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleLogout}>
                   {t("header.actions.logout")}

@@ -6,6 +6,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -15,13 +16,21 @@ import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { GetUsersUseCase } from '../../../../application/usecases/GetUsersUseCase.js';
 import { GetCurrentUserUseCase } from '../../../../application/usecases/GetCurrentUserUseCase.js';
 import { DeleteAccountUseCase } from '../../../../application/usecases/DeleteAccountUseCase.js';
+import { UpdateCurrentUserLocaleUseCase } from '../../../../application/usecases/UpdateCurrentUserLocaleUseCase.js';
+import { UpdateCurrentUserCurrencyUseCase } from '../../../../application/usecases/UpdateCurrentUserCurrencyUseCase.js';
 import { GetUsersQueryDto } from '../dtos/GetUsersQueryDto.js';
 import { GetUsersResponseDto } from '../dtos/GetUsersResponseDto.js';
 import { GetCurrentUserResponseDto } from '../dtos/GetCurrentUserResponseDto.js';
 import { DeleteAccountResponseDto } from '../dtos/DeleteAccountResponseDto.js';
+import { UpdateCurrentUserLocaleRequestDto } from '../dtos/UpdateCurrentUserLocaleRequestDto.js';
+import { UpdateCurrentUserLocaleResponseDto } from '../dtos/UpdateCurrentUserLocaleResponseDto.js';
+import { UpdateCurrentUserCurrencyRequestDto } from '../dtos/UpdateCurrentUserCurrencyRequestDto.js';
+import { UpdateCurrentUserCurrencyResponseDto } from '../dtos/UpdateCurrentUserCurrencyResponseDto.js';
 import { GetUsersPresenter } from '../presenters/GetUsersPresenter.js';
 import { GetCurrentUserPresenter } from '../presenters/GetCurrentUserPresenter.js';
 import { DeleteAccountPresenter } from '../presenters/DeleteAccountPresenter.js';
+import { UpdateCurrentUserLocalePresenter } from '../presenters/UpdateCurrentUserLocalePresenter.js';
+import { UpdateCurrentUserCurrencyPresenter } from '../presenters/UpdateCurrentUserCurrencyPresenter.js';
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import { GetUserRolesUseCase } from '../../../../application/usecases/GetUserRolesUseCase.js';
 import { GetUserRolesResponseDto } from '../dtos/GetUserRolesResponseDto.js';
@@ -47,6 +56,10 @@ export class UserController {
     private readonly getCurrentUserPresenter: GetCurrentUserPresenter,
     private readonly deleteAccountUseCase: DeleteAccountUseCase,
     private readonly deleteAccountPresenter: DeleteAccountPresenter,
+    private readonly updateCurrentUserLocaleUseCase: UpdateCurrentUserLocaleUseCase,
+    private readonly updateCurrentUserLocalePresenter: UpdateCurrentUserLocalePresenter,
+    private readonly updateCurrentUserCurrencyUseCase: UpdateCurrentUserCurrencyUseCase,
+    private readonly updateCurrentUserCurrencyPresenter: UpdateCurrentUserCurrencyPresenter,
     private readonly getUserRolesUseCase: GetUserRolesUseCase,
     private readonly getUserRolesPresenter: GetUserRolesPresenter,
     private readonly addUserRoleUseCase: AddUserRoleUseCase,
@@ -112,6 +125,67 @@ export class UserController {
     });
 
     return this.getCurrentUserPresenter.present(result);
+  }
+
+  @ApiOkResponse({ type: UpdateCurrentUserLocaleResponseDto })
+  @Patch('me/locale')
+  async handleUpdateMeLocale(
+    @Body()
+    updateCurrentUserLocaleRequestDto: UpdateCurrentUserLocaleRequestDto,
+    @Claims() claims: AuthClaim,
+  ) {
+    try {
+      const result =
+        await this.updateCurrentUserLocaleUseCase.execute({
+          userId: claims.sub,
+          locale: updateCurrentUserLocaleRequestDto.locale,
+        });
+
+      return this.updateCurrentUserLocalePresenter.present(
+        result,
+      );
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof UserActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  @ApiOkResponse({ type: UpdateCurrentUserCurrencyResponseDto })
+  @Patch('me/currency')
+  async handleUpdateMeCurrency(
+    @Body()
+    updateCurrentUserCurrencyRequestDto: UpdateCurrentUserCurrencyRequestDto,
+    @Claims() claims: AuthClaim,
+  ) {
+    try {
+      const result =
+        await this.updateCurrentUserCurrencyUseCase.execute({
+          userId: claims.sub,
+          preferredCurrencyCode:
+            updateCurrentUserCurrencyRequestDto.preferredCurrencyCode.toUpperCase(),
+        });
+
+      return this.updateCurrentUserCurrencyPresenter.present(
+        result,
+      );
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException('User does not exist.');
+      }
+
+      if (error instanceof UserActionForbiddenException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOkResponse({ type: DeleteAccountResponseDto })

@@ -1,6 +1,12 @@
 import { useColorMode, type ConfigColorMode } from "@kobalte/core";
-import { createSignal } from "solid-js";
-import { userControllerHandleDeleteMe } from "~/api/generated";
+import { createMemo, createResource, createSignal } from "solid-js";
+import {
+  billingControllerHandleGetCurrencies,
+  type UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+  userControllerHandleDeleteMe,
+  userControllerHandleUpdateMeCurrency,
+  userControllerHandleUpdateMeLocale,
+} from "~/api/generated";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -18,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/Select";
-import { useLocale } from "~/context/Locale";
+import { useLocale, type Locale } from "~/context/Locale";
 import { TextField, TextFieldInput } from "~/components/ui/TextField";
 import { useAuth } from "~/context/Auth";
 import {
@@ -31,19 +37,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/Dialog";
-import { showToast } from "~/components/ui/Toast";
 
 type ThemeOption = {
   label: string;
-  key: string;
+  key: ConfigColorMode;
+};
+
+type LanguageOption = {
+  label: string;
+  key: Locale;
+};
+
+type CurrencyOption = {
+  label: string;
+  code: UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode;
 };
 
 function Settings() {
-  const { t } = useLocale();
+  const { locale, setLocale, t } = useLocale();
 
   const { user } = useAuth();
 
-  const themeOptions: ThemeOption[] = [
+  const { setColorMode, colorMode } = useColorMode();
+
+  const themeOptions = createMemo<ThemeOption[]>(() => [
     {
       label: t("settingsPage.theme.options.system"),
       key: "system",
@@ -56,15 +73,124 @@ function Settings() {
       label: t("settingsPage.theme.options.dark"),
       key: "dark",
     },
-  ];
+  ]);
 
-  const { setColorMode, colorMode } = useColorMode();
+  const selectedTheme = createMemo(
+    () =>
+      themeOptions().find((option) => option.key === colorMode()) ??
+      themeOptions()[0],
+  );
 
-  const [theme, setTheme] = createSignal<ThemeOption>(
-    themeOptions.find((theme) => theme.key === colorMode())!,
+  const [draftThemeKey, setDraftThemeKey] = createSignal<ConfigColorMode>(
+    selectedTheme().key,
+  );
+
+  const draftTheme = createMemo(
+    () =>
+      themeOptions().find((option) => option.key === draftThemeKey()) ??
+      selectedTheme(),
+  );
+
+  const hasThemeChanges = createMemo(() => draftThemeKey() !== colorMode());
+
+  const languageOptions = createMemo<LanguageOption[]>(() => [
+    {
+      label: t("settingsPage.language.options.en"),
+      key: "en",
+    },
+    {
+      label: t("settingsPage.language.options.ru"),
+      key: "ru",
+    },
+  ]);
+
+  const selectedLanguage = createMemo(
+    () =>
+      languageOptions().find((option) => option.key === locale()) ??
+      languageOptions()[0],
+  );
+
+  const [draftLocale, setDraftLocale] = createSignal<Locale>(
+    selectedLanguage().key,
+  );
+
+  const draftLanguage = createMemo(
+    () =>
+      languageOptions().find((option) => option.key === draftLocale()) ??
+      selectedLanguage(),
+  );
+  const hasLanguageChanges = createMemo(() => draftLocale() !== locale());
+
+  const [supportedCurrencies] = createResource(async () => {
+    const response = await billingControllerHandleGetCurrencies();
+
+    return response.data.currencies;
+  });
+
+  const currencyOptions = createMemo<CurrencyOption[]>(() => {
+    const displayNames = new Intl.DisplayNames([locale()], {
+      type: "currency",
+    });
+
+    const currencies = supportedCurrencies() ?? [
+      user()!
+        .preferredCurrencyCode as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+    ];
+
+    return currencies.map((code) => ({
+      code,
+      label: `${displayNames.of(code) ?? code} (${code})`,
+    }));
+  });
+
+  const [savedCurrency, setSavedCurrency] =
+    createSignal<UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode>(
+      user()!
+        .preferredCurrencyCode as UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode,
+    );
+
+  const selectedCurrency = createMemo(
+    () =>
+      currencyOptions().find((option) => option.code === savedCurrency()) ??
+      currencyOptions()[0],
+  );
+
+  const [draftCurrency, setDraftCurrency] =
+    createSignal<UpdateCurrentUserCurrencyRequestDtoPreferredCurrencyCode>(
+      selectedCurrency().code,
+    );
+
+  const draftCurrencyOption = createMemo(
+    () =>
+      currencyOptions().find((option) => option.code === draftCurrency()) ??
+      selectedCurrency(),
+  );
+
+  const hasCurrencyChanges = createMemo(
+    () => draftCurrency() !== savedCurrency(),
   );
 
   const [isDeletingAccount, setIsDeletingAccount] = createSignal(false);
+
+  const handleSaveLanguage = () => {
+    const locale = draftLocale();
+
+    void userControllerHandleUpdateMeLocale({
+      locale,
+    });
+
+    setLocale(locale);
+  };
+
+  const handleSaveCurrency = () => {
+    const preferredCurrencyCode = draftCurrency();
+
+    void userControllerHandleUpdateMeCurrency({
+      preferredCurrencyCode,
+    });
+
+    setSavedCurrency(preferredCurrencyCode);
+  };
 
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
@@ -73,11 +199,6 @@ function Settings() {
       await userControllerHandleDeleteMe();
 
       window.location.href = "/login";
-    } catch {
-      showToast({
-        title: t("settingsPage.deleteAccount.error"),
-        variant: "error",
-      });
     } finally {
       setIsDeletingAccount(false);
     }
@@ -112,7 +233,9 @@ function Settings() {
               <p class="text-sm text-muted-foreground">
                 {t("settingsPage.email.footer")}
               </p>
-              <Button disabled>{t("settingsPage.actions.save")}</Button>
+              <Button class="transition-opacity" disabled>
+                {t("settingsPage.actions.save")}
+              </Button>
             </CardFooter>
           </Card>
 
@@ -125,9 +248,9 @@ function Settings() {
             </CardHeader>
             <CardContent>
               <Select
-                value={theme()}
-                onChange={(value) => value && setTheme(value)}
-                options={themeOptions}
+                value={draftTheme()}
+                onChange={(value) => value && setDraftThemeKey(value.key)}
+                options={themeOptions()}
                 optionValue="key"
                 optionTextValue="label"
                 itemComponent={(props) => (
@@ -149,7 +272,93 @@ function Settings() {
             </CardContent>
             <CardFooter class="justify-end border-t p-6 bg-muted/20">
               <Button
-                on:click={() => setColorMode(theme().key as ConfigColorMode)}
+                class="transition-opacity"
+                disabled={!hasThemeChanges()}
+                on:click={() => setColorMode(draftThemeKey())}
+              >
+                {t("settingsPage.actions.save")}
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("settingsPage.language.title")}</CardTitle>
+              <CardDescription class="text-card-foreground">
+                {t("settingsPage.language.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Select
+                value={draftLanguage()}
+                onChange={(value) => value && setDraftLocale(value.key)}
+                options={languageOptions()}
+                optionValue="key"
+                optionTextValue="label"
+                itemComponent={(props) => (
+                  <SelectItem item={props.item}>
+                    {props.item.rawValue.label}
+                  </SelectItem>
+                )}
+              >
+                <SelectTrigger
+                  aria-label={t("settingsPage.language.title")}
+                  class="w-full max-w-xs"
+                >
+                  <SelectValue<LanguageOption>>
+                    {(state) => state.selectedOption().label}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent />
+              </Select>
+            </CardContent>
+            <CardFooter class="justify-end border-t p-6 bg-muted/20">
+              <Button
+                class="transition-opacity"
+                disabled={!hasLanguageChanges()}
+                on:click={handleSaveLanguage}
+              >
+                {t("settingsPage.actions.save")}
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("settingsPage.currency.title")}</CardTitle>
+              <CardDescription class="text-card-foreground">
+                {t("settingsPage.currency.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Select
+                value={draftCurrencyOption()}
+                onChange={(value) => value && setDraftCurrency(value.code)}
+                options={currencyOptions()}
+                optionValue="code"
+                optionTextValue="label"
+                itemComponent={(props) => (
+                  <SelectItem item={props.item}>
+                    {props.item.rawValue.label}
+                  </SelectItem>
+                )}
+              >
+                <SelectTrigger
+                  aria-label={t("settingsPage.currency.title")}
+                  class="w-full max-w-xs"
+                >
+                  <SelectValue<CurrencyOption>>
+                    {(state) => state.selectedOption().label}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent class="max-h-80 overflow-y-auto" />
+              </Select>
+            </CardContent>
+            <CardFooter class="justify-end border-t p-6 bg-muted/20">
+              <Button
+                class="transition-opacity"
+                disabled={!hasCurrencyChanges()}
+                on:click={handleSaveCurrency}
               >
                 {t("settingsPage.actions.save")}
               </Button>

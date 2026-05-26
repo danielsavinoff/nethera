@@ -22,6 +22,11 @@ export class GetCurrentUserResponseDto {
   locale?: string;
 
   @Expose()
+  @ApiProperty()
+  @Optional()
+  preferredCurrencyCode?: string;
+
+  @Expose()
   @ApiProperty({
     enum: Permission,
     isArray: true,

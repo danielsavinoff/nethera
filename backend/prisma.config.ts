@@ -37,7 +37,7 @@ function getConnectionString() {
 
   return `${server}://${user}:${pass}@${host}:${port}/${db}`;
 }
-console.log(getConnectionString());
+
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {

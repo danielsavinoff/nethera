@@ -13,9 +13,16 @@ import {
 
 export const Permission = {
   SubscriptionPlanViewAny: "subscription-plan.view.any",
+  SubscriptionPlanViewPublic: "subscription-plan.view.public",
   SubscriptionPlanAddAny: "subscription-plan.add.any",
   SubscriptionViewOwn: "subscription.view.own",
   SubscriptionViewAny: "subscription.view.any",
+  SubscriptionCancelOwn: "subscription.cancel.own",
+  SubscriptionCancelAny: "subscription.cancel.any",
+  VpnSubscriptionViewOwn: "vpn-subscription.view.own",
+  VpnSubscriptionViewAny: "vpn-subscription.view.any",
+  InvoiceViewOwn: "invoice.view.own",
+  InvoiceViewAny: "invoice.view.any",
   PaymentViewOwn: "payment.view.own",
   PaymentViewAny: "payment.view.any",
   UserRoleViewOwn: "user-role.view.own",
@@ -24,6 +31,10 @@ export const Permission = {
   UserRoleDeleteAny: "user-role.delete.any",
   UserViewOwn: "user.view.own",
   UserViewAny: "user.view.any",
+  UserLocaleUpdateOwn: "user.locale.update.own",
+  UserLocaleUpdateAny: "user.locale.update.any",
+  UserCurrencyUpdateOwn: "user.currency.update.own",
+  UserCurrencyUpdateAny: "user.currency.update.any",
   UserDeleteOwn: "user.delete.own",
   UserDeleteAny: "user.delete.any",
 } as const satisfies Record<string, GetCurrentUserResponseDtoPermissionsItem>;
@@ -35,6 +46,7 @@ export interface User {
   displayName: string;
   email: string;
   locale: string;
+  preferredCurrencyCode: string;
   permissions: Permission[] | null;
 }
 
@@ -57,6 +69,7 @@ async function fetchMe(): Promise<User> {
     displayName: user.displayName,
     email: user.email,
     locale: user.locale,
+    preferredCurrencyCode: user.preferredCurrencyCode,
     permissions: user.permissions,
   };
 }

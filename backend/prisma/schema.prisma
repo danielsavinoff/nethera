@@ -10,9 +10,10 @@ datasource db {
 model User {
   id String @id @db.Uuid
 
-  email      String
-  is_deleted Boolean @default(false)
-  locale     String? @db.VarChar(10)
+  email        String
+  is_deleted   Boolean @default(false)
+  locale                  String? @db.VarChar(10)
+  preferred_currency_code String? @db.Char(3)
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt

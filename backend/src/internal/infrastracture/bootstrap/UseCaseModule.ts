@@ -8,6 +8,8 @@ import { SendMagicLinkUseCase } from '../../application/usecases/SendMagicLinkUs
 import { GetCurrentUserUseCase } from '../../application/usecases/GetCurrentUserUseCase.js';
 import { GetUsersUseCase } from '../../application/usecases/GetUsersUseCase.js';
 import { DeleteAccountUseCase } from '../../application/usecases/DeleteAccountUseCase.js';
+import { UpdateCurrentUserLocaleUseCase } from '../../application/usecases/UpdateCurrentUserLocaleUseCase.js';
+import { UpdateCurrentUserCurrencyUseCase } from '../../application/usecases/UpdateCurrentUserCurrencyUseCase.js';
 import { GetRolesUseCase } from '../../application/usecases/GetRolesUseCase.js';
 import { GetUserRolesUseCase } from '../../application/usecases/GetUserRolesUseCase.js';
 import { AddUserRoleUseCase } from '../../application/usecases/AddUserRoleUseCase.js';
@@ -19,6 +21,7 @@ import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUs
 import { GetInvoiceUseCase } from '../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../application/usecases/GetInvoicesUseCase.js';
+import { GetSupportedCurrenciesUseCase } from '../../application/usecases/GetSupportedCurrenciesUseCase.js';
 import { GetCurrentVpnSubscriptionUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUseCase.js';
 import { GetCurrentVpnSubscriptionUsageUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUsageUseCase.js';
 import { FulfillInvoiceUseCase } from '../../application/usecases/FulfillInvoiceUseCase.js';
@@ -229,6 +232,32 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       inject: [PrismaUserRepository, UserPolicy],
     },
     {
+      provide: UpdateCurrentUserLocaleUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userPolicy: UserPolicy,
+      ) => {
+        return new UpdateCurrentUserLocaleUseCase(
+          userRepository,
+          userPolicy,
+        );
+      },
+      inject: [PrismaUserRepository, UserPolicy],
+    },
+    {
+      provide: UpdateCurrentUserCurrencyUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        userPolicy: UserPolicy,
+      ) => {
+        return new UpdateCurrentUserCurrencyUseCase(
+          userRepository,
+          userPolicy,
+        );
+      },
+      inject: [PrismaUserRepository, UserPolicy],
+    },
+    {
       provide: GetRolesUseCase,
       useFactory: (roleRepository: RoleRepository) => {
         return new GetRolesUseCase(roleRepository);
@@ -377,6 +406,13 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
         PrismaTransactionRunner,
         DefaultTranslatorFactory,
       ],
+    },
+    {
+      provide: GetSupportedCurrenciesUseCase,
+      useFactory: () => {
+        return new GetSupportedCurrenciesUseCase();
+      },
+      inject: [],
     },
     {
       provide: GetInvoicesUseCase,
@@ -680,6 +716,8 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetUsersUseCase,
     GetCurrentUserUseCase,
     DeleteAccountUseCase,
+    UpdateCurrentUserLocaleUseCase,
+    UpdateCurrentUserCurrencyUseCase,
     GetRolesUseCase,
     GetUserRolesUseCase,
     AddUserRoleUseCase,
@@ -688,6 +726,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionPlanUseCase,
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
+    GetSupportedCurrenciesUseCase,
     GetInvoiceUseCase,
     GetInvoicesUseCase,
     GetInvoiceLinesUseCase,

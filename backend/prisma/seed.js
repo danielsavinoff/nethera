@@ -36,6 +36,8 @@ async function main() {
     Permission.PaymentViewOwn,
     Permission.UserRoleViewOwn,
     Permission.UserViewOwn,
+    Permission.UserLocaleUpdateOwn,
+    Permission.UserCurrencyUpdateOwn,
     Permission.UserDeleteOwn,
   ];
 
@@ -51,6 +53,8 @@ async function main() {
     Permission.UserRoleUpdateAny,
     Permission.UserRoleDeleteAny,
     Permission.UserViewAny,
+    Permission.UserLocaleUpdateAny,
+    Permission.UserCurrencyUpdateAny,
     Permission.UserDeleteAny,
   ];
 

@@ -200,12 +200,24 @@
     },
     "theme": {
       "title": "Theme",
-      "description": "Choose a preferred theme",
+      "description": "Choose a preferred theme.",
       "options": {
         "system": "System",
         "light": "Light",
         "dark": "Dark"
       }
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose the language used for the interface, emails, notifications, and billing.",
+      "options": {
+        "en": "English",
+        "ru": "Russian"
+      }
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "Choose the currency used for prices, invoices, and billing."
     },
     "deleteAccount": {
       "title": "Delete account",

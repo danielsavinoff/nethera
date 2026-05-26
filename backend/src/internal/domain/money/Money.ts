@@ -1,10 +1,11 @@
 import { UnknownCurrencyException } from './UnknownCurrencyException.js';
+import { SupportedCurrency } from './SupportedCurrency.js';
 
 export class Money {
-  static readonly currencyScale = {
-    USD: 2,
-    EUR: 2,
-    RUB: 2,
+  static readonly currencyScale: Record<SupportedCurrency, number> = {
+    [SupportedCurrency.RUB]: 2,
+    [SupportedCurrency.EUR]: 2,
+    [SupportedCurrency.USD]: 2,
   };
 
   static toMinor(amount: number, currency: string): number {
