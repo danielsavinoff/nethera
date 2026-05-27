@@ -241,5 +241,46 @@
         "continue": "Continue"
       }
     }
+  },
+  "downloadPage": {
+    "title": "Download",
+    "platform": {
+      "title": "Operating system",
+      "description": "Choose your device platform."
+    },
+    "vpnClient": {
+      "title": "VPN client",
+      "description": "Choose the VPN client you want to install."
+    },
+    "steps": {
+      "appInstallation": {
+        "title": "App Installation",
+        "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode."
+      },
+      "macos": {
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the right version for your device, click the button below, and install the app."
+          },
+          "addSubscription": {
+            "title": "Add subscription",
+            "description": "Click the button below. The app will open and the subscription will be added automatically."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, press the large power button in the center to connect to VPN. Remember to choose a server from the server list. If needed, select another server from the list."
+          }
+        }
+      }
+    },
+    "actions": {
+      "appStoreRu": "App Store (RU)",
+      "appStoreGlobal": "App Store (Global)",
+      "addSubscription": "Add subscription"
+    },
+    "errors": {
+      "subscriptionLinkFetchFailed": "Could not load the subscription link. Please try again."
+    }
   }
 }

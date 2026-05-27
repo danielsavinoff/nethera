@@ -6,11 +6,11 @@ import {
   ExtendSubscriptionRequestDtoProvider,
   subscriptionControllerHandleCancelCurrentSubscription,
   subscriptionControllerHandleExtendCurrentSubscription,
-  subscriptionControllerHandleGetCurrentSubscription,
-  vpnSubscriptionControllerHandleGetCurrentVpnSubscription,
   vpnSubscriptionControllerHandleGetCurrentVpnSubscriptionUsage,
 } from "~/api/generated";
 import { useLocale } from "~/context/Locale";
+import { useSubscription } from "~/context/Subscription";
+import { useVpnSubscription } from "~/context/VpnSubscription";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -43,48 +43,22 @@ import { showToast } from "~/components/ui/Toast";
 
 function Subscription() {
   const { locale, t } = useLocale();
+  const {
+    subscription,
+    refetch: refetchSubscription,
+    isLoading: isSubscriptionLoading,
+  } = useSubscription();
+  const {
+    vpnSubscription,
+    refetch: refetchVpnSubscription,
+    isLoading: isVpnSubscriptionLoading,
+  } = useVpnSubscription();
 
   const [isCanceling, setIsCanceling] = createSignal(false);
   const [isExtending, setIsExtending] = createSignal(false);
 
-  const [currentSubscription, currentSubscriptionActions] = createResource(
-    locale,
-    async () => {
-      try {
-        const response =
-          await subscriptionControllerHandleGetCurrentSubscription();
-
-        return response.data;
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-          return null;
-        }
-
-        throw error;
-      }
-    },
-  );
-
-  const [vpnSubscription, vpnSubscriptionActions] = createResource(
-    () => currentSubscription()?.id,
-    async () => {
-      try {
-        const response =
-          await vpnSubscriptionControllerHandleGetCurrentVpnSubscription();
-
-        return response.data;
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-          return null;
-        }
-
-        throw error;
-      }
-    },
-  );
-
   const [vpnUsage, vpnUsageActions] = createResource(
-    () => currentSubscription()?.id,
+    () => subscription()?.id,
     async (subscriptionId) => {
       if (!subscriptionId) {
         return null;
@@ -105,11 +79,11 @@ function Subscription() {
     },
   );
 
-  const hasSubscription = () => Boolean(currentSubscription());
+  const hasSubscription = () => Boolean(subscription());
 
-  const getSubscriptionValidUntil = () => currentSubscription()?.expiresAt;
+  const getSubscriptionValidUntil = () => subscription()?.expiresAt;
 
-  const getSubscriptionUrl = () => vpnSubscription()?.subscriptionUrl!;
+  const getSubscriptionUrl = () => vpnSubscription()?.url ?? "";
 
   const handleCopy = async () => {
     try {
@@ -133,8 +107,7 @@ function Subscription() {
     try {
       await subscriptionControllerHandleCancelCurrentSubscription();
 
-      currentSubscriptionActions.mutate(null);
-      vpnSubscriptionActions.mutate(null);
+      await Promise.all([refetchSubscription(), refetchVpnSubscription()]);
       vpnUsageActions.mutate(null);
 
       showToast({
@@ -287,7 +260,7 @@ function Subscription() {
                 <Button
                   variant="secondary"
                   class="w-full"
-                  disabled={!getSubscriptionUrl()}
+                  disabled={isVpnSubscriptionLoading() || !getSubscriptionUrl()}
                   onClick={handleCopy}
                 >
                   {t("subscriptionPage.linkCard.copyUrl")}
@@ -304,10 +277,10 @@ function Subscription() {
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
                   <Show
-                    when={!currentSubscription.loading}
+                    when={!isSubscriptionLoading()}
                     fallback={<Skeleton height={16} width={192} radius={10} />}
                   >
-                    {currentSubscription()?.subscriptionPlan?.name}
+                    {subscription()?.name}
                   </Show>
                 </p>
               </CardContent>
@@ -350,7 +323,7 @@ function Subscription() {
               <CardContent class="flex-1 flex items-center">
                 <p class="text-2xl font-semibold tracking-tight">
                   <Show
-                    when={!currentSubscription.loading}
+                    when={!isSubscriptionLoading()}
                     fallback={<Skeleton height={16} width={192} radius={10} />}
                   >
                     {formatSubscriptionValidity()}

@@ -20,14 +20,6 @@ import { A } from "@solidjs/router";
 import { authControllerHandleLogout } from "~/api/generated";
 import { Icon } from "@iconify-icon/solid";
 import { Separator } from "./ui/Separator";
-import {
-  IconBrandAndroid,
-  IconBrandApple,
-  IconBrandFinder,
-  IconBrandUbuntu,
-  IconBrandWindows,
-  IconDeviceTv,
-} from "@tabler/icons-solidjs";
 import { useAuth } from "~/context/Auth";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
@@ -217,46 +209,10 @@ export function Header(props: HeaderProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger as={Button} variant={"outline"}>
-                <Download />
-                {t("header.actions.download")}
-                {/* <ChevronDown class="size-3!" /> */}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent class="min-w-3xs">
-                <DropdownMenuLabel>
-                  {t("header.download.platform")}
-                </DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <IconBrandApple stroke={"1.75"} class="size-5" />
-                  iOS
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconBrandAndroid stroke={"1.75"} class="size-5" />
-                  Android
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconBrandUbuntu stroke={"1.75"} class="size-5" />
-                  Linux
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconBrandFinder stroke={"1.75"} class="size-5" />
-                  macOS
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconBrandWindows stroke={"1.75"} class="size-5" />
-                  Windows
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconDeviceTv stroke={"1.75"} class="size-5" />
-                  Android TV
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconDeviceTv stroke={"1.75"} class="size-5" />
-                  Apple TV
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="outline" as={A} href="/download">
+              <Download />
+              {t("header.actions.download")}
+            </Button>
           </Flex>
         </Col>
       </Grid>

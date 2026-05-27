@@ -8,12 +8,41 @@ const Card: Component<ComponentProps<"div">> = (props) => {
   return (
     <div
       class={cn(
-        "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden",
+        "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden [&:has(>[data-card-aside])]:grid [&:has(>[data-card-aside])]:grid-cols-[auto_1fr]",
         local.class,
       )}
       {...others}
     />
   );
+};
+
+const CardAside: Component<ComponentProps<"div">> = (props) => {
+  const [local, others] = splitProps(props, ["class"]);
+  return (
+    <div
+      data-card-aside
+      class={cn("p-6 pr-0", local.class)}
+      {...others}
+    />
+  );
+};
+
+const CardIndex: Component<ComponentProps<"div">> = (props) => {
+  const [local, others] = splitProps(props, ["class"]);
+  return (
+    <div
+      class={cn(
+        "flex size-10 items-center justify-center rounded-full bg-muted text-primary font-medium",
+        local.class,
+      )}
+      {...others}
+    />
+  );
+};
+
+const CardMain: Component<ComponentProps<"div">> = (props) => {
+  const [local, others] = splitProps(props, ["class"]);
+  return <div class={local.class} {...others} />;
 };
 
 const CardHeader: Component<ComponentProps<"div">> = (props) => {
@@ -60,6 +89,9 @@ const CardFooter: Component<ComponentProps<"div">> = (props) => {
 
 export {
   Card,
+  CardAside,
+  CardIndex,
+  CardMain,
   CardHeader,
   CardFooter,
   CardTitle,

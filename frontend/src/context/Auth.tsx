@@ -57,7 +57,7 @@ export interface Auth {
 type AuthContextValue = {
   user: () => Auth["user"];
   refetch: () => Promise<unknown> | unknown;
-  isInitialized: () => boolean;
+  isLoaded: () => boolean;
   isLoading: () => boolean;
 };
 
@@ -85,7 +85,7 @@ export function AuthProvider(props: ParentProps) {
 
   const isLoading = () => currentUser.loading;
 
-  const isInitialized = () => currentUser.state !== "pending";
+  const isLoaded = () => currentUser.state !== "pending";
 
   createEffect(() => {
     const user = currentUser();
@@ -102,7 +102,7 @@ export function AuthProvider(props: ParentProps) {
       value={{
         user: () => store.user,
         refetch: refetch,
-        isInitialized: isInitialized,
+        isLoaded: isLoaded,
         isLoading: isLoading,
       }}
     >
