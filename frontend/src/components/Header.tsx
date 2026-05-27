@@ -148,7 +148,7 @@ export function Header(props: HeaderProps) {
                     </Flex>
                   </div>
                   <Flex class="fixed bottom-0 overflow-hidden whitespace-nowrap">
-                    <span class="w-full inline-block animate-[marquee_15s_linear_infinite] font-black text-9xl opacity-10 blur-xs">
+                    <span class="w-full inline-block animate-[marquee_15s_linear_infinite] font-black text-9xl opacity-10 blur-xs select-none">
                       Nethera
                     </span>
                   </Flex>
