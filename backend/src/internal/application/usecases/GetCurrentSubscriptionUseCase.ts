@@ -79,7 +79,7 @@ export class GetCurrentSubscriptionUseCase {
                 filter: {
                   field: 'locale',
                   operator: FilterOperator.Equals,
-                  value: command.locale,
+                  value: initiator.locale ?? command.locale,
                 },
               },
             },
