@@ -16,14 +16,14 @@ import { VpnSubscriptionProvider } from "./context/VpnSubscription";
 
 const root = document.getElementById("root");
 
-const Login = lazy(() => import("./pages/Login"));
-const Subscription = lazy(() => import("./pages/Subscription"));
-const Plans = lazy(() => import("./pages/Plans"));
-const Settings = lazy(() => import("./pages/Settings"));
-const Invoices = lazy(() => import("./pages/Invoices"));
-const Invoice = lazy(() => import("./pages/Invoice"));
-const Download = lazy(() => import("./pages/Download"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/login"));
+const Subscription = lazy(() => import("./pages/subscription"));
+const Plans = lazy(() => import("./pages/plans"));
+const Settings = lazy(() => import("./pages/settings"));
+const Invoices = lazy(() => import("./pages/invoices"));
+const Invoice = lazy(() => import("./pages/invoice"));
+const Download = lazy(() => import("./pages/download"));
+const NotFound = lazy(() => import("./pages/not-found"));
 
 const Protected = lazy(() => import("./layouts/Protected"));
 const Default = lazy(() => import("./layouts/Default"));

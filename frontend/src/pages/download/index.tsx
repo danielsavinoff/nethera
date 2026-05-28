@@ -7,12 +7,7 @@ import {
   IconDeviceTv,
 } from "@tabler/icons-solidjs";
 import { Link, Plus, SquareArrowOutUpRight } from "lucide-solid";
-import {
-  createMemo,
-  createSignal,
-  type Component,
-  type JSX,
-} from "solid-js";
+import { createMemo, createSignal, type Component, type JSX } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   Select,
@@ -161,6 +156,7 @@ const vpnClientOptionsByPlatform: Record<Platform, VpnClientOption[]> = {
 
 function Download() {
   const { t } = useLocale();
+
   const { vpnSubscription } = useVpnSubscription();
 
   const happDeepLink = createMemo(() => {
@@ -169,7 +165,7 @@ function Download() {
     return subscriptionUrl ? `happ://add/${subscriptionUrl}` : undefined;
   });
 
-  const downloadConfig = createMemo<
+  const config = createMemo<
     Record<Platform, Partial<Record<VpnClient, DownloadStep[]>>>
   >(() => ({
     [Platform.Ios]: {
@@ -356,9 +352,7 @@ function Download() {
 
   const [vpnClient, setVpnClient] = createSignal(vpnClientOptions()[0]);
 
-  const downloadSteps = createMemo(
-    () => downloadConfig()[platform()][vpnClient().value] ?? [],
-  );
+  const steps = createMemo(() => config()[platform()][vpnClient().value] ?? []);
 
   const handlePlatformChange = (value: PlatformOption | null) => {
     if (!value) {
@@ -470,7 +464,7 @@ function Download() {
               </CardMain>
             </Card>
 
-            {downloadSteps().map((step, index) => (
+            {steps().map((step, index) => (
               <Card>
                 <CardAside>
                   <CardIndex>{index + 3}</CardIndex>
