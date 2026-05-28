@@ -225,10 +225,11 @@ function Subscription() {
         }
       >
         <Grid
-          cols={4}
-          class="w-full flex-1 min-h-0 gap-4 overflow-hidden grid-rows-[fit_1fr]"
+          colsSm={1}
+          colsLg={4}
+          class="w-full flex-1 min-h-0 gap-4 max-lg:auto-rows-fr lg:overflow-hidden"
         >
-          <Col span={2}>
+          <Col spanSm={1} spanLg={2}>
             <Card class="h-full flex flex-col">
               <CardHeader class="flex-row justify-between items-center space-y-0">
                 <CardTitle>{t("subscriptionPage.linkCard.title")}</CardTitle>
@@ -252,8 +253,13 @@ function Subscription() {
                   />
                 </TextField>
               </CardContent>
-              <CardFooter class="gap-4">
-                <Button variant="default" class="w-full">
+              <CardFooter class="gap-4 max-lg:grid">
+                <Button
+                  variant="default"
+                  class="w-full"
+                  as={A}
+                  href="/download"
+                >
                   <PlusIcon />
                   {t("subscriptionPage.linkCard.addSubscription")}
                 </Button>
@@ -343,7 +349,7 @@ function Subscription() {
             </Card>
           </Col>
 
-          <Col span={4} class="h-full min-h-0">
+          <Col spanSm={1} spanLg={4} class="h-full min-h-0 max-lg:max-h-72">
             <Card class="h-full min-h-0 flex flex-col">
               <CardHeader>
                 <CardTitle>{t("subscriptionPage.trafficCard.title")}</CardTitle>
