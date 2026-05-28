@@ -253,23 +253,594 @@
       "description": "Choose the VPN client you want to install."
     },
     "steps": {
-      "appInstallation": {
-        "title": "App Installation",
-        "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode."
+      "ios": {
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode.",
+            "links": {
+              "appStoreRu": "App Store (RU)",
+              "appStoreGlobal": "App Store (Global)"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        },
+        "stash": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the App Store page and install the app.",
+            "links": {
+              "appStore": "Open in App Store"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Tap the button below — Stash will open and the configuration will be added automatically.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "On the main screen, tap the Start button. When prompted, allow adding VPN configurations. After the profile is activated, open the Policy section and select the country you want to connect through."
+          }
+        },
+        "shadowrocket": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode.",
+            "links": {
+              "appStore": "Open in App Store"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        },
+        "streisand": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode.",
+            "links": {
+              "appStore": "Open in App Store"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        }
+      },
+      "android": {
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in Google Play and install the app. Or install the app directly from the APK file if Google Play is not working.",
+            "links": {
+              "googlePlay": "Open in Google Play",
+              "downloadApk": "Download APK"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Open the app and connect to the server"
+          }
+        },
+        "flclashx": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Download and install FlClashX APK",
+            "links": {
+              "downloadApk": "Download APK"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add a subscription manually. Click the Get link button on this page in the upper right corner, copy the link. In FlClashX, go to the Profiles section, click the + button, select the URL, paste your copied link and click Send"
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added profile in the Profiles section. In the Control Panel, click the Enable button in the bottom right corner. Once it's running, you can change the server you're connected to in the Proxy section."
+          }
+        },
+        "clashMeta": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Download and install Clash Meta APK",
+            "links": {
+              "downloadApk": "Download APK",
+              "fDroid": "Open in F-Droid"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to open the profile creation window. You will need to specify the auto-update period, for example, 720 minutes. Click the Save button in the top right corner.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Go to the Profiles section and select the created profile, then return to the main page. Now you can connect by clicking the Stopped button."
+          }
+        },
+        "v2rayNg": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Download and install v2rayNG APK",
+            "links": {
+              "downloadApk": "Download APK"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "update": {
+            "title": "Update subscriptions",
+            "description": "Tap the three dots in the top-right corner and select Update subscription. After that, the available servers will appear in the list."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the required server and click the Enable button in the bottom right corner."
+          }
+        }
+      },
+      "linux": {
+        "flclashx": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app."
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add a subscription manually. Click the Get link button on this page in the upper right corner, copy the link. In FlClashX, go to the Profiles section, click the + button, select the URL, paste your copied link and click Send."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added profile in the Profiles section. In the Dashboard, click the enable button in the lower right corner, and then turn on the switch next to the TUN item. After launching, in the Proxy section, you can change the server you will connect to."
+          }
+        },
+        "koalaClash": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app."
+          },
+          "warning": {
+            "title": "Warning",
+            "description": "If you have previously used Clash Verge Rev, you need to uninstall it before installing Koala Clash."
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. Click the Get Link button in the top right corner of this page, copy the link. In Koala Clash, go to the main page, click the Add Profile button, paste the link into the text field, and then click the Import button."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "You can select a server at the bottom of the main page, and enable VPN by clicking on the large button in the center of the main page."
+          }
+        },
+        "prizrakBox": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the package matching your architecture and install Prizrak-Box."
+          },
+          "warning": {
+            "title": "Warning",
+            "description": "Run the program."
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add the subscription automatically.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. On this page, click the Get Link button in the upper right corner, copy the link. In Prizrak-Box, go to the Profiles section, click the + button, paste your copied link, and click Confirm."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added subscription in the Profiles section. You can choose the server country in the Proxy section. Set the TUN switch to ON."
+          }
+        }
       },
       "macos": {
         "happ": {
           "appInstallation": {
             "title": "App Installation",
-            "description": "Choose the right version for your device, click the button below, and install the app."
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "appStoreRu": "App Store (RU)",
+              "appStoreGlobal": "App Store (Global)"
+            }
           },
           "addSubscription": {
-            "title": "Add subscription",
-            "description": "Click the button below. The app will open and the subscription will be added automatically."
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
           },
           "connectionUsage": {
             "title": "Connect and use",
-            "description": "In the main section, press the large power button in the center to connect to VPN. Remember to choose a server from the server list. If needed, select another server from the list."
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        },
+        "flclashx": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "appleSilicon": "macOS (Apple Silicon)",
+              "intel": "macOS (Intel)"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add a subscription manually. Click the Get link button on this page in the upper right corner, copy the link. In FlClashX, go to the Profiles section, click the + button, select the URL, paste your copied link and click Send"
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added profile in the Profiles section. In the Dashboard, click the enable button in the lower right corner, and then turn on the switch next to the TUN item. After launching, in the Proxy section, you can change the choice of the server to which you will be connected."
+          }
+        },
+        "koalaClash": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "appleSilicon": "macOS (Apple Silicon)",
+              "intel": "macOS (Intel)"
+            }
+          },
+          "warning": {
+            "title": "Warning",
+            "description": "If you have previously used Clash Verge Rev, you need to uninstall it before installing Koala Clash. ⚠️ Warning: If you get a notification that the application is corrupted when you run it on macOS, run this command in Terminal: sudo xattr -r -c /Applications/Koala\\ Clash.app"
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. Click the Get Link button in the top right corner of this page, copy the link. In Koala Clash, go to the main page, click the Add Profile button, paste the link into the text field, and then click the Import button."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "You can select a server at the bottom of the main page, and enable VPN by clicking on the large button in the center of the main page."
+          }
+        },
+        "prizrakBox": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Download the archive for your chip (Apple Silicon or Intel), unzip and move Prizrak-Box.app to Applications.",
+            "links": {
+              "appleSilicon": "macOS (Apple Silicon)",
+              "intel": "macOS (Intel)"
+            }
+          },
+          "warning": {
+            "title": "Read before first launch",
+            "description": "If macOS shows security warnings, follow this guide.",
+            "links": {
+              "macGuide": "Mac Guide"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add the subscription automatically.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. On this page, click the Get Link button in the upper right corner, copy the link. In Prizrak-Box, go to the Profiles section, click the + button, paste your copied link, and click Confirm."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added subscription in the Profiles section. You can choose the server country in the Proxy (🚀) section. Set the TUN switch to ON."
+          }
+        }
+      },
+      "windows": {
+        "flclashx": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "setup": "Windows (Setup)",
+              "armSetup": "Windows on ARM (Setup)"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add a subscription manually. Click the Get link button on this page in the upper right corner, copy the link. In FlClashX, go to the Profiles section, click the + button, select the URL, paste your copied link and click Send"
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added profile in the Profiles section. In the Dashboard, click the enable button in the lower right corner, and then turn on the switch next to the TUN item. After launching, in the Proxy section, you can change the choice of the server to which you will be connected."
+          }
+        },
+        "koalaClash": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "setup": "Windows (Setup)"
+            }
+          },
+          "warning": {
+            "title": "Warning",
+            "description": "If you have previously used Clash Verge Rev, you need to uninstall it before installing Koala Clash."
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. Click the Get Link button in the top right corner of this page, copy the link. In Koala Clash, go to the main page, click the Add Profile button, paste the link into the text field, and then click the Import button."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "You can select a server at the bottom of the main page, and enable VPN by clicking on the large button in the center of the main page."
+          }
+        },
+        "prizrakBox": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose your architecture (installer preferred for automatic integration) and install or unzip Prizrak-Box.",
+            "links": {
+              "setup": "Windows (Setup)",
+              "armSetup": "Windows on ARM (Setup)"
+            }
+          },
+          "warning": {
+            "title": "Warning",
+            "description": "Run the program as an administrator."
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add the subscription automatically.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "manual": {
+            "title": "If the subscription is not added",
+            "description": "If nothing happens after clicking the button, add the subscription manually. On this page, click the Get Link button in the upper right corner, copy the link. In Prizrak-Box, go to the Profiles section, click the + button, paste your copied link, and click Confirm."
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Select the added subscription in the Profiles section. You can choose the server country in the Proxy (🚀) section. Set the TUN switch to ON."
+          }
+        },
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Choose the version for your device, click the button below and install the app.",
+            "links": {
+              "windows": "Windows"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        }
+      },
+      "androidTv": {
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in Google Play and install the app. Or install the app directly from the APK file if Google Play is not working.",
+            "links": {
+              "googlePlay": "Open in Google Play",
+              "downloadApk": "Download APK"
+            }
+          },
+          "instructions": {
+            "title": "Installation instructions",
+            "description": "Detailed instructions to help you set up Happ on your device.",
+            "links": {
+              "russian": "In Russian",
+              "english": "In English"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription, if you opened the subscription page on your TV",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Open the app and connect to the server"
+          }
+        },
+        "vpn4tv": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in Google Play and install the app. Or install the app directly from the APK file if Google Play is not working.",
+            "links": {
+              "googlePlay": "Open in Google Play",
+              "downloadApk": "Download APK"
+            }
+          },
+          "instructions": {
+            "title": "Installation instructions",
+            "description": "Detailed instructions to help you set up VPN4TV on your device.",
+            "links": {
+              "quickGuide": "Quick Guide",
+              "sberBoxGuide": "Sber Box Guide"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription, if you opened the subscription page on your TV",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Open the app and connect to the server"
+          }
+        }
+      },
+      "appleTv": {
+        "happ": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in the App Store on your Apple TV and install the app. Launch it, allow VPN configuration if prompted, and enter your passcode if required.",
+            "links": {
+              "appStore": "App Store"
+            }
+          },
+          "instructions": {
+            "title": "Installation instructions",
+            "description": "Detailed instructions to help you set up Happ on your device.",
+            "links": {
+              "russian": "In Russian",
+              "english": "In English"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below to add subscription, if you opened the subscription page on your TV",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "Open the app and connect to the server"
+          }
+        },
+        "shadowrocket": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the page in App Store and install the app. Launch it, in the VPN configuration permission window click Allow and enter your passcode.",
+            "links": {
+              "appStore": "Open in App Store"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Click the button below — the app will open and the subscription will be added automatically",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "In the main section, click the large power button in the center to connect to VPN. Don't forget to select a server from the server list. If needed, choose another server from the server list."
+          }
+        },
+        "stash": {
+          "appInstallation": {
+            "title": "App Installation",
+            "description": "Open the App Store page and install the app.",
+            "links": {
+              "appStore": "Open in App Store"
+            }
+          },
+          "addSubscription": {
+            "title": "Add Subscription",
+            "description": "Tap the button below — Stash will open and the configuration will be added automatically.",
+            "links": {
+              "addSubscription": "Add Subscription"
+            }
+          },
+          "connectionUsage": {
+            "title": "Connect and use",
+            "description": "On the main screen, tap the Start button. When prompted, allow adding VPN configurations. After the profile is activated, open the Policy section and select the country you want to connect through."
           }
         }
       }

@@ -9,6 +9,7 @@ import { vpnSubscriptionControllerHandleGetCurrentVpnSubscription } from "~/api/
 import { useSubscription } from "~/context/Subscription";
 
 export interface VpnSubscription {
+  username: string;
   url: string;
 }
 
@@ -53,6 +54,7 @@ export function VpnSubscriptionProvider(props: ParentProps) {
     }
 
     return {
+      username: current.username,
       url: current.subscriptionUrl,
     };
   };

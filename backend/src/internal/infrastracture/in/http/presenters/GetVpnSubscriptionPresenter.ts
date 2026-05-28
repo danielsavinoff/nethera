@@ -8,6 +8,7 @@ export class GetVpnSubscriptionPresenter {
     result: GetCurrentVpnSubscriptionResult,
   ): GetVpnSubscriptionResponseDto {
     return new GetVpnSubscriptionResponseDto({
+      username: result.data.vpnSubscription.externalId,
       subscriptionUrl:
         result.data.vpnSubscription.subscriptionUrl,
     });
