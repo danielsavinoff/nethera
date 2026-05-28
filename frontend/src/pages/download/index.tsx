@@ -7,7 +7,7 @@ import {
   IconDeviceTv,
 } from "@tabler/icons-solidjs";
 import { Link, Plus, SquareArrowOutUpRight } from "lucide-solid";
-import { createMemo, createSignal, type Component, type JSX } from "solid-js";
+import { createMemo, createSignal, type Component } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   Select,
@@ -46,7 +46,11 @@ type VpnClientOption = {
 type DownloadStep = {
   title: string;
   description: string;
-  content?: JSX.Element;
+  content?: {
+    url: string;
+    label: string;
+    icon?: Component;
+  }[];
 };
 
 const Platform = {
@@ -159,12 +163,6 @@ function Download() {
 
   const { vpnSubscription } = useVpnSubscription();
 
-  const happDeepLink = createMemo(() => {
-    const subscriptionUrl = vpnSubscription()?.url;
-
-    return subscriptionUrl ? `happ://add/${subscriptionUrl}` : undefined;
-  });
-
   const config = createMemo<
     Record<Platform, Partial<Record<VpnClient, DownloadStep[]>>>
   >(() => ({
@@ -173,72 +171,72 @@ function Download() {
         {
           title: t("downloadPage.steps.appInstallation.title"),
           description: t("downloadPage.steps.appInstallation.description"),
-          content: (
-            <>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreRu")}
-              </Button>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreGlobal")}
-              </Button>
-            </>
-          ),
+          content: [
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreRu"),
+              icon: Link,
+            },
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreGlobal"),
+              icon: Link,
+            },
+          ],
         },
       ],
       [VpnClient.Stash]: [
         {
           title: t("downloadPage.steps.appInstallation.title"),
           description: t("downloadPage.steps.appInstallation.description"),
-          content: (
-            <>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreRu")}
-              </Button>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreGlobal")}
-              </Button>
-            </>
-          ),
+          content: [
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreRu"),
+              icon: Link,
+            },
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreGlobal"),
+              icon: Link,
+            },
+          ],
         },
       ],
       [VpnClient.Shadowrocket]: [
         {
           title: t("downloadPage.steps.appInstallation.title"),
           description: t("downloadPage.steps.appInstallation.description"),
-          content: (
-            <>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreRu")}
-              </Button>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreGlobal")}
-              </Button>
-            </>
-          ),
+          content: [
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreRu"),
+              icon: Link,
+            },
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreGlobal"),
+              icon: Link,
+            },
+          ],
         },
       ],
       [VpnClient.Streisand]: [
         {
           title: t("downloadPage.steps.appInstallation.title"),
           description: t("downloadPage.steps.appInstallation.description"),
-          content: (
-            <>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreRu")}
-              </Button>
-              <Button as="a" href="#" variant="outline">
-                <Link />
-                {t("downloadPage.actions.appStoreGlobal")}
-              </Button>
-            </>
-          ),
+          content: [
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreRu"),
+              icon: Link,
+            },
+            {
+              url: "#",
+              label: t("downloadPage.actions.appStoreGlobal"),
+              icon: Link,
+            },
+          ],
         },
       ],
     },
@@ -251,47 +249,31 @@ function Download() {
           description: t(
             "downloadPage.steps.macos.happ.appInstallation.description",
           ),
-          content: (
-            <>
-              <Button
-                as="a"
-                href="https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?l=en-GB"
-                target="_blank"
-                rel="noreferrer"
-                variant="outline"
-              >
-                <SquareArrowOutUpRight />
-                {t("downloadPage.actions.appStoreRu")}
-              </Button>
-              <Button
-                as="a"
-                href="https://apps.apple.com/us/app/happ-proxy-utility/id6504287215"
-                target="_blank"
-                rel="noreferrer"
-                variant="outline"
-              >
-                <SquareArrowOutUpRight />
-                {t("downloadPage.actions.appStoreGlobal")}
-              </Button>
-            </>
-          ),
+          content: [
+            {
+              url: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?l=en-GB",
+              label: t("downloadPage.actions.appStoreRu"),
+              icon: SquareArrowOutUpRight,
+            },
+            {
+              url: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
+              label: t("downloadPage.actions.appStoreGlobal"),
+              icon: SquareArrowOutUpRight,
+            },
+          ],
         },
         {
           title: t("downloadPage.steps.macos.happ.addSubscription.title"),
           description: t(
             "downloadPage.steps.macos.happ.addSubscription.description",
           ),
-          content: (
-            <Button
-              as="a"
-              href={happDeepLink() ?? "#"}
-              disabled={!happDeepLink()}
-              variant="outline"
-            >
-              <Plus />
-              {t("downloadPage.actions.addSubscription")}
-            </Button>
-          ),
+          content: [
+            {
+              url: `happ://add/${vpnSubscription()?.url}`,
+              label: t("downloadPage.actions.addSubscription"),
+              icon: Plus,
+            },
+          ],
         },
         {
           title: t("downloadPage.steps.macos.happ.connectionUsage.title"),
@@ -474,10 +456,32 @@ function Download() {
                     <CardTitle>{step.title}</CardTitle>
                     <CardDescription>{step.description}</CardDescription>
                   </CardHeader>
-                  {step.content && (
+                  {!!step.content?.length && (
                     <CardContent>
                       <Flex class="justify-start gap-2 flex-wrap">
-                        {step.content}
+                        {step.content.map((content) => (
+                          <Button
+                            as="a"
+                            href={content.url || "#"}
+                            target={
+                              content.url.startsWith("http")
+                                ? "_blank"
+                                : undefined
+                            }
+                            rel={
+                              content.url.startsWith("http")
+                                ? "noreferrer"
+                                : undefined
+                            }
+                            disabled={!content.url}
+                            variant="outline"
+                          >
+                            {content.icon && (
+                              <Dynamic component={content.icon} />
+                            )}
+                            {content.label}
+                          </Button>
+                        ))}
                       </Flex>
                     </CardContent>
                   )}
