@@ -253,7 +253,7 @@ function Subscription() {
                   />
                 </TextField>
               </CardContent>
-              <CardFooter class="gap-4 max-lg:grid">
+              <CardFooter class="gap-2 lg:gap-4 max-lg:grid">
                 <Button
                   variant="default"
                   class="w-full"
