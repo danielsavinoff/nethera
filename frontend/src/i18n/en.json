@@ -69,7 +69,7 @@
     },
     "linkCard": {
       "title": "Link",
-      "tooltip": "Paste this link into your VPN client. To download the client, use the Download button in the top right and choose your platform.",
+      "tooltip": "Paste this link into your VPN client. To download the client, use the Download button in the top right.",
       "addSubscription": "Add subscription",
       "copyUrl": "Copy URL",
       "copySuccess": "Link copied. Paste it into your VPN client.",
