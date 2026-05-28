@@ -9,6 +9,7 @@ import { BillingController } from './controllers/BillingController.js';
 import { VpnSubscriptionController } from './controllers/VpnSubscriptionController.js';
 import { NowPaymentsWebhookController } from './controllers/NowPaymentsWebhookController.js';
 import { UserController } from './controllers/UserController.js';
+import { NowPaymentsGuard } from './guards/NowPaymentsGuard.js';
 import { PersistenceModule } from '../../out/persistence/PersistenceModule.js';
 import { GetCurrentUserPresenter } from './presenters/GetCurrentUserPresenter.js';
 import { GetUsersPresenter } from './presenters/GetUsersPresenter.js';
@@ -74,6 +75,7 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     GetVpnSubscriptionPresenter,
     GetVpnUsagePresenter,
     NowPaymentsPaymentStatusMapper,
+    NowPaymentsGuard,
   ],
   imports: [UseCaseModule, PersistenceModule],
 })

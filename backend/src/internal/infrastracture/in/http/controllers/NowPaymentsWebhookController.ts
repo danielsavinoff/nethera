@@ -4,8 +4,10 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { Public } from '../decorators/Public.js';
+import { NowPaymentsGuard } from '../guards/NowPaymentsGuard.js';
 import { HandlePaymentStatusChangeUseCase } from '../../../../application/usecases/HandlePaymentStatusChangeUseCase.js';
 import { BillingProvider } from '../../../../domain/subscription/BillingProvider.js';
 import { ApiNoContentResponse } from '@nestjs/swagger';
@@ -46,6 +48,7 @@ interface HandlePaymentStatusRequestBody {
 }
 
 @Public()
+@UseGuards(NowPaymentsGuard)
 @Controller('webhooks/nowpayments')
 export class NowPaymentsWebhookController {
   constructor(
@@ -60,7 +63,6 @@ export class NowPaymentsWebhookController {
     @Body()
     handlePaymentStatusRequestBody: HandlePaymentStatusRequestBody,
   ) {
-    // TODO: Check auth
     const externalPaymentId =
       handlePaymentStatusRequestBody.payment_id;
 
