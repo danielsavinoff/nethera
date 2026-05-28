@@ -43,11 +43,13 @@ import { showToast } from "~/components/ui/Toast";
 
 function Subscription() {
   const { locale, t } = useLocale();
+
   const {
     subscription,
     refetch: refetchSubscription,
     isLoading: isSubscriptionLoading,
   } = useSubscription();
+
   const {
     vpnSubscription,
     refetch: refetchVpnSubscription,
@@ -129,11 +131,9 @@ function Subscription() {
 
     try {
       const response =
-        await subscriptionControllerHandleExtendCurrentSubscription(
-          {
-            provider: ExtendSubscriptionRequestDtoProvider.NOWPAYMENTS,
-          },
-        );
+        await subscriptionControllerHandleExtendCurrentSubscription({
+          provider: ExtendSubscriptionRequestDtoProvider.NOWPAYMENTS,
+        });
 
       if (!response.data.externalCheckoutUrl) {
         showToast({
