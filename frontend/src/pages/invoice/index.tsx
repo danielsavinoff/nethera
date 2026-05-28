@@ -112,10 +112,21 @@ function Invoice() {
       return t("invoicePage.paymentMethod.unknown");
     }
 
-    const key = `invoicePage.paymentMethod.${provider.toLowerCase()}`;
-    const translated = t(key);
+    const paymentKey = `payments.${provider.toLowerCase()}`;
 
-    return translated === key ? provider : translated;
+    const translatedPayment = t(paymentKey);
+
+    if (translatedPayment !== paymentKey) {
+      return translatedPayment;
+    }
+
+    const invoicePaymentKey = `invoicePage.paymentMethod.${provider.toLowerCase()}`;
+
+    const translatedInvoicePayment = t(invoicePaymentKey);
+
+    return translatedInvoicePayment === invoicePaymentKey
+      ? provider
+      : translatedInvoicePayment;
   };
 
   const shouldShowPayButton = () =>

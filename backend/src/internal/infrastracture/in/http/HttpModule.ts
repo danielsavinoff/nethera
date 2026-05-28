@@ -30,6 +30,7 @@ import { GetInvoicesPresenter } from './presenters/GetInvoicesPresenter.js';
 import { GetInvoicePresenter } from './presenters/GetInvoicePresenter.js';
 import { GetInvoiceLinesPresenter } from './presenters/GetInvoiceLinesPresenter.js';
 import { CreateInvoicePresenter } from './presenters/CreateInvoicePresenter.js';
+import { GetBillingProvidersPresenter } from './presenters/GetBillingProvidersPresenter.js';
 import { GetSupportedCurrenciesPresenter } from './presenters/GetSupportedCurrenciesPresenter.js';
 import { GetVpnSubscriptionPresenter } from './presenters/GetVpnSubscriptionPresenter.js';
 import { GetVpnUsagePresenter } from './presenters/GetVpnUsagePresenter.js';
@@ -68,6 +69,7 @@ import { NowPaymentsPaymentStatusMapper } from '../../shared/payment/mappers/Now
     GetInvoicesPresenter,
     GetInvoiceLinesPresenter,
     CreateInvoicePresenter,
+    GetBillingProvidersPresenter,
     GetSupportedCurrenciesPresenter,
     GetVpnSubscriptionPresenter,
     GetVpnUsagePresenter,

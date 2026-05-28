@@ -109,6 +109,12 @@
     "title": "Plans",
     "annualBilling": "Annual billing",
     "action": "Get started",
+    "paymentProviderDialog": {
+      "title": "Select payment provider",
+      "loading": "Loading payment providers...",
+      "empty": "No payment providers are available.",
+      "cancel": "Cancel"
+    },
     "errors": {
       "checkoutCreateFailed": "Could not start checkout. Please try again.",
       "checkoutUrlMissing": "Checkout link is unavailable. Please try again."
@@ -127,6 +133,9 @@
         "year": "every {count} years"
       }
     }
+  },
+  "payments": {
+    "nowpayments": "Cryptocurrency"
   },
   "invoicesPage": {
     "title": "Invoices",
@@ -176,7 +185,7 @@
       "title": "Payment method",
       "label": "Payment",
       "unknown": "Unknown",
-      "nowpayments": "NowPayments",
+      "nowpayments": "Cryptocurrency",
       "pay": "Pay"
     },
     "status": {

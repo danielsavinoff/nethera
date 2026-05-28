@@ -109,6 +109,12 @@
     "title": "Тарифы",
     "annualBilling": "Годовая оплата",
     "action": "Подключить",
+    "paymentProviderDialog": {
+      "title": "Выберите способ оплаты",
+      "loading": "Загружаем способы оплаты...",
+      "empty": "Нет доступных способов оплаты.",
+      "cancel": "Отмена"
+    },
     "errors": {
       "checkoutCreateFailed": "Не удалось открыть оплату. Попробуйте ещё раз.",
       "checkoutUrlMissing": "Ссылка на оплату недоступна. Попробуйте ещё раз."
@@ -127,6 +133,9 @@
         "year": "каждые {count} г."
       }
     }
+  },
+  "payments": {
+    "nowpayments": "Криптовалюта"
   },
   "invoicesPage": {
     "title": "Счета",
@@ -176,7 +185,7 @@
       "title": "Способ оплаты",
       "label": "Оплата",
       "unknown": "Неизвестно",
-      "nowpayments": "NowPayments",
+      "nowpayments": "Криптовалюта",
       "pay": "Оплатить"
     },
     "status": {

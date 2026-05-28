@@ -20,6 +20,7 @@ import { SubscriptionPlanNotFoundException } from '../../../../application/excep
 import { UserNotFoundException } from '../../../../application/exceptions/UserNotFoundException.js';
 import type { AuthClaim } from '../../../../application/models/AuthClaim.js';
 import { CreateInvoiceUseCase } from '../../../../application/usecases/CreateInvoiceUseCase.js';
+import { GetBillingProvidersUseCase } from '../../../../application/usecases/GetBillingProvidersUseCase.js';
 import { GetInvoiceUseCase } from '../../../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../../../application/usecases/GetInvoicesUseCase.js';
@@ -27,11 +28,13 @@ import { GetSupportedCurrenciesUseCase } from '../../../../application/usecases/
 import { InvoiceActionForbiddenException } from '../../../../domain/subscription/InvoiceActionForbiddenException.js';
 import { Claims } from '../decorators/Claims.js';
 import { CreateInvoiceRequestDto } from '../dtos/CreateInvoiceRequestDto.js';
+import { GetBillingProvidersResponseDto } from '../dtos/GetBillingProvidersResponseDto.js';
 import { GetInvoiceLinesResponseDto } from '../dtos/GetInvoiceLinesResponseDto.js';
 import { GetInvoiceResponseDto } from '../dtos/GetInvoiceResponseDto.js';
 import { GetInvoicesResponseDto } from '../dtos/GetInvoicesResponseDto.js';
 import { GetSupportedCurrenciesResponseDto } from '../dtos/GetSupportedCurrenciesResponseDto.js';
 import { CreateInvoicePresenter } from '../presenters/CreateInvoicePresenter.js';
+import { GetBillingProvidersPresenter } from '../presenters/GetBillingProvidersPresenter.js';
 import { GetInvoicePresenter } from '../presenters/GetInvoicePresenter.js';
 import { GetInvoiceLinesPresenter } from '../presenters/GetInvoiceLinesPresenter.js';
 import { GetInvoicesPresenter } from '../presenters/GetInvoicesPresenter.js';
@@ -44,6 +47,8 @@ export class BillingController {
   constructor(
     private readonly getSupportedCurrenciesUseCase: GetSupportedCurrenciesUseCase,
     private readonly getSupportedCurrenciesPresenter: GetSupportedCurrenciesPresenter,
+    private readonly getBillingProvidersUseCase: GetBillingProvidersUseCase,
+    private readonly getBillingProvidersPresenter: GetBillingProvidersPresenter,
     private readonly createInvoiceUseCase: CreateInvoiceUseCase,
     private readonly createInvoicePresenter: CreateInvoicePresenter,
     private readonly getInvoicesUseCase: GetInvoicesUseCase,
@@ -64,6 +69,14 @@ export class BillingController {
     const result = this.getSupportedCurrenciesUseCase.execute({});
 
     return this.getSupportedCurrenciesPresenter.present(result);
+  }
+
+  @ApiOkResponse({ type: GetBillingProvidersResponseDto })
+  @Get('providers')
+  handleGetProviders() {
+    const result = this.getBillingProvidersUseCase.execute({});
+
+    return this.getBillingProvidersPresenter.present(result);
   }
 
   @ApiOkResponse({ type: GetInvoiceResponseDto })

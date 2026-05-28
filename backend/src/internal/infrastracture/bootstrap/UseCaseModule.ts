@@ -21,6 +21,7 @@ import { CreateInvoiceUseCase } from '../../application/usecases/CreateInvoiceUs
 import { GetInvoiceUseCase } from '../../application/usecases/GetInvoiceUseCase.js';
 import { GetInvoiceLinesUseCase } from '../../application/usecases/GetInvoiceLinesUseCase.js';
 import { GetInvoicesUseCase } from '../../application/usecases/GetInvoicesUseCase.js';
+import { GetBillingProvidersUseCase } from '../../application/usecases/GetBillingProvidersUseCase.js';
 import { GetSupportedCurrenciesUseCase } from '../../application/usecases/GetSupportedCurrenciesUseCase.js';
 import { GetCurrentVpnSubscriptionUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUseCase.js';
 import { GetCurrentVpnSubscriptionUsageUseCase } from '../../application/usecases/GetCurrentVpnSubscriptionUsageUseCase.js';
@@ -408,6 +409,13 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
       ],
     },
     {
+      provide: GetBillingProvidersUseCase,
+      useFactory: () => {
+        return new GetBillingProvidersUseCase();
+      },
+      inject: [],
+    },
+    {
       provide: GetSupportedCurrenciesUseCase,
       useFactory: () => {
         return new GetSupportedCurrenciesUseCase();
@@ -726,6 +734,7 @@ const NOTIFICATION_CHANNELS = Symbol('NOTIFICATION_CHANNELS');
     GetSubscriptionPlanUseCase,
     CreateSubscriptionPlanUseCase,
     CreateInvoiceUseCase,
+    GetBillingProvidersUseCase,
     GetSupportedCurrenciesUseCase,
     GetInvoiceUseCase,
     GetInvoicesUseCase,

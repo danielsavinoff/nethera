@@ -216,6 +216,17 @@ export interface GetSupportedCurrenciesResponseDto {
   currencies: GetSupportedCurrenciesResponseDtoCurrenciesItem[];
 }
 
+export type GetBillingProvidersResponseDtoProvidersItem = typeof GetBillingProvidersResponseDtoProvidersItem[keyof typeof GetBillingProvidersResponseDtoProvidersItem];
+
+
+export const GetBillingProvidersResponseDtoProvidersItem = {
+  NOWPAYMENTS: 'NOWPAYMENTS',
+} as const;
+
+export interface GetBillingProvidersResponseDto {
+  providers: GetBillingProvidersResponseDtoProvidersItem[];
+}
+
 export interface GetInvoiceLineAmountResponseDto {
   minor: number;
   currencyCode: string;
@@ -555,6 +566,15 @@ export const billingControllerHandleGetCurrencies = (
       options);
     }
 
+export const billingControllerHandleGetProviders = (
+
+ options?: SecondParameter<typeof api<GetBillingProvidersResponseDto>>,) => {
+      return api<GetBillingProvidersResponseDto>(
+      {url: `/billing/providers`, method: 'GET'
+    },
+      options);
+    }
+
 export const billingControllerHandleGetInvoice = (
     id: string,
  options?: SecondParameter<typeof api<GetInvoiceResponseDto>>,) => {
@@ -716,6 +736,7 @@ export type SubscriptionControllerHandleCancelCurrentSubscriptionResult = NonNul
 export type SubscriptionControllerHandleExtendCurrentSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleExtendCurrentSubscription>>>
 export type SubscriptionControllerHandleGetSubscriptionResult = NonNullable<Awaited<ReturnType<typeof subscriptionControllerHandleGetSubscription>>>
 export type BillingControllerHandleGetCurrenciesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetCurrencies>>>
+export type BillingControllerHandleGetProvidersResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetProviders>>>
 export type BillingControllerHandleGetInvoiceResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoice>>>
 export type BillingControllerHandleGetInvoiceLinesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoiceLines>>>
 export type BillingControllerHandleGetInvoicesResult = NonNullable<Awaited<ReturnType<typeof billingControllerHandleGetInvoices>>>

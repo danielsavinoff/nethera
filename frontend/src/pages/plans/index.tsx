@@ -2,8 +2,10 @@ import { LucideBadgeCheck } from "lucide-solid";
 import { createResource, createSignal, For, Show } from "solid-js";
 import {
   billingControllerHandleCreateInvoice,
+  billingControllerHandleGetProviders,
   CreateInvoiceRequestDtoProvider,
   CreateInvoiceRequestDtoType,
+  type GetBillingProvidersResponseDtoProvidersItem,
   type GetSubscriptionPlanResponseDto,
   subscriptionPlanControllerGetSubscriptionPlans,
   SubscriptionPlanControllerGetSubscriptionPlansInterval,
@@ -11,6 +13,12 @@ import {
 import { useLocale } from "~/context/Locale";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/Dialog";
 import { Flex } from "~/components/ui/Flex";
 import { Grid } from "~/components/ui/Grid";
 import { Separator } from "~/components/ui/Separator";
@@ -23,12 +31,15 @@ import {
 } from "~/components/ui/Switch";
 
 type Plan = GetSubscriptionPlanResponseDto;
+type BillingProvider = GetBillingProvidersResponseDtoProvidersItem;
 
 function Plans() {
   const { locale, t } = useLocale();
 
-  const [isLoading, setIsLoading] = createSignal(false);
+  const [isInvoiceCreating, setIsInvoiceCreating] = createSignal(false);
   const [isAnnualBilling, setIsAnnualBilling] = createSignal(false);
+  const [isProviderDialogOpen, setIsProviderDialogOpen] = createSignal(false);
+  const [selectedPlan, setSelectedPlan] = createSignal<Plan>();
 
   const [plans] = createResource(
     () => ({
@@ -38,14 +49,21 @@ function Plans() {
         : SubscriptionPlanControllerGetSubscriptionPlansInterval.MONTH,
     }),
     async (query) => {
-      const response = await subscriptionPlanControllerGetSubscriptionPlans(
-        {
-          interval: query.interval,
-          count: 1,
-        },
-      );
+      const response = await subscriptionPlanControllerGetSubscriptionPlans({
+        interval: query.interval,
+        count: 1,
+      });
 
       return response.data.subscriptionPlans;
+    },
+  );
+
+  const [providers] = createResource(
+    () => (isProviderDialogOpen() ? locale() : undefined),
+    async () => {
+      const response = await billingControllerHandleGetProviders();
+
+      return response.data.providers;
     },
   );
 
@@ -62,17 +80,34 @@ function Plans() {
     );
   };
 
-  const handleCreateSubscriptionInvoice = async (plan: Plan) => {
-    setIsLoading(true);
+  const formatBillingProvider = (provider: BillingProvider) => {
+    const key = `payments.${provider.toLowerCase()}`;
+
+    const label = t(key);
+
+    return label === key ? provider : label;
+  };
+
+  const handleSelectPlan = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setIsProviderDialogOpen(true);
+  };
+
+  const handleCreateSubscriptionInvoice = async (provider: BillingProvider) => {
+    const plan = selectedPlan();
+
+    if (!plan) {
+      return;
+    }
+
+    setIsInvoiceCreating(true);
 
     try {
-      const response = await billingControllerHandleCreateInvoice(
-        {
-          type: CreateInvoiceRequestDtoType.SUBSCRIPTION_PLAN,
-          referenceId: plan.id,
-          provider: CreateInvoiceRequestDtoProvider.NOWPAYMENTS,
-        },
-      );
+      const response = await billingControllerHandleCreateInvoice({
+        type: CreateInvoiceRequestDtoType.SUBSCRIPTION_PLAN,
+        referenceId: plan.id,
+        provider: provider as CreateInvoiceRequestDtoProvider,
+      });
 
       if (!response.data.externalCheckoutUrl) {
         showToast({
@@ -90,7 +125,7 @@ function Plans() {
         variant: "error",
       });
     } finally {
-      setIsLoading(false);
+      setIsInvoiceCreating(false);
     }
   };
 
@@ -133,13 +168,12 @@ function Plans() {
                     </Grid>
                     <Grid class="gap-4">
                       <p class="text-sm text-muted-foreground">
-                        {plan.description ??
-                          t("plansPage.descriptionFallback")}
+                        {plan.description ?? t("plansPage.descriptionFallback")}
                       </p>
                       <Button
                         size="sm"
-                        disabled={isLoading()}
-                        onClick={() => handleCreateSubscriptionInvoice(plan)}
+                        disabled={isInvoiceCreating()}
+                        onClick={() => handleSelectPlan(plan)}
                       >
                         {t("plansPage.action")}
                       </Button>
@@ -154,11 +188,10 @@ function Plans() {
                       </Flex>
                       <ul class="space-y-4">
                         <For
-                          each={plan.features
-                            .sort(
-                              (first, second) =>
-                                first.sortOrder - second.sortOrder,
-                            )}
+                          each={plan.features.sort(
+                            (first, second) =>
+                              first.sortOrder - second.sortOrder,
+                          )}
                         >
                           {(feature) => (
                             <li class="flex items-center gap-3">
@@ -187,6 +220,42 @@ function Plans() {
           </Show>
         </Grid>
       </div>
+      <Dialog
+        open={isProviderDialogOpen()}
+        onOpenChange={setIsProviderDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("plansPage.paymentProviderDialog.title")}
+            </DialogTitle>
+          </DialogHeader>
+          <Grid class="gap-2">
+            <Show when={providers.loading}>
+              <p class="text-sm text-muted-foreground">
+                {t("plansPage.paymentProviderDialog.loading")}
+              </p>
+            </Show>
+            <Show when={!providers.loading && (providers()?.length ?? 0) < 1}>
+              <p class="text-sm text-muted-foreground">
+                {t("plansPage.paymentProviderDialog.empty")}
+              </p>
+            </Show>
+            <For each={providers() ?? []}>
+              {(provider) => (
+                <Button
+                  variant="outline"
+                  class="w-full justify-start"
+                  disabled={isInvoiceCreating()}
+                  onClick={() => handleCreateSubscriptionInvoice(provider)}
+                >
+                  {formatBillingProvider(provider)}
+                </Button>
+              )}
+            </For>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
