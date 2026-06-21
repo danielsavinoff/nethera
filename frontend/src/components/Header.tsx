@@ -22,6 +22,7 @@ import { Icon } from "@iconify-icon/solid";
 import { Separator } from "./ui/Separator";
 import { useAuth } from "~/context/Auth";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Logo } from "./Logo";
 
 type HeaderProps = JSX.HTMLAttributes<HTMLHeadElement> & {};
 
@@ -53,13 +54,10 @@ export function Header(props: HeaderProps) {
       <Grid cols={2} colsMd={3} class="h-full container items-center gap-4">
         <Col class="min-w-0">
           <Flex class="w-fit items-center gap-4">
-            <div
-              class="hidden sm:flex size-10 items-center justify-center rounded-xl border border-foreground/10 bg-foreground text-background shadow-sm"
-              aria-label={t("header.brand.logo")}
-              role="img"
-            >
-              <span class="text-sm font-semibold">N</span>
-            </div>
+            <Logo
+              aria-label="Nethera"
+              class="size-8 fill-primary hidden sm:block"
+            />
             <div class="sm:hidden flex items-center gap-4">
               <Popover
                 overflowPadding={0}
