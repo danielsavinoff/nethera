@@ -62,7 +62,7 @@ services:
       frontend:
         condition: service_started
     environment:
-      - DOMAIN=value
+      - DOMAIN=nethera.org
     ports:
       - 80:80
     volumes:
