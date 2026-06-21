@@ -2,14 +2,14 @@ FROM node:25-alpine AS deps
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm ci
 
 FROM deps AS dev
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY frontend/. .
 
 CMD ["npm", "run", "dev"]
 
@@ -17,18 +17,14 @@ FROM deps AS build
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY frontend/. .
 
 RUN npm run build
 
-FROM node:25-alpine AS prod
+FROM caddy:2-alpine AS prod
 
-WORKDIR /usr/src/app
+COPY deploy/docker/frontend/Caddyfile /etc/caddy/Caddyfile
 
-ENV NODE_ENV=production
-
-COPY --from=build /usr/src/app/.output ./.output
+COPY --from=build /usr/src/app/dist /srv
 
 EXPOSE 4000
-
-CMD ["node", ".output/server/index.mjs"]

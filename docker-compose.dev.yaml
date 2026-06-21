@@ -40,8 +40,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./frontend/Dockerfile
       target: dev
     container_name: ${FRONTEND_HOST}
     depends_on:

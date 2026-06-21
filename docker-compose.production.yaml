@@ -35,47 +35,22 @@ services:
   frontend:
     image: nethera-frontend:latest
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./frontend/Dockerfile
       target: prod
     container_name: ${FRONTEND_HOST}
     depends_on:
       backend:
         condition: service_started
-    expose:
-      - ${FRONTEND_PORT}
-    env_file:
-      - .env
-    environment:
-      - HOST=${FRONTEND_HOST}
-      - PORT=${FRONTEND_PORT}
-    networks:
-      - internal-net
-
-  caddy:
-    image: caddy:2
-    container_name: caddy
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_started
-      frontend:
-        condition: service_started
-    env_file:
-      - .env
     ports:
-      - 80:80
-    volumes:
-      - ./deploy/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - 80:4000
+    env_file:
+      - .env
     networks:
       - internal-net
 
 volumes:
   postgres_data:
-  caddy_data:
-  caddy_config:
 
 networks:
   internal-net:

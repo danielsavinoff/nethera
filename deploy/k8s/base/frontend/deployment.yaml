@@ -23,9 +23,6 @@ spec:
                 name: app-env
             - secretRef:
                 name: app-env-secret
-          command:
-            - node
-            - .output/server/index.mjs
           ports:
             - containerPort: 4000
           readinessProbe:
