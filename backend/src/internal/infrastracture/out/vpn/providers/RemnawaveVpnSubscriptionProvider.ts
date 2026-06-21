@@ -35,11 +35,17 @@ export class RemnawaveVpnSubscriptionProvider
   extends RemnawaveBaseProvider
   implements VpnSubscriptionProvider
 {
+  private readonly internalSquadId: string;
+
   constructor(
     private readonly httpService: HttpService,
     configService: ConfigService,
   ) {
     super(configService);
+
+    this.internalSquadId = configService.getOrThrow<string>(
+      'REMNAWAVE_NEW_USER_INTERNAL_SQUAD_ID',
+    );
   }
 
   async fetch(
@@ -100,6 +106,7 @@ export class RemnawaveVpnSubscriptionProvider
         {
           username: input.userName,
           expireAt: expiration,
+          activeInternalSquads: [this.internalSquadId],
         },
         {
           headers: this.getHeaders(),
