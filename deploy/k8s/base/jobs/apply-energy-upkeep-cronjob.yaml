@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: energy-cron
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+            - name: gitlab-registry
+          restartPolicy: Never
+          containers:
+            - name: energy
+              image: backend
+              imagePullPolicy: Always
+              command: ["npm", "run", "job:energy"]
+              envFrom:
+                - configMapRef:
+                    name: app-env
+                - secretRef:
+                    name: app-env-secret
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"

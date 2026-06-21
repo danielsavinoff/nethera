@@ -1,0 +1,95 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: ${DATABASE_HOST}
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+      POSTGRES_DB: ${DATABASE}
+    command: ["postgres", "-c", "port=${DATABASE_PORT}"]
+    ports:
+      - ${DATABASE_EXPOSED_PORT}:${DATABASE_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+
+  backend:
+    image: nethera-backend:latest
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: prod
+    container_name: backend
+    depends_on:
+      postgres:
+        condition: service_started
+    expose:
+      - ${BACKEND_PORT}
+    env_file:
+      - .env
+    networks:
+      - internal-net
+
+  frontend:
+    image: nethera-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: prod
+    container_name: ${FRONTEND_HOST}
+    depends_on:
+      backend:
+        condition: service_started
+    expose:
+      - ${FRONTEND_PORT}
+    env_file:
+      - .env
+    environment:
+      - HOST=${FRONTEND_HOST}
+      - PORT=${FRONTEND_PORT}
+    networks:
+      - internal-net
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+      frontend:
+        condition: service_started
+    environment:
+      - DOMAIN=value
+    ports:
+      - 80:80
+    volumes:
+      - ./deploy/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal-net
+
+  redis:
+    image: redis:7
+    container_name: ${REDIS_HOST}
+    command: --port ${REDIS_PORT}
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal-net
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal-net:
+    driver: bridge
