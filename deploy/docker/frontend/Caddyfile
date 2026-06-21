@@ -1,7 +1,7 @@
 {$DOMAIN:nethera.org} {
 	encode gzip zstd
 
-	handle /api/* {
+	handle_path /api/* {
 		reverse_proxy backend:3000
 	}
 
