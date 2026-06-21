@@ -30,4 +30,4 @@ COPY deploy/docker/frontend/Caddyfile /etc/caddy/Caddyfile
 
 COPY --from=build /usr/src/app/dist /srv
 
-EXPOSE 4000
+EXPOSE 80 443

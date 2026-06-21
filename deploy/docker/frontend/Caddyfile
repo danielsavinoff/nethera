@@ -1,4 +1,4 @@
-:4000 {
+{$DOMAIN:nethera.org} {
 	encode gzip zstd
 
 	handle /api/* {
