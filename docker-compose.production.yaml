@@ -38,6 +38,8 @@ services:
       context: .
       dockerfile: ./frontend/Dockerfile
       target: prod
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     container_name: ${FRONTEND_HOST}
     depends_on:
       backend:
